@@ -102,6 +102,29 @@ xyz ;; c
 (set xyz "hello") ;; causes an error
 
 ;; compound data types
+;; strings
+"Hello World" ;; Hello World
+(string #\h #\e #\l #\l #\o) ;; hello
+(define greeting "Hello")
+(define greeting "hello; hello")
+greeting ;; hello; hello
+(string-ref greeting 0) ;; h
+(string-ref greeting 4) ;; o
+(string-append "E"
+ " Pluribus "
+ "Unum") ;; E Pluribus Unum
+(define a=3-char-long-string (make-string 3))
+a=3-char-long-string
+(make-string 3) 
+(set! a=3-char-long-string "ll")
+a=3-char-long-string ;; ll
+(string? "hello") ;; #t
+(string? 43) ;; #f
+(define hello (string #\H #\e #\l #\l #\o))
+hello ;; Hello
+(string-set! hello 1 #\a)
+hello ;; Hallo
+
 
 
 
