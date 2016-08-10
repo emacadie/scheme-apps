@@ -23,6 +23,7 @@
     (lambda (length breadth)
       (* length breadth)))
 (area 2 7) ;; 14
+;; that seems a bit more verbose than Clojure with "defun"
 
 ;; "apply" can be used to call a procedure
 (define x '(1 2 3))
