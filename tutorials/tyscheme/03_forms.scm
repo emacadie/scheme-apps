@@ -31,6 +31,7 @@
 (apply + 1 2 3 x) ;; 12
 x ;; (1 2 3)
 
+;; forms in a sequence
 ;; "apply" has an implicit "begin"
 (define display3
     (lambda (arg1 arg2 arg3)
