@@ -32,7 +32,7 @@
 x ;; (1 2 3)
 
 ;; forms in a sequence
-;; "apply" has an implicit "begin"
+; so I think "begin" is like "do" in Clojure, and like "do" returns value of last expression
 (define display3
     (lambda (arg1 arg2 arg3)
       (begin
@@ -45,6 +45,7 @@ x ;; (1 2 3)
 (display3 "Scheme" "is" "interesting") ;; Scheme is interesting
 (display3 'scheme 'is 'cool) ;; scheme is cool
 
+;; "lambda" has an implicit "begin"
 ;; same as
 (define display3
     (lambda (arg1 arg2 arg3)

@@ -89,6 +89,3 @@ counter ;; 3
 ;; 6
 (display counter) ;; 6
 
-
-
-
