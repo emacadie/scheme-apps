@@ -39,4 +39,6 @@
 ;; so in repl started in top dir in repo you could do this:
 ;; (load-relative "tutorials/tyscheme/03_forms.scm")
 ;; then call "add2" in repl
+;; load-relative in kawa, chicken, not in chez
+
 

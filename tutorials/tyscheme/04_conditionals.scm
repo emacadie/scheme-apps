@@ -9,8 +9,8 @@
 ;; result: low-pressure
 
 ;; when and unless
-> (define pressure-tube 55)
-> (when (< pressure-tube 60)
+(define pressure-tube 55)
+(when (< pressure-tube 60)
     (display "'open-valve ")
     (display "'attach-floor-pump-tube ")
     (display "'depress-floor-pump-5 ")
