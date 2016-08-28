@@ -2,7 +2,8 @@
 
 ;; define-macro works in kawa, not chez
 ;; not too clear at the moment what the dot is for in the lambda
-;; I think the dot separates lists - so far it looks like he uses it when the args are dots
+;; in section 3:  
+;; anything before dot bound to corresponding arg, var after dot picks up everything after that as one list
 (define-macro when2
     (lambda (test . branch)
         (list 'if test

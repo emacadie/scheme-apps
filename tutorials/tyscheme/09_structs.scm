@@ -17,12 +17,14 @@ coconut ;; #(tree 30 10 20 square green)
 (set-tree-age! coconut 44)
 (tree-age coconut) ;; 44
 ;; chez scheme macro is at http://cisco.github.io/ChezScheme/csug9.4/compat.html#./compat:s25
-
+;; to see what the macro gives you, use expand
+(expand '(define-structure (tree height girth age leaf-shape leaf-color)))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; their macro for structs is defstruct
 ;; it needs this function from chapter 6
 ;; note: This macro will not work in chez scheme
+;; This works kawa and guile
 (define list-position
   (lambda (o l)
     (let loop ((i 0) (l l))
@@ -112,5 +114,8 @@ palm ;; #(tree 60   frond green)
 (tree.leaf-shape plantain) ;; sheet
 (tree.leaf-color plantain) ;; green
 
+;; to see what the macro gives you, use expand
+(require 'syntax-utils)
+(expand '(defstruct tree height girth age leaf-shape leaf-color))
 
 
