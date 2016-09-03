@@ -1,4 +1,6 @@
 ;; 12 Objects and classes
+;; look into http://www.ccs.neu.edu/home/dorai/scmobj/scmobj.html
+;; also basis for http://wiki.call-cc.org/eggref/4/coops
 
 (defstruct standard-class
     slots superclass method-names method-vector)
@@ -156,7 +158,7 @@
         (list 'slots
             'class-precedence-list
             'method-names
-            'methdo-vector)
+            'method-vector)
         '()
         '(make-instance)
         (vector make-instance)))
