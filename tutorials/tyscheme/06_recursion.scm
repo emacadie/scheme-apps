@@ -19,7 +19,7 @@
             (is-even? (- n 1)))))
 
 ;; letrec can make procedures into local variables
-;; the "rec" is recursive
+;; the "rec" is recursive, so letrec is like "let" for recursive functions
 (letrec ((local-even? (lambda (n)
                 (if (= n 0) #t
                     (local-odd? (- n 1)))))
