@@ -27,6 +27,8 @@
 (integer? 22/7) ;; #f
 (integer? 42) ;; #t
 
+(exact->inexact (/ 22 7)) ;; 3.142857142857143
+
 ;; general purpose equality
 (eqv? 42 42) ;; #t
 (eqv? 42 #f) ;; #f
