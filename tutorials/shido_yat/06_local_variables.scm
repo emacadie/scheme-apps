@@ -55,10 +55,12 @@
 (define (distance v ang)
     (let* ((pi (* 4 (atan 1.0)))
             (radian-ang (* ang (/ pi 180.0)))
+            (cos-radian (cos radian-ang))
+            (sin-radian (sin radian-ang))
             )
   (*
-   (* v (cos radian-ang))                     ; vx
-   (/ (* 2.0 (* v (sin radian-ang))) 9.8) )))         ; t
+   (* v cos-radian)                     ; vx
+   (/ (* 2.0 (* v sin-radian)) 9.8) )))         ; t
 
 (distance 40 30) ;; 141.39190265868385
 
