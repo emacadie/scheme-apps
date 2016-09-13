@@ -74,4 +74,6 @@
    (* v (cos (deg-to-rad ang)))                     ; vx
    (free-fall-time (* v (sin (deg-to-rad ang))))))         ; t
 ;; close, right? multiply both inputs by v since it's 40 meters/second SQUARED
+(distance 40 30)
+;Value: 141.39190265868385
 
