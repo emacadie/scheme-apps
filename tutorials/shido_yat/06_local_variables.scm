@@ -53,14 +53,17 @@
 
 ; distance
 (define (distance v ang)
-    (let* ((pi (* 4 (atan 1.0)))
-            (radian-ang (* ang (/ pi 180.0)))
-            (cos-radian (cos radian-ang))
-            (sin-radian (sin radian-ang))
-            )
+    (let* ((radian-ang (* ang (/ (* 4 (atan 1.0)) 180.0)))
+            (cos-r (cos radian-ang))
+            (sin-r (sin radian-ang)))
   (*
-   (* v cos-radian)                     ; vx
-   (/ (* 2.0 (* v sin-radian)) 9.8) )))         ; t
+   v cos-r                     ; vx
+   (/ (* 2.0 v sin-r) 9.8) )))         ; t
 
 (distance 40 30) ;; 141.39190265868385
+
+;; shido's solution
+(define (throw v a)
+  (let ((r (/ (* 4 a (atan 1.0)) 180)))
+    (/ (* 2 v v (cos r) (sin r)) 9.8)))
 
