@@ -56,9 +56,9 @@
     (let* ((pi (* 4 (atan 1.0)))
             (radian-ang (* ang (/ pi 180.0)))
             )
-  (dx
+  (*
    (* v (cos radian-ang))                     ; vx
-   (ff-time (* v (sin radian-ang))))))         ; t
+   (/ (* 2.0 (* v (sin radian-ang))) 9.8) )))         ; t
 
 (distance 40 30) ;; 141.39190265868385
 
