@@ -119,6 +119,16 @@
 (equal? "hello" "hello") ;; #t
 
 ;; comparing numbers
+(= 1 1 1.0) ;; #t
+(< 1 2 3);; #t
+(< 1) ;; error in Kawa, #t in chez and guile
+(= 2 2 2) ;; #t
+(< 2 3 3.1) ;; #t
+(> 4 1 -0.2) ;; #t
+(<= 1 1 1.1) ;; #t
+(>= 2 1 1.0) ;; #t
+(< 3 4 3.9) ;; #f
+
 
 
 
