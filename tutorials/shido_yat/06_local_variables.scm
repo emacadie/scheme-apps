@@ -53,12 +53,10 @@
 
 ; distance
 (define (distance v ang)
-    (let* ((radian-ang (* ang (/ (* 4 (atan 1.0)) 180.0)))
-            (cos-r (cos radian-ang))
-            (sin-r (sin radian-ang)))
+    (let* ((r-ang (* ang (/ (* 4 (atan 1.0)) 180.0))))
   (*
-   v cos-r                     ; vx
-   (/ (* 2.0 v sin-r) 9.8) )))         ; t
+   v (cos r-ang)                     ; vx
+   (/ (* 2.0 v (sin r-ang)) 9.8) )))         ; t
 
 (distance 40 30) ;; 141.39190265868385
 
@@ -66,4 +64,16 @@
 (define (throw v a)
   (let ((r (/ (* 4 a (atan 1.0)) 180)))
     (/ (* 2 v v (cos r) (sin r)) 9.8)))
+
+
+(define pi (* 4 (atan 1.0)))
+
+;; so these are equal
+; degree -> radian
+(define (radian deg)
+  (* deg (/ (* 4 (atan 1.0)) 180.0)))
+
+; degree -> radian
+(define (radian2 deg)
+  (/ (* 4 deg (atan 1.0)) 180))
 
