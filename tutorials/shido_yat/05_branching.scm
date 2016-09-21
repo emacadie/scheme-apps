@@ -61,6 +61,15 @@
 (positive-product 3 4 5/3) ;; 20
 (positive-product 3 4 -5/3) ;; #f
 (positive-product 3 -4 -5) ;; #f
+(define (positive-product a b c)
+    (if (and (positive? a) (positive? b) (positive? c))
+        (begin
+            (display "in the if")
+            (newline)
+            (* a b c))
+        (begin
+            (display "In the else")(newline) 
+            #f)))
 
 ;; A function that takes three real numbers as arguments. It returns the product of these three numbers if at least one of them is negative. 
 (define (product-one-neg a b c)
