@@ -184,6 +184,7 @@
 ;; named let
 (define (fact-let n)
     (let loop((n1 n) (p n))
+        (display-all "n1: " n1 ", p:" p)
         (if (= n1 1)
             p
             (let ((m (- n1 1)))
@@ -201,9 +202,34 @@
             (lambda (y) y) ;; so this just returns itself?
             (lambda (y) (cons h y)))
          (remove x (cdr ls))))))
+
 (define (remove-let x ls)
-    (let loop((ls ls))
-        (loop ))
+    (let loop((carls (car ls)) (cdrls (cdr ls)))
+        (display-all "carls: " carls ", cdrls: " cdrls)
+        (if (null? cdrls)
+            carls
+            (cond ((eqv? x carls)  
+                    (begin
+                        (display-all "in first cond, x: " x ", carls: " carls)
+                        (loop '() cdrls)))
+                  ((= x (car cdrls)) 
+                      (begin
+                          (display-all "in second cond, x: " x ", carls: " carls ", cdrls: " cdrls)
+                            (loop carls (cdr cdrls))))
+                  (else (begin
+                          (display-all "in else, X: " x ", carls: " carls ", cdrls: " cdrls)
+                          (display-all "attempting to call with: " (list carls (car cdrls)) " and " (cdr cdrls))
+                          (loop (list carls (car cdrls)) (cdr cdrls))))))))
+(remove-let 3 '(1 2 3 4 3))
+(define ls '(1 2 3 4 3))
+;; it works, but see what shido comes up with
+;; good to know you can loop from multiple places
+;; less need for setters
+;; Exception: attempt to apply non-procedure (2 3 4 3)
+;; in Kawa: 
+;; gnu.mapping.WrongArguments
+;; 	at gnu.kawa.functions.ApplyToArgs.applyN(ApplyToArgs.java:162)
+;; usually you have something like (some-var) instead of (some-func)
 ;; A function that takes a list (ls) and and an object (x) and returns the first position of x in ls. The position is counted from 0. If x is not found in ls, the function returns #f. 
 ;; shido's answer from above
 (define (position x ls)
