@@ -147,6 +147,9 @@
   (if (null? ls)
       n
       (my-sum-rec (cdr ls) (+ n (car ls)))))
+(my-sum-tail '(10 11 5)) ;; 26
+(my-sum-tail '(2 3 4)) ;; 9
+
 ;; Converting a string that represents a positive integer to the corresponding integer, i.e. "1232" → 1232. Input error check is not required.
 ;; Hint:
 ;; Character to number conversion is done by subtracting 48 from the ASCII codes of characters #\0 ... #\9. Function char->integer is available to get the ASCII code of a character.
@@ -154,15 +157,7 @@
 (define (num-string-to-num ns)
     (rec-num-string (my-reverse (string->list ns)) 1))
 (define (rec-num-string ns factor)
-    (display "ns is ")
-    (display ns)
-    (display "; car ns: ")
-    (display (car ns))
-    (display "; cdr ns: " )
-    (display (cdr ns))
-    (display "; factor is: ")
-    (display factor)
-    (newline)
+    (display-all "ns is " ns "; car ns: " (car ns) "; cdr ns: " (cdr ns) "; factor is: " factor)
     (if ((= (length ns) 1)) ;; ( (display "in the if with ns: ")(display ns)(newline)
             (* ns factor)
             ;; ((display "In the else")(newline)
@@ -174,13 +169,14 @@
   (char2int (string->list str) 0))
 
 (define (char2int ls n)
+    (display-all "ls: " ls ", n: " n)
   (if (null? ls)
       n
       (char2int (cdr ls) 
 		(+ (- (char->integer (car ls)) 48)
 		   (* n 10)))))
 
-
+(my-string->integer "1234")
 ;; named let
 (define (fact-let n)
     (let loop((n1 n) (p n))
@@ -220,11 +216,26 @@
                           (display-all "in else, X: " x ", carls: " carls ", cdrls: " cdrls)
                           (display-all "attempting to call with: " (list carls (car cdrls)) " and " (cdr cdrls))
                           (loop (list carls (car cdrls)) (cdr cdrls))))))))
+;; more concise
+(define (remove-let x ls)
+    (let loop((carls (car ls)) (cdrls (cdr ls)))
+        (if (null? cdrls)
+            carls
+            (cond ((eqv? x carls) (loop '() cdrls) )
+                  ((= x (car cdrls)) (loop carls (cdr cdrls)))
+                  (else (loop (list carls (car cdrls)) (cdr cdrls)))))))
+;; even more concise
+(define (remove-let x ls)
+    (let loop((carls (car ls)) (cdrls (cdr ls)))
+        (cond ((null? cdrls) carls)
+            ((eqv? x carls) (loop '() cdrls))
+            ((eqv? x (car cdrls)) (loop carls (cdr cdrls)))
+            (else (loop (list carls (car cdrls)) (cdr cdrls))))))
 (remove-let 3 '(1 2 3 4 3))
+(remove-let "a" '("q" "a" "r" "d" "a" "f"))
 (define ls '(1 2 3 4 3))
-;; it works, but see what shido comes up with
-;; good to know you can loop from multiple places
-;; less need for setters
+;; it works, but see what shido comes up with - needs to be flattened
+;; good to know you can loop from multiple places, less need for setters
 ;; Exception: attempt to apply non-procedure (2 3 4 3)
 ;; in Kawa: 
 ;; gnu.mapping.WrongArguments
@@ -247,4 +258,89 @@
             ((null? lsa) #f)
             ((eqv? x (car lsa)) i)
             (else (loop (cdr lsa) (+ 1 i))))))
+(position-let 1 '(1 2 3)) ;; 0
+(position-let 3 '(1 2 3 3 2)) ;; 2
+
+(position-let 9 '(1 2 3))
+
+;; with named let
+;; my-reverse that reverse the order of list items. (Function reverse is pre-defined.)
+(define (my-reverse-let ls)
+    (let loop ((lsa ls) (revls '()))
+        (if (null? lsa) revls
+            (loop (cdr lsa) (cons (car lsa) revls)))))
+(my-reverse-let '(1 2 3 4)) ;; (4 3 2 1)
+(my-reverse-let '('a 'b 'c 'd)) ;; ((quote d) (quote c) (quote b) (quote a))
+
+;; Summarizing items of a list consisting of numbers.
+(define (sum-list-let ls)
+    (let loop ((lsa ls) (sum 0))
+        (if (null? (cdr lsa)) (+ sum (car lsa))
+            (loop (cdr lsa) (+ sum (car lsa))))))
+(sum-list-let '(10 11 5))
+(sum-list-let '(2 3 4))
+
+;; Converting a string that represents a positive integer to the corresponding integer, i.e. "1232" → 1232. Input error check is not required.
+;; Hint:
+;;Character to number conversion is done by subtracting 48 from the ASCII codes of characters #\0 ... #\9. Function char->integer is available to get the ASCII code of a character.
+;; Function string->list is available to convert string to a list of characters. 
+(define (my-string->integer str)
+  (char2int (string->list str) 0))
+
+(define (char2int ls n)
+    (display-all "ls: " ls ", n: " n)
+  (if (null? ls)
+      n
+      (char2int (cdr ls) 
+		(+ (- (char->integer (car ls)) 48)
+		   (* n 10)))))
+
+(my-string->integer "1234")
+(define (string-to-number-let str)
+    (let loop ((stra (string->list str)) (number 0))
+        (display-all "stra: " stra ", number: " number)
+        (if (null? stra) number
+            (loop (cdr stra) (+ (* number 10) (- (char->integer (car stra)) 48) )))))
+(string-to-number-let "1234")
+
+;; section 5: letrec
+;; letrec can make procedures into local variables
+;; the "rec" is recursive, so letrec is like "let" for recursive functions
+;; shido says: a name defined by letrec can refer itself in its definition
+
+(define (fact-letrec n)
+  (letrec ((iter (lambda (n1 p)
+		   (if (= n1 1)
+		       p
+		       (let ((m (- n1 1)))
+			 (iter m (* p m)))))))     ; *
+    (iter n n)))
+;; from R7RS spec
+(letrec ((even?
+          (lambda (n)
+            (if (zero? n)
+                #t
+                (odd? (- n 1)))))
+         (odd?
+          (lambda (n)
+            (if (zero? n)
+                #f
+                (even? (- n 1))))))
+  (even? 88))
+;; functions calling each other
+;; like in fact-letrec, "iter" is called at a few different places, not just at the tail
+;;  Exercise 4: Write letrec version of exercise 2.
+;; let with loop was soooo much better
+;; my-reverse that reverse the order of list items. (Function reverse is pre-defined.)
+(define (my-reverse-letrec ls)
+    (letrec (
+;; Summarizing items of a list consisting of numbers.(
+(define (sum-letrec ls)
+    (letrec
+;; Converting a string that represents a positive integer to the corresponding integer, i.e. "1232" → 1232. Input error check is not required.
+;; Hint:
+;; Character to number conversion is done by subtracting 48 from the ASCII codes of characters #\0 ... #\9. Function char->integer is available to get the ASCII code of a character.
+;; Function string->list is available to convert string to a list of characters. 
+
+
 
