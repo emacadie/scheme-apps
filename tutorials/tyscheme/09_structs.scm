@@ -115,7 +115,7 @@ palm ;; #(tree 60   frond green)
 (tree.leaf-color plantain) ;; green
 
 ;; to see what the macro gives you, use expand
-(require 'syntax-utils)
+(require 'syntax-utils) ;; needed in kawa
 (expand '(defstruct tree height girth age leaf-shape leaf-color))
 
 

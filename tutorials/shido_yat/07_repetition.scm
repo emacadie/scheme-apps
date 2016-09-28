@@ -177,7 +177,8 @@
 		   (* n 10)))))
 
 (my-string->integer "1234")
-;; named let
+
+;;section 4 - named let -
 (define (fact-let n)
     (let loop((n1 n) (p n))
         (display-all "n1: " n1 ", p:" p)
@@ -333,14 +334,54 @@
 ;; let with loop was soooo much better
 ;; my-reverse that reverse the order of list items. (Function reverse is pre-defined.)
 (define (my-reverse-letrec ls)
-    (letrec (
+    (letrec ((rev-letrec (lambda (lsa revls) ;; gotta start letrec w/2 parens, even though the 2nd seems extraneous
+        (if (null? lsa) revls
+            (rev-letrec (cdr lsa) (cons (car lsa) revls)))))) ;; letrec procs seem to end w/a LOT of parens
+        (rev-letrec ls '())))
+(my-reverse-letrec '(1 2 3 4)) ;; (4 3 2 1)
+(my-reverse-letrec '('a 'b 'c 'd)) ;; ((quote d) (quote c) (quote b) (quote a))
+
 ;; Summarizing items of a list consisting of numbers.(
 (define (sum-letrec ls)
-    (letrec
+    (letrec ((sum-inside-loop (lambda (inls sum)
+        (if (null? (cdr inls)) (+ sum (car inls))
+            (sum-inside-loop (cdr inls) (+ sum (car inls)))))))
+        (sum-inside-loop ls 0))) ;; last call must be inside letrec
+
+(sum-letrec '(10 11 5)) ;; 26
+(sum-letrec '(2 3 4)) ;; 9
+;; not a great use of letrec, I admit. But it still needs a condition that will end the recursion
+
 ;; Converting a string that represents a positive integer to the corresponding integer, i.e. "1232" → 1232. Input error check is not required.
 ;; Hint:
 ;; Character to number conversion is done by subtracting 48 from the ASCII codes of characters #\0 ... #\9. Function char->integer is available to get the ASCII code of a character.
 ;; Function string->list is available to convert string to a list of characters. 
 
+;; frankly I think I will skip this one. Kind of tired of letrec already. 
+;; this might be a good use of letrec
+(define (remove-let x ls)
+    (let loop((carls (car ls)) (cdrls (cdr ls)))
+        (cond ((null? cdrls) carls)
+            ((eqv? x carls) (loop '() cdrls))
+            ((eqv? x (car cdrls)) (loop carls (cdr cdrls)))
+            (else (loop (list carls (car cdrls)) (cdr cdrls))))))
+(remove-let 3 '(1 2 3 4 3))
+(remove-let "a" '("q" "a" "r" "d" "a" "f"))
+(define (remove-letrec x ls)
+    (letrec ((rm-letrec (lambda (carls cdrls)
+        (cond ((null? cdrls) carls)
+            ((eqv? x carls) (rm-letrec '() cdrls))
+            ((eqv? x (car cdrls)) (rm-letrec carls (cdr cdrls)))
+            (else (rm-letrec (list carls (car cdrls)) (cdr cdrls)))))))
+        (rm-letrec (car ls) (cdr ls))))
+(remove-letrec 3 '(1 2 3 4 3)) ;; ((1 2) 4) ;; still needs to be flattened
+(remove-letrec 3 '(1 2 3 4)) ;; ((1 2) 4)
+(remove-letrec "a" '("q" "a" "r" "d" "a" "f")) ;; (((q r) d) f)
 
+;; another section 5: do expression
+(define (fact-do n)
+    (do ((n1 n (- n1 1)) (p n (* p (- n1 1)))) ((= n1 1) p)))
+
+;; he says do is more complicated than named let, and I agree. Perhaps I will see what the overflowed stack has to offer
+;; http://stackoverflow.com/questions/3199228/using-do-in-scheme
 
