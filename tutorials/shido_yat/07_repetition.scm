@@ -64,33 +64,7 @@
 
 ;; A function that takes a list (ls) and an object (x) and returns the first position of x in ls. The position is counted from 0. If x is not found in ls, the function returns #f. 
 ;; this one was hard, did not finish
-(define (find-first-instance ls x)
-    (cond ((= (length ls) 0) #f) ;;  ((null? ls) #f)
-        ((= x (car ls)) 0)
-        (else (+ 1 (find-first-instance (cdr ls) x)))))
-(find-first-instance '(1 2 3) 1) ;; 0
-(find-first-instance '(1 2 3 3 2) 3) ;; 2
 
-(find-first-instance '(1 2 3) 9)
-
-(define (find-first-instance ls x)
-    (cond ((= (length ls) 0) #f) ;;  ((null? ls) #f)
-        ((= x (car ls)) 
-            (display "in (=x (car ls), list is: ")
-            (display ls)
-            (newline))
-        (else (
-                (display "in else, list is: ")
-                (display ls)
-                (newline)
-                (+ 1 (find-first-instance (cdr ls) x))))))
-(define (find-first-instance ls x)
-    (display "Here is list: ")
-    (display ls)
-    (newline)
-    (cond ((= (length ls) 0) #f) ;;  ((null? ls) #f)
-        ((= x (car ls)) 0)
-        (else (+ 1 (find-first-instance (cdr ls) x)))))
 ;; mine doesn't work if the item is not in the list
 ;; shido's answer
 (define (position x ls)
@@ -101,9 +75,9 @@
    ((null? ls) #f)
    ((eqv? x (car ls)) i)
    (else (position-aux x (cdr ls) (+ 1 i)))))
-;; he said "A function", so I tried writing one, not one that calls another
+;; he said "A function", so I tried writing _one_, not one that calls another
 
-;; tail recursive
+;; section 3:  tail recursion
 ;; his first recursion was at the end, so I am not clear how "tail recursion" is different than "recursion"
 (define (fact-tail n)
     (fact-rec n n))
@@ -119,11 +93,7 @@
 ;; from the other tutorial
 (define (my-reverse s)
     (let loop ((s s) (r '()))
-        (display "s is: ")
-        (display s)
-        (display "; r is: ")
-        (display r)
-        (newline)
+        (display-all "s is: " s "; r is: " r)
       (if (null? s) r ;; if head is empty, return the end
           (let ((d (cdr s))) ;; set d to the rest of s
             (set-cdr! s r) ;; set the rest of s to r, keeping the head intact on s
@@ -154,16 +124,7 @@
 ;; Hint:
 ;; Character to number conversion is done by subtracting 48 from the ASCII codes of characters #\0 ... #\9. Function char->integer is available to get the ASCII code of a character.
 ;; Function string->list is available to convert string to a list of characters. 
-(define (num-string-to-num ns)
-    (rec-num-string (my-reverse (string->list ns)) 1))
-(define (rec-num-string ns factor)
-    (display-all "ns is " ns "; car ns: " (car ns) "; cdr ns: " (cdr ns) "; factor is: " factor)
-    (if ((= (length ns) 1)) ;; ( (display "in the if with ns: ")(display ns)(newline)
-            (* ns factor)
-            ;; ((display "In the else")(newline)
-                (+ (* (- (char->integer (car ns)) 48) factor) (rec-num-string (cdr ns) (* 10 factor)))))
-(num-string-to-num "1234")
-;; this is not working
+;; I could not get that to work, removing
 ;; shido's answer
 (define (my-string->integer str)
   (char2int (string->list str) 0))
@@ -189,7 +150,7 @@
 
 ;; exercise 3
 ;; do with let and loop
-;;  A function that takes a list (ls) and an object (x) as arguments and returns a list removing x from ls.
+;; A function that takes a list (ls) and an object (x) as arguments and returns a list removing x from ls.
 ;; shido's answer from above
 (define (remove x ls)
   (if (null? ls)
@@ -237,6 +198,18 @@
 (define ls '(1 2 3 4 3))
 ;; it works, but see what shido comes up with - needs to be flattened
 ;; good to know you can loop from multiple places, less need for setters
+;; shido's answer:
+(define (remove x ls)
+  (let loop((ls0 ls) (ls1 ()))
+    (if (null? ls0) 
+	(reverse ls1)
+	(loop
+	 (cdr ls0)
+          (if (eqv? x (car ls0))
+              ls1
+            (cons (car ls0) ls1))))))
+
+;; note to self:
 ;; Exception: attempt to apply non-procedure (2 3 4 3)
 ;; in Kawa: 
 ;; gnu.mapping.WrongArguments
@@ -263,7 +236,14 @@
 (position-let 3 '(1 2 3 3 2)) ;; 2
 
 (position-let 9 '(1 2 3))
-
+;; shido's answer
+(define (position x ls)
+  (let loop((ls0 ls) (i 0))
+    (cond
+     ((null? ls0) #f)
+     ((eqv? x (car ls0)) i)
+     (else (loop (cdr ls0) (1+ i))))))
+;; pretty muh the same
 ;; with named let
 ;; my-reverse that reverse the order of list items. (Function reverse is pre-defined.)
 (define (my-reverse-let ls)
@@ -272,6 +252,13 @@
             (loop (cdr lsa) (cons (car lsa) revls)))))
 (my-reverse-let '(1 2 3 4)) ;; (4 3 2 1)
 (my-reverse-let '('a 'b 'c 'd)) ;; ((quote d) (quote c) (quote b) (quote a))
+;; shido's answer
+(define (my-reverse-let ls)
+  (let loop((ls0 ls) (ls1 ()))
+    (if (null? ls0)
+	ls1
+	(loop (cdr ls0) (cons (car ls0) ls1)))))
+;; pretty much the same
 
 ;; Summarizing items of a list consisting of numbers.
 (define (sum-list-let ls)
@@ -280,11 +267,18 @@
             (loop (cdr lsa) (+ sum (car lsa))))))
 (sum-list-let '(10 11 5))
 (sum-list-let '(2 3 4))
-
+;; shido's answer
+(define (my-sum-let ls)
+  (let loop((ls0 ls) (n 0))
+    (if (null? ls0)
+	n
+	(loop (cdr ls0) (+ (car ls0) n)))))
+;; slightly different
 ;; Converting a string that represents a positive integer to the corresponding integer, i.e. "1232" → 1232. Input error check is not required.
 ;; Hint:
 ;;Character to number conversion is done by subtracting 48 from the ASCII codes of characters #\0 ... #\9. Function char->integer is available to get the ASCII code of a character.
 ;; Function string->list is available to convert string to a list of characters. 
+;; shido's from before
 (define (my-string->integer str)
   (char2int (string->list str) 0))
 
@@ -297,12 +291,54 @@
 		   (* n 10)))))
 
 (my-string->integer "1234")
+;; now mine
 (define (string-to-number-let str)
     (let loop ((stra (string->list str)) (number 0))
         (display-all "stra: " stra ", number: " number)
         (if (null? stra) number
             (loop (cdr stra) (+ (* number 10) (- (char->integer (car stra)) 48) )))))
 (string-to-number-let "1234")
+
+;; shido's answer:
+(define (my-string->integer-let str)
+  (let loop((ls0 (string->list str)) (n 0))
+    (if (null? ls0)
+	n
+	(loop (cdr ls0)
+	      (+ (- (char->integer (car ls0)) 48)
+		 (* n 10))))))
+
+;; The function range that returns a list of numbers from 0 to n (not including n). 
+(define (range-let n)
+    (let loop ((ls '())(num 0))
+        (cond ((= num 0) (loop '(0) (+ 1 num)))
+            ((< num n) (loop (cons ls num) (+ 1 num)))
+            ((= num n) ls))))
+(range-let 4) ;; ((((0) . 1) . 2) . 3)
+(range-let 10) ;; ((((((((((0) . 1) . 2) . 3) . 4) . 5) . 6) . 7) . 8) . 9)
+;; again, not flattening
+;; shido's answer:
+(define (range n)
+  (let loop((i 0) (ls1 ()))
+      (display-all "i is " i "; lsl is " ls1)
+    (if (= i n)
+        (reverse ls1)
+      (loop (+ 1 i) (cons i ls1)))))
+(cons 0 '()) ;; (0)
+(cons 1 '(0)) ;; (1 0)
+(cons '(0) 1) ;; ((0) . 1)
+(cons 3 '(0 1 2)) ;; (3 0 1 2)
+;; so if second element in cons is a list, it returns a flat list
+
+(define q (cons '(0) 1) )
+q ;; ((0) . 1)
+(cons 2 q) ;; (2 (0) . 1)
+(cons q 2) ;; (((0) . 1) . 2)
+;; but I guess you need to do that from the beginning
+;; I admit, it's there in the docs: 
+(cons "a" '(b c)) ;; ("a" b c)
+(cons "a" '("b" "c")) ;; (a b c)
+(cons '("a" "b") '("c" "d")) ;; ((a b) c d)
 
 ;; section 5: letrec
 ;; letrec can make procedures into local variables
@@ -340,8 +376,15 @@
         (rev-letrec ls '())))
 (my-reverse-letrec '(1 2 3 4)) ;; (4 3 2 1)
 (my-reverse-letrec '('a 'b 'c 'd)) ;; ((quote d) (quote c) (quote b) (quote a))
+;; shido's answer
+(define (my-reverse-letrec ls)
+  (letrec ((iter (lambda (ls0 ls1)
+		   (if (null? ls0)
+		       ls1
+		       (iter (cdr ls0) (cons (car ls0) ls1))))))
+    (iter ls ())))
 
-;; Summarizing items of a list consisting of numbers.(
+;; Summarizing items of a list consisting of numbers.
 (define (sum-letrec ls)
     (letrec ((sum-inside-loop (lambda (inls sum)
         (if (null? (cdr inls)) (+ sum (car inls))
@@ -351,6 +394,13 @@
 (sum-letrec '(10 11 5)) ;; 26
 (sum-letrec '(2 3 4)) ;; 9
 ;; not a great use of letrec, I admit. But it still needs a condition that will end the recursion
+;; shido's answer
+(define (my-sum-letrec ls)
+  (letrec ((iter (lambda (ls0 n)
+		   (if (null? ls0)
+		       n
+		       (iter (cdr ls0) (+ (car ls0) n))))))
+    (iter ls 0)))
 
 ;; Converting a string that represents a positive integer to the corresponding integer, i.e. "1232" → 1232. Input error check is not required.
 ;; Hint:
@@ -384,4 +434,22 @@
 
 ;; he says do is more complicated than named let, and I agree. Perhaps I will see what the overflowed stack has to offer
 ;; http://stackoverflow.com/questions/3199228/using-do-in-scheme
+;; shido's do exercise
+; 1
+(define (my-reverse-do ls)
+  (do ((ls0 ls (cdr ls0)) (ls1 () (cons (car ls0) ls1)))
+      ((null? ls0) ls1)))
+
+; 2
+(define (my-sum-do ls)
+  (do ((ls0 ls (cdr ls0)) (n 0 (+ n (car ls0))))
+      ((null? ls0) n)))
+
+; 3
+(define (my-string->integer-do str)
+  (do ((ls0 (string->list str) (cdr ls0))
+       (n 0 (+ (- (char->integer (car ls0)) 48) 
+	       (* n 10))))
+      ((null? ls0) n)))
+
 
