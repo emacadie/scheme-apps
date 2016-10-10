@@ -39,6 +39,11 @@ sum ;; 10
 ;; (11 22 33 44 55 66 77 88 99 100)
 ;; Shido's answers use keep-matching-items, which does not exist in Kawa
 
+(define (filter-even ls)
+  (filter even? ls))
+(define (filter-10-100 ls)
+  (filter (lambda (x) (<= 10 x 100)) ls)) ;; I keep forgetting you don't need the "and"
+
 ;; 4 Folding aka reducing - neither of those names really says what it does
 (reduce + 0 '(1 2 3 4)) ;; 10
 (reduce + 0 '(1 2)) ;; 3
@@ -109,4 +114,90 @@ sum ;; 10
   (sqrt (apply + (map (lambda (x) (* x x)) ls))))
 ;; so he/she (?) doesn't start with apply, he uses it in the middle
 
+;; 7 Making higher order functions
+;; this returns a sublist starting with first element that satisfies the predicate
+(define (member-if proc ls)
+    (display-all "proc is " proc ", ls is " ls)
+    (cond
+        ((null? ls) #f)
+        ((proc (car ls)) ls)
+        (else (member-if proc (cdr ls)))))
+(member-if positive? '(0 -1 -2 3 5 -7))
+
+(define (member-find proc obj ls)
+    (cond
+        ((null? ls) #f)
+        ((proc obj (car ls)) ls)
+        (else (member-find proc obj (cdr ls)))))
+(member-find string=? "hello" '("hi" "guys" "bye" "hello" "see you"))
+
+;; exercise 6
+;; Define keep-matching-items by yourself.
+(define (keep-matching-items proc ls)
+    (display-all "proc 1: " (proc 1))
+    (display-all "proc 2: " (proc 2))
+    (let loop ((ls0 ls) (ls1 '()))
+        (display-all " proc is " proc ", ls0 is " ls0 ", ls1 is " ls1)
+        (cond 
+            ((null? ls0) (reverse ls1))
+            ((proc (car ls0)) (loop (cdr ls0) (cons (car ls0) ls1)))
+            ((eqv? #f (proc (car ls0))) (loop (cdr ls0) ls1)))))
+
+(keep-matching-items symbol? (list 'hello 4 'this "u" 'is 88 'fun #\r)) ;; (hello this is fun)
+
+
+(define (keep-matching-items proc ls)
+    (display-all "proc 1: " (proc 1))
+    (display-all "proc 2: " (proc 2))
+    (let loop ((ls0 ls) (ls1 '()))
+        (display-all " proc is " proc ", ls0 is " ls0 ", ls1 is " ls1)
+        (display-all "(apply " proc " " (car ls0) '() ": " (apply proc (car ls0) '()) )
+        (cond 
+            ((null? ls0) (reverse ls1))
+            
+            ((eqv? #f (apply proc (car ls0) '())) (loop (cdr ls0) ls1))
+            ((eqv? #t (apply proc (car ls0) '())) (loop (cdr ls0) (cons (car ls0) ls1))))))
+
+(define (keep-matching-items proc ls)
+    (display-all "proc 1: " (proc 1))
+    (display-all "proc 2: " (proc 2))
+    (let loop ((ls0 ls) (ls1 '()))
+        (display-all " proc is " proc ", ls0 is " ls0 ", ls1 is " ls1)
+        (display-all "(apply " proc " " (car ls0) '() ": " (apply proc (car ls0) '()) )
+        (cond 
+            ((null? ls0) ((display-all "in null case")(reverse ls1)))
+            
+            ((eqv? #f (apply proc (car ls0) '())) ((display-all "in the false case")(loop (cdr ls0) ls1)))
+            ((eqv? #t (apply proc (car ls0) '())) ((display-all "in the true case")(loop (cdr ls0) (cons (car ls0) ls1)))))))
+;; gnu.mapping.WrongArguments
+;;	at gnu.kawa.functions.ApplyToArgs.applyN(ApplyToArgs.java:162)
+(define (remove-let x ls)
+    (let loop((carls (car ls)) (cdrls (cdr ls)))
+        (cond ((null? cdrls) carls)
+            ((eqv? x carls) (loop '() cdrls))
+            ((eqv? x (car cdrls)) (loop carls (cdr cdrls)))
+            (else (loop (list carls (car cdrls)) (cdr cdrls))))))
+
+(define (keep-matching-items x ls)
+    (let loop((carls (car ls)) (cdrls (cdr ls)))
+        (cond ((null? cdrls) carls)
+            ((eqv? x carls) (loop '() cdrls))
+            ((eqv? x (car cdrls)) (loop carls (cdr cdrls)))
+            (else (loop (list carls (car cdrls)) (cdr cdrls))))))
+
+(keep-matching-items even? '(1 2 3 4 5))
+(define (remove x ls)
+  (let loop ((ls0 ls) (ls1 ()))
+    (if (null? ls0) 
+	(reverse ls1)
+	(loop (cdr ls0)
+          (if (eqv? x (car ls0))
+              ls1
+            (cons (car ls0) ls1))))))
+;; so if second element in cons is a list, it returns a flat list
+;; Define map by yourself. It may be some how difficult to accept more than one list as arguments.
+;; The rest parameter is defined by a dot pair (.). The cdr part of the pair is sent to the function as a list.
+;; Example: my-list
+;; (define (my-list . x) x)
+;; In addition, you need the function apply. 
 
