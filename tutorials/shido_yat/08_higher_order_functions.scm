@@ -143,21 +143,17 @@ sum ;; 10
             ((proc (car ls0)) (loop (cdr ls0) (cons (car ls0) ls1)))
             ((eqv? #f (proc (car ls0))) (loop (cdr ls0) ls1)))))
 
-(keep-matching-items symbol? (list 'hello 4 'this "u" 'is 88 'fun #\r)) ;; (hello this is fun)
-
-
 (define (keep-matching-items proc ls)
-    (display-all "proc 1: " (proc 1))
-    (display-all "proc 2: " (proc 2))
     (let loop ((ls0 ls) (ls1 '()))
-        (display-all " proc is " proc ", ls0 is " ls0 ", ls1 is " ls1)
-        (display-all "(apply " proc " " (car ls0) '() ": " (apply proc (car ls0) '()) )
         (cond 
             ((null? ls0) (reverse ls1))
-            
-            ((eqv? #f (apply proc (car ls0) '())) (loop (cdr ls0) ls1))
-            ((eqv? #t (apply proc (car ls0) '())) (loop (cdr ls0) (cons (car ls0) ls1))))))
+            ((proc (car ls0)) (loop (cdr ls0) (cons (car ls0) ls1)))
+            ((eqv? #f (proc (car ls0))) (loop (cdr ls0) ls1)))))
 
+(keep-matching-items symbol? (list 'hello 4 'this "u" 'is 88 'fun #\r)) ;; (hello this is fun)
+(keep-matching-items string? '("hello" 4 "this" 'tt "is" #\n "fun")) ;; (hello this is fun)
+
+;; another version
 (define (keep-matching-items proc ls)
     (display-all "proc 1: " (proc 1))
     (display-all "proc 2: " (proc 2))
@@ -166,38 +162,37 @@ sum ;; 10
         (display-all "(apply " proc " " (car ls0) '() ": " (apply proc (car ls0) '()) )
         (cond 
             ((null? ls0) ((display-all "in null case")(reverse ls1)))
-            
             ((eqv? #f (apply proc (car ls0) '())) ((display-all "in the false case")(loop (cdr ls0) ls1)))
             ((eqv? #t (apply proc (car ls0) '())) ((display-all "in the true case")(loop (cdr ls0) (cons (car ls0) ls1)))))))
 ;; gnu.mapping.WrongArguments
 ;;	at gnu.kawa.functions.ApplyToArgs.applyN(ApplyToArgs.java:162)
-(define (remove-let x ls)
-    (let loop((carls (car ls)) (cdrls (cdr ls)))
-        (cond ((null? cdrls) carls)
-            ((eqv? x carls) (loop '() cdrls))
-            ((eqv? x (car cdrls)) (loop carls (cdr cdrls)))
-            (else (loop (list carls (car cdrls)) (cdr cdrls))))))
-
-(define (keep-matching-items x ls)
-    (let loop((carls (car ls)) (cdrls (cdr ls)))
-        (cond ((null? cdrls) carls)
-            ((eqv? x carls) (loop '() cdrls))
-            ((eqv? x (car cdrls)) (loop carls (cdr cdrls)))
-            (else (loop (list carls (car cdrls)) (cdr cdrls))))))
-
-(keep-matching-items even? '(1 2 3 4 5))
-(define (remove x ls)
-  (let loop ((ls0 ls) (ls1 ()))
-    (if (null? ls0) 
-	(reverse ls1)
-	(loop (cdr ls0)
-          (if (eqv? x (car ls0))
-              ls1
-            (cons (car ls0) ls1))))))
+;; I had this: (ls)
 ;; so if second element in cons is a list, it returns a flat list
+
 ;; Define map by yourself. It may be some how difficult to accept more than one list as arguments.
 ;; The rest parameter is defined by a dot pair (.). The cdr part of the pair is sent to the function as a list.
 ;; Example: my-list
 ;; (define (my-list . x) x)
 ;; In addition, you need the function apply. 
+(define (my-list . x) 
+    (display x)
+    x)
+;; I think I will try it on one list first
+
+(for-each 
+    (lambda (i) 
+        (vector-set! v i (* i i))) 
+    '(0 1 2 3 4))
+(define (my-list . x) 
+    (display x)
+    x)
+
+(define c (my-list '(1 2 3) '(4 5 6)))
+(for-each
+    (lambda (i)
+        (display-all "Here is i: " i))
+    c)
+;; gives:
+;; Here is i: (1 2 3)
+;; Here is i: (4 5 6)
 
