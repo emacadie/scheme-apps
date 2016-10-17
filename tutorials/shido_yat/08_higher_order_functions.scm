@@ -152,7 +152,9 @@ sum ;; 10
 
 (keep-matching-items symbol? (list 'hello 4 'this "u" 'is 88 'fun #\r)) ;; (hello this is fun)
 (keep-matching-items string? '("hello" 4 "this" 'tt "is" #\n "fun")) ;; (hello this is fun)
-
+(filter (lambda (x) (not (even? x))) '(1 2 -3 -4 5))
+(keep-matching-items even? '(1 2 -3 -4 5))
+(keep-matching-items (lambda (x) (not (even? x))) '(1 2 -3 -4 5))
 ;; another version
 (define (keep-matching-items proc ls)
     (display-all "proc 1: " (proc 1))
@@ -164,6 +166,14 @@ sum ;; 10
             ((null? ls0) ((display-all "in null case")(reverse ls1)))
             ((eqv? #f (apply proc (car ls0) '())) ((display-all "in the false case")(loop (cdr ls0) ls1)))
             ((eqv? #t (apply proc (car ls0) '())) ((display-all "in the true case")(loop (cdr ls0) (cons (car ls0) ls1)))))))
+;; shido's version
+(define (my-keep-matching-items ls fn)
+  (cond
+   ((null? ls) '())
+   ((fn (car ls))
+    (cons (car ls) (my-keep-matching-items (cdr ls) fn)))
+   (else (my-keep-matching-items  (cdr ls) fn))))
+
 ;; gnu.mapping.WrongArguments
 ;;	at gnu.kawa.functions.ApplyToArgs.applyN(ApplyToArgs.java:162)
 ;; I had this: (ls)
@@ -195,4 +205,40 @@ sum ;; 10
 ;; gives:
 ;; Here is i: (1 2 3)
 ;; Here is i: (4 5 6)
+(define (my-map func . x)
+    (define my-x (keep-matching-items (lambda (arg) (not (= 0 (length arg)))) x))
+    (display-all "my-x is " my-x ", with length " (length my-x)  ", (list-ref 0 my-x) is " (list-ref my-x 0))
+    (if (= (length my-x) 1) 
+        (apply func (list-ref my-x 0))
+        ((display-all "my-x is longer than 1")
+            (multi-list-map func my-x)))
+(my-map + '(1 2 3) '(4 5 6))
+
+(define (muli-list-map func x)
+    (define x-length (get-arg-length x))
+
+(define (get-arg-length x)
+    (let loop ((len (current-second)) (carls (car x)) (cdrls (cdr x)))
+        (display-all "len is " len ", carls is " carls ", cdrls is " cdrls)
+        (cond
+            ((= 0 (length cdrls)) len)
+            ((< len (length carls)) (loop len (car cdrls) (cdr cdrls)))
+            ((>= len (length carls)) (loop (length carls) (car cdrls) (cdr cdrls))))))
+(get-arg-length (my-list '(1 2 3) '(4 5 6)))
+(get-arg-length (my-list '(11 12 13 14) '(1 2 3) '(4 5 6)))
+(get-arg-length (my-list '(1 2 3) '(4 5 6) '(11 12 13 14)))
+;; this is going way too far, should I just look at what shido did?
+(define (my-map fun . lss)
+  (letrec ((iter (lambda (fun lss)
+		       (if (null? lss)
+			   '()
+			   (cons (fun (car lss))
+				 (iter fun (cdr lss))))))
+	   (map-rec (lambda (fun lss)
+		      (if (memq '() lss)
+			  '()
+			  (cons (apply fun (iter car lss))
+				(map-rec fun (iter cdr lss)))))))
+    (map-rec fun lss)))
+;; I hate letrec, I never would have guessed that
 
