@@ -16,3 +16,13 @@ Not like this:
 (display-all '("n1: " n1 ", p:" p))
 ```
 
+Division in scheme:
+```scheme
+(/ 2307 120)
+```
+gives 769/40, which to me is not useful. In Kawa (and R7Rs in general), do this:   
+```scheme
+(inexact (/ 2307 120)) 
+```
+which gives 19.225.   
+
