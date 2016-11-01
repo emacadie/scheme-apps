@@ -8,7 +8,8 @@
           (if (eqv? (car l) o) i
               (loop (+ i 1) (cdr l)))))))
 
-(define-macro defstruct
+;; was define-macro, now define-syntax, have not tried since changing on 2016-10-31
+(define-syntax defstruct
   (lambda (s . ff)
     (let ((s-s (symbol->string s)) (n (length ff)))
       (let* ((n+1 (+ n 1))
