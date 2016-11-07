@@ -165,5 +165,54 @@ a ;; ()
 	  b1 ...
 	  (loop (+ i step)))))))
 
+;; 3.2 recursive definition of macros
+;; "or" and "and" defined recursively
+(define-syntax my-and
+    (syntax-rules ()
+        ((_) #t)
+        ((_ e ) e)
+        ((_ e1 e2 ...)
+            (if e1
+                (my-and e2 ...)
+                #f))))
+
+(define-syntax my-or
+    (syntax-rules ()
+        ((_) #f)
+        ((_ e) e)
+        ((_ e1 e2 ...)
+            (let ((t e1))
+                (if t t (my-or e2 ...))))))
+
+(my-and 1 2) ;; 2
+(my-and #f 1) ;; #f
+(my-or 1 2) ;; 1
+(my-or #f 1) ;; 1
+
+;; Exercise 4
+;; Define let* by yourself. 
+;; I admit, I punted on this one. Here is shido's answer:
+(define-syntax my-let*
+  (syntax-rules ()
+    ((_ ((p v)) b ...)
+     (let ((p v)) b ...))
+    ((_ ((p1 v1) (p2 v2) ...) b ...)
+     (let ((p1 v1))
+       (my-let* ((p2 v2) ...)
+		b ...)))))
+
+;; 3.3. Using reserved words
+;; The first argument of the syntax-rules is a list of reserved words. For instance, cond is defined like [code 6], in which else is a reserved word. 
+(define-syntax my-cond
+  (syntax-rules (else)
+    ((_ (else e1 ...))
+     (begin e1 ...))
+    ((_ (e1 e2 ...))
+     (when e1 e2 ...))
+    ((_ (e1 e2 ...) c1 ...)
+     (if e1 
+	 (begin e2 ...)
+	 (cond c1 ...)))))
+
 
 
