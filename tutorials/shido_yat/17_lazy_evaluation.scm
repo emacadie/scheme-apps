@@ -122,10 +122,19 @@ laz ;; 3
     (lazy-car (lazy-cdr ls)))
 
 ;; eliminate rror from the approximation
+;; I think bitwise-arithmetic-shift is correct function 
+;; to replace MIT Scheme fix:lsh
 (define (elimerror n ls)
     (let ((a (lazy-car ls))
             (b (lazy-second ls))
-            (c (bitwise-arithmetic-shift 1 n))) ;; (expt 2 n)
+            (c (bitwise-arithmetic-shift 1 n))) ;; (expt 2 n) 
+            (lazy-cons  (/ (- (* b c) a) (- c 1))
+                (elimerror n (lazy-cdr ls)))))
+
+(define (elimerror n ls)
+    (let ((a (lazy-car ls))
+            (b (lazy-second ls))
+            (c (expt 2 n))) ;; same result as aboveS
             (lazy-cons  (/ (- (* b c) a) (- c 1))
                 (elimerror n (lazy-cdr ls)))))
 
@@ -151,7 +160,34 @@ laz ;; 3
 (define (super ls)
     (lazy-map lazy-second (inf-seq ls improve)))
 
+;; calculate differentiation of function 'f' at x within error range
+;; h0 is initial window width
+(define (diff f x h0 eps)
+    (lazylist->answer (super (lazylist-diff h0 f x)) eps))
 
+;; try them out
+(diff sin 0.0 0.1 0.0000001) ;; 0.9995833854135666, shido got .9999999999999516
+(diff exp 0.0 0.1 0.000001) ;; 1.0254219275204823, shido got .9999999991733471
+
+;; integration
+;; primitive integration
+(define (easyintegrate f a b)
+    (* (/ (+ (f a) (f b)) 2) (- b a)))
+
+;; create the lazy list of approximation for integration
+(define (lazylist-integrate f a b)
+    (let ((mid (/ (+ a b) 2)))
+        (lazy-cons (easyintegrate f a b)
+            (lazy-map + (lazylist-integrate f a mid) (lazylist-integrate f mid b)))))
+
+;; integrate function f in a range of a and b within error eps
+(define (integrate f a b eps)
+    (lazylist->answer (super (lazylist-integrate f a b)) eps))
+
+(define pi (* 4 (atan 1)))
+(integrate sin 0 pi 0.0000001) ;; 1.5707963267948968, shido got 2.000000002272428
+(integrate exp 0 1 0.0000001) ;; 1.7539310924648255, shido got 1.7182818277724858
+(- (exp 1) 1) ;; 1.718281828459045
 
 
 
