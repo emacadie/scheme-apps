@@ -3,29 +3,34 @@
 ;;; This file uses Scheme features we don't talk about in _Simply_Scheme_.
 ;;; Read at your own risk.
 
+;; EKM: I mostly got it to work in Kawa, with a small exception:
+;; tutorials/simply.scheme/simply.scm:797:1: no matching syntax-rule for define
+;; I will wait to see how it is used to make further changes
+
 (if (equal? 'foo (symbol->string 'foo))
     (error "Simply.scm already loaded!!")
     #f)
 
 ;; Make number->string remove leading "+" if necessary
 
-(if (char=? #\+ (string-ref (number->string 1.0) 0))
-    (let ((old-ns number->string) (char=? char=?) (string-ref string-ref)
-	  (substring substring) (string-length string-length))
-      (set! number->string
-	    (lambda args
-	      (let ((result (apply old-ns args)))
-		(if (char=? #\+ (string-ref result 0))
-		    (substring result 1 (string-length result))
-		    result)))))
-    'no-problem)
+;(if (char=? #\+ (string-ref (number->string 1.0) 0))
+;    (let ((old-ns number->string) (char=? char=?) (string-ref string-ref);
+;	  (substring substring) (string-length string-length))
+;      (set! number->string
+;	    (lambda args
+;	      (let ((result (apply old-ns args)))
+;		(if (char=? #\+ (string-ref result 0))
+;		    (substring result 1 (string-length result))
+;		    result)))))
+;    'no-problem)
 
-(define number->string
-  (let ((old-ns number->string) (string? string?))
-    (lambda args
-      (if (string? (car args))
-	  (car args)
-	  (apply old-ns args)))))
+;; this is in R7RS
+;; (define number->string
+;;   (let ((old-ns number->string) (string? string?))
+;;    (lambda args
+;;      (if (string? (car args))
+;;	  (car args)
+;;	  (apply old-ns args)))))
 
 ;; Get strings in error messages to print nicely (especially "")
 
@@ -44,28 +49,28 @@
 ;; but we think it should always return an exact integer.
 ;; (It matters because some Schemes print inexact integers as "+1.0".)
 ;; The (exact 1) test is for PC Scheme, in which nothing is exact.
-(if (and (inexact? (round (sqrt 2))) (exact? 1))
-    (let ((old-round round) (inexact->exact inexact->exact))
-      (set! round
-	    (lambda (number)
-	      (inexact->exact (old-round number)))))
-    'no-problem)
+; (if (and (inexact? (round (sqrt 2))) (exact? 1))
+;    (let ((old-round round) (inexact->exact inexact->exact))
+;      (set! round
+;	    (lambda (number)
+;	      (inexact->exact (old-round number)))))
+;    'no-problem)
 
 ;; Remainder and quotient blow up if their argument isn't an integer.
 ;; Unfortunately, in SCM, (* 365.25 24 60 60) *isn't* an integer.
 
-(if (inexact? (* .25 4))
-    (let ((rem remainder) (quo quotient) (inexact->exact inexact->exact)
-	  (integer? integer?))
-      (set! remainder
-	    (lambda (x y)
-	      (rem (if (integer? x) (inexact->exact x) x)
-		   (if (integer? y) (inexact->exact y) y))))
-      (set! quotient
-	    (lambda (x y)
-	      (quo (if (integer? x) (inexact->exact x) x)
-		   (if (integer? y) (inexact->exact y) y)))))
-    'done)
+;(if (inexact? (* .25 4))
+;    (let ((rem remainder) (quo quotient) (inexact->exact inexact->exact)
+;	  (integer? integer?))
+;      (set! remainder
+;	    (lambda (x y)
+;	      (rem (if (integer? x) (inexact->exact x) x)
+;		   (if (integer? y) (inexact->exact y) y))))
+;      (set! quotient
+;	    (lambda (x y)
+;	      (quo (if (integer? x) (inexact->exact x) x);
+;		   (if (integer? y) (inexact->exact y) y)))))
+;    'done)
 
 
 ;; Random
@@ -443,7 +448,7 @@
 	     (whoops "Invalid first argument to BEFORE? (not a word): " wd1))
 	    ((not (word? wd2))
 	     (whoops "Invalid second argument to BEFORE? (not a word): " wd2))
-	    (else (stringstring wd1) (word->string wd2)))))))
+	    (else (stringstring wd1) (word->string wd2))))))
 
 
 ;;; Higher Order Functions
@@ -818,75 +823,75 @@
 	     (show "Strings are already numbers"))
 	    ((eq? yesno #t)
 	     (set! are-they? #t)
-	     (set! * (logoize real-*))
-	     (set! + (logoize real-+))
-	     (set! - (logoize real--))
-	     (set! / (logoize real-/))
-	     (set! < (logoize real-<))
-	     (set! <= (logoize real-<=))
-	     (set! = (logoize real-=))
-	     (set! > (logoize real->))
-	     (set! >= (logoize real->=))
-	     (set! abs (logoize-1 real-abs))
-	     (set! acos (logoize-1 real-acos))
-	     (set! asin (logoize-1 real-asin))
-	     (set! atan (logoize real-atan))
-	     (set! ceiling (logoize-1 real-ceiling))
-	     (set! cos (logoize-1 real-cos))
-	     (set! even? (logoize-1 real-even?))
-	     (set! exp (logoize-1 real-exp))
-	     (set! expt (logoize-2 real-expt))
-	     (set! floor (logoize-1 real-floor))
-	     (set! align (logoize align))
-	     (set! gcd (logoize real-gcd))
-	     (set! integer? (logoize-1 real-integer?))
+	     ;(set! * (logoize real-*))
+	     ;(set! + (logoize real-+))
+	     ;(set! - (logoize real--))
+	     ;(set! / (logoize real-/))
+	     ;(set! < (logoize real-<))
+	     ;(set! <= (logoize real-<=))
+	     ;(set! = (logoize real-=))
+	     ;(set! > (logoize real->))
+	     ;(set! >= (logoize real->=))
+	     ;(set! abs (logoize-1 real-abs))
+	     ;(set! acos (logoize-1 real-acos))
+	     ;(set! asin (logoize-1 real-asin))
+	     ;(set! atan (logoize real-atan))
+	     ;(set! ceiling (logoize-1 real-ceiling))
+	     ;(set! cos (logoize-1 real-cos))
+	     ;(set! even? (logoize-1 real-even?))
+	     ;(set! exp (logoize-1 real-exp))
+	     ;(set! expt (logoize-2 real-expt))
+	     ;(set! floor (logoize-1 real-floor))
+	     ;(set! align (logoize align))
+	     ;(set! gcd (logoize real-gcd))
+	     ;(set! integer? (logoize-1 real-integer?))
 	     (set! item (lambda (n stuff)
 			  (real-item (maybe-num n) stuff)))
-	     (set! lcm (logoize real-lcm))
-	     (set! list-ref (lambda (lst k) 
-			      (real-list-ref lst (maybe-num k))))
-	     (set! log (logoize-1 real-log))
-	     (set! max (logoize real-max))
-	     (set! min (logoize real-min))
-	     (set! modulo (logoize-2 real-modulo))
-	     (set! negative? (logoize-1 real-negative?))
-	     (set! number? (logoize-1 real-number?))
-	     (set! odd? (logoize-1 real-odd?))
-	     (set! positive? (logoize-1 real-positive?))
-	     (set! quotient (logoize-2 real-quotient))
+	     ;(set! lcm (logoize real-lcm))
+	     ;(set! list-ref (lambda (lst k) 
+		;	      (real-list-ref lst (maybe-num k))))
+	     ;(set! log (logoize-1 real-log))
+	     ;(set! max (logoize real-max))
+	     ;(set! min (logoize real-min))
+	     ;(set! modulo (logoize-2 real-modulo))
+	     ;(set! negative? (logoize-1 real-negative?))
+	     ;(set! number? (logoize-1 real-number?))
+	     ;(set! odd? (logoize-1 real-odd?))
+	     ;(set! positive? (logoize-1 real-positive?))
+	     ;(set! quotient (logoize-2 real-quotient))
 	     (set! random (logoize real-random))
-	     (set! remainder (logoize-2 real-remainder))
-	     (set! round (logoize-1 real-round))
-	     (set! sin (logoize-1 real-sin))
-	     (set! sqrt (logoize-1 real-sqrt))
+	     ;(set! remainder (logoize-2 real-remainder))
+	     ;(set! round (logoize-1 real-round))
+	     ;(set! sin (logoize-1 real-sin))
+	     ;(set! sqrt (logoize-1 real-sqrt))
 
-	     (set! tan (logoize-1 real-tan))
-	     (set! truncate (logoize-1 real-truncate))
-	     (set! zero? (logoize-1 real-zero?))
-	     (set! vector-ref
-		   (lambda (vec i) (real-vector-ref vec (maybe-num i))))
-	     (set! vector-set!
-		   (lambda (vec i val)
-		     (real-vector-set! vec (maybe-num i) val)))
-	     (set! make-vector
-		   (lambda (num . args)
-		     (apply real-make-vector (cons (maybe-num num)
+	     ;(set! tan (logoize-1 real-tan))
+	     ;(set! truncate (logoize-1 real-truncate))
+	     ;(set! zero? (logoize-1 real-zero?))
+	     ;(set! vector-ref
+		 ;  (lambda (vec i) (real-vector-ref vec (maybe-num i))))
+	     ;(set! vector-set!
+		 ;  (lambda (vec i val)
+		 ;    (real-vector-set! vec (maybe-num i) val)))
+	     ;(set! make-vector
+		 ;  (lambda (num . args)
+		 ;    (apply real-make-vector (cons (maybe-num num)
 						   args))))
-	     (set! list-ref
-		   (lambda (lst i) (real-list-ref lst (maybe-num i))))
+	     ;(set! list-ref
+		 ;  (lambda (lst i) (real-list-ref lst (maybe-num i))))
 	     (set! repeated
 		   (lambda (fn n) (real-repeated fn (maybe-num n)))))
 	    ((and (not are-they?) (not yesno))
 	     (show "Strings are already not numbers"))
 	    ((not yesno)
-	     (set! are-they? #f) (set! * real-*) (set! + real-+)
-	     (set! - real--) (set! / real-/) (set! < real-<)
-	     (set! <= real-<=) (set! = real-=) (set! > real->)
-	     (set! >= real->=) (set! abs real-abs) (set! acos real-acos)
-	     (set! asin real-asin) (set! atan real-atan)
-	     (set! ceiling real-ceiling) (set! cos real-cos)
-	     (set! even? real-even?)
-	     (set! exp real-exp) (set! expt real-expt)
+	     ;(set! are-they? #f) (set! * real-*) (set! + real-+)
+	     ;(set! - real--) (set! / real-/) (set! < real-<)
+	     ;(set! <= real-<=) (set! = real-=) (set! > real->)
+	     ;(set! >= real->=) (set! abs real-abs) (set! acos real-acos)
+	     ;(set! asin real-asin) (set! atan real-atan)
+	     ;(set! ceiling real-ceiling) (set! cos real-cos)
+	     ;(set! even? real-even?)
+	     ;(set! exp real-exp) (set! expt real-expt)
 	     (set! floor real-floor) (set! align real-align)
 	     (set! gcd real-gcd) (set! integer? real-integer?)
 	     (set! item real-item)
