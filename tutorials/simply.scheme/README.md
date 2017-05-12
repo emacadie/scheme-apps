@@ -11,7 +11,7 @@ You load simply.scm first
 (load-relative "./functions.scm")   
   
 Chapter two:   
-
+2.1:  
 |function|arg 1|arg 2|result|
 |--- | --- |--- |--- |
 |word|now|here|*nowhere*|
@@ -27,3 +27,8 @@ Chapter two:
 |last|()|~~none~~|~~*Argument(s) not in domain.*~~|	
 |*every*|last|(honey pie)|(y e)|
 |*keep*|*vowel?*|taxman|aa|
+
+2.2:   
+He talks about the domain (possible arguments) and range (return values) of functions. I have never heard those terms before. The domain of the vowel? function is a string (which he calls a word) or a list without the tick (which I think he calls a sentence). He also defines functions as a data type.     
+2.3:   
+The domain of "appearances" seems to be a word (or a number), then a sentence, and the range is the number of times the word is in the sentence.
