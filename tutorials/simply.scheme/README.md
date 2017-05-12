@@ -10,4 +10,20 @@ You load simply.scm first
 (load-relative "./simply.scm")   
 (load-relative "./functions.scm")   
   
- 
+Chapter two:   
+
+|function|arg 1|arg 2|result|
+|--- | --- |--- |--- |
+|word|now|here|*nowhere*|
+ sentence 	 now	 here
+ first	 blackbird	 none
+ first	 (blackbird) 	 none
+	 3	 4	 7
+ every		 (thank you girl) 	 (hank ou irl) 
+ member?	 e	 aardvark
+ member?	 the		 #t
+ keep	 vowel?	 (i will)
+ keep	 vowel?		 eieio[5]
+ last	 ()	 none	
+	 last	 (honey pie)	 (y e)
+		 taxman	 aa
