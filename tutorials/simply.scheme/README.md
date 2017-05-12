@@ -15,15 +15,15 @@ Chapter two:
 |function|arg 1|arg 2|result|
 |--- | --- |--- |--- |
 |word|now|here|*nowhere*|
- sentence 	 now	 here
- first	 blackbird	 none
- first	 (blackbird) 	 none
-	 3	 4	 7
- every		 (thank you girl) 	 (hank ou irl) 
- member?	 e	 aardvark
- member?	 the		 #t
- keep	 vowel?	 (i will)
- keep	 vowel?		 eieio[5]
- last	 ()	 none	
-	 last	 (honey pie)	 (y e)
-		 taxman	 aa
+|sentence|now|here|*(now here)*|
+|first|blackbird|~~none~~|*b*|
+|first|(blackbird)|~~none~~|*blackbird*|
+|*+*|3|4|7|
+|every|*first*|(thank you girl)|(hank ou irl)| 
+|member?|e|aardvark|*#F*|
+|member?|the|#t|*(the best language is scheme)*|
+|keep|vowel?|(i will)|*(i)*|
+|keep|vowel?|*perihelion*|eieio|
+|last|()|~~none~~|~~*Argument(s) not in domain.*~~|	
+|*every*|last|(honey pie)|(y e)|
+|*keep*|*vowel?*|taxman|aa|
