@@ -1,10 +1,20 @@
 Exercises for Chapter two of "Simply Scheme": https://people.eecs.berkeley.edu/~bh/ss-toc2.html  
 
 Functions in this chapter:   
-+, -, /, <=, <, =, >=, >, and, appearances, butfirst, butlast, cos, count, equal?, every, even?, expt, first, if, item, keep, last, max, member?, not, number?, number-of-arguments, odd?, or, quotient, random, remainder, round, sentence, sqrt, vowel?, and word. 
+- +, 
+- -, 
+- /, 
+- <=, 
+- <, 
+- =, 
+- >=, 
+- >, 
+- and, 
+- appearances, butfirst, butlast, cos, count, equal?, every, even?, expt, first, if, item, keep, last, max, member?, not, number?, number-of-arguments, odd?, or, quotient, random, remainder, round, sentence, sqrt, vowel?, and word. 
  
 Chapter two:   
 2.1:  
+
 |function|arg 1|arg 2|result|
 |--- | --- |--- |--- |
 |word|now|here|*nowhere*|
