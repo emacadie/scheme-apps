@@ -5,10 +5,9 @@ Functions in this chapter:
 |--- | --- |--- |--- |
 |+|number|number|number|
 |-|number|number|number|- 
-
-- /
-- <=
-- <
+|//|number|number|number|
+|/<=|number|number|boolean|
+|/<|number|number|boolean|
 - =
 - >=
 - >
@@ -31,7 +30,7 @@ Functions in this chapter:
 - member?
 - not
 - number?
-- number-of-arguments
+|number-of-arguments|name of function||number|
 - odd?
 - or
 - quotient
