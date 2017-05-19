@@ -1,40 +1,41 @@
 Exercises for Chapter two of "Simply Scheme": https://people.eecs.berkeley.edu/~bh/ss-toc2.html  
 
 Functions in this chapter:   
+
 |function|arg 1|arg 2|result|
 |--- | --- |--- |--- |
 |+|number|number|number|
 |-|number|number|number|- 
-|//|number|number|number|
-|/<=|number|number|boolean|
-|/<|number|number|boolean|
-- =
-- >=
-- >
+|/|number|number|number|
+|\<=|number|number|boolean|
+|\<|number|number|boolean|
+|=|number|number|boolean|
+|\>=|number|number|boolean|
+|\>|number|number|boolean|
 - and
-- appearances
+|appearances|word|sentence|number|
 - butfirst
 - butlast
 - cos
 - count
 - equal?
 - every
-- even?
-- expt
+|even?|*anything*||boolean|
+|expt|number|number|number|
 - first
 - if
 - item
 - keep
 - last
 - max
-- member?
+|member?|word|sentence|boolean|
 - not
 - number?
-|number-of-arguments|name of function||number|
+|number-of-arguments|*name of function*||number|
 - odd?
 - or
 - quotient
-- random
+|random|number||number|
 - remainder
 - round
 - sentence
@@ -54,7 +55,7 @@ Chapter two:
 |*+*|3|4|7|
 |every|*first*|(thank you girl)|(hank ou irl)| 
 |member?|e|aardvark|*#F*|
-|member?|the|#t|*(the best language is scheme)*|
+|member?|the|*(the best language is scheme)*|#t
 |keep|vowel?|(i will)|*(i)*|
 |keep|vowel?|*perihelion*|eieio|
 |last|()|~~none~~|~~*Argument(s) not in domain.*~~|	
