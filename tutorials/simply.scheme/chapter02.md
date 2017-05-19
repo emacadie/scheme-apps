@@ -2,7 +2,7 @@ Exercises for Chapter two of "Simply Scheme": https://people.eecs.berkeley.edu/~
 
 Functions in this chapter:   
 
-|function|arg 1|arg 2|result|
+|function|arg 1 type|arg 2 type|result type|
 |--- | --- |--- |--- |
 |+|number|number|number|
 |-|number|number|number|- 
@@ -12,36 +12,39 @@ Functions in this chapter:
 |=|number|number|boolean|
 |\>=|number|number|boolean|
 |\>|number|number|boolean|
-- and
 |appearances|word|sentence|number|
+|cos|number||number|
+|even?|*anything*||boolean|
+|equal?|*anything*|*anything*|boolean|
+|expt|number|number|number|
+|member?|word|sentence|boolean|
+|number-of-arguments|*name of function*||number|
+|odd?|*anything*||boolean|
+|random|number||number|
+|word|*word or integer*|*word or integer*|word|
+
+
+- and
 - butfirst
 - butlast
-- cos
 - count
-- equal?
 - every
-|even?|*anything*||boolean|
-|expt|number|number|number|
 - first
 - if
 - item
 - keep
 - last
 - max
-|member?|word|sentence|boolean|
 - not
 - number?
-|number-of-arguments|*name of function*||number|
-- odd?
 - or
 - quotient
-|random|number||number|
 - remainder
 - round
 - sentence
 - sqrt
 - vowel?
-- word 
+-  
     
 Chapter two:   
 2.1:  
