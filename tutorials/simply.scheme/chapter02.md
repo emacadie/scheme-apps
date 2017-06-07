@@ -2,35 +2,40 @@ Exercises for Chapter two of "Simply Scheme": https://people.eecs.berkeley.edu/~
 
 Functions in this chapter:   
 
-|function|arg 1 type|arg 2 type|result type|
-|--- | --- |--- |--- |
-|+|number|number|number|
-|-|number|number|number|- 
-|/|number|number|number|
-|\<=|number|number|boolean|
-|\<|number|number|boolean|
-|=|number|number|boolean|
-|\>=|number|number|boolean|
-|\>|number|number|boolean|
-|appearances|word|sentence|number|
-|cos|number||number|
-|even?|*anything*||boolean|
-|equal?|*anything*|*anything*|boolean|
-|expt|number|number|number|
-|member?|word|sentence|boolean|
-|number-of-arguments|*name of function*||number|
-|odd?|*anything*||boolean|
-|random|number||number|
-|word|*word or integer*|*word or integer*|word|
+|function    |arg 1 type|arg 2 type|arg3 type|result type|
+|---         | ---      |---       |---       |---       |
+|+           |number    |number    |          |number    |
+|-           |number    |number    |          |number    |
+|/           |number    |number    |          |number    |
+|\<=         |number    |number    |          |boolean   |
+|\<          |number    |number    |          |boolean   |
+|=           |number    |number    |          |boolean   |
+|\>=         |number    |number    |          |boolean   |
+|\>          |number    |number    |          |boolean   |
+|and         |boolean   |boolean   |          |boolean   |
+|appearances |word      |sentence  |          |number    |
+|cos         |number    |          |          |number    |
+|count       |*anything*|          |          |number    |
+|even?       |*anything*|          |          |boolean   |
+|equal?      |*anything*|*anything*|          |boolean   |
+|every       |*name of function*|*that function's inputs*|*anything*|
+|expt        |number    |number    |          |number    |
+|if          |boolean   |*anything*|*anything*|*anything*|
+|member?     |word      |sentence  |          |boolean   |
+|not         |boolean   |          |          |boolean   |
+|number-of-arguments|*name of function*||     |number    |
+|odd?        |*anything*|          |          |boolean   |
+|quotient    |number    |number    |          |number    |
+|random      |number    |          |          |number    |
+|remainder   |number    |number    |          |number    |
+|sqrt        |number    |          |          |number    |
+|vowel?      |*anything*|          |          |boolean   |
+|word        |*word or integer*|*word or integer*||word  |
 
 
-- and
 - butfirst
 - butlast
-- count
-- every
 - first
-- if
 - item
 - keep
 - last
@@ -38,13 +43,10 @@ Functions in this chapter:
 - not
 - number?
 - or
-- quotient
-- remainder
 - round
 - sentence
-- sqrt
-- vowel?
--  
+
+For "and", "not" and "or", I have to enter the booleans as "#t" or "#f". That did not occur to me right away. Usually you get the values for the arguments from a function, or multiple functions. I guess this "functions" program does things differently.    
     
 Chapter two:   
 2.1:  
