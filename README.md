@@ -15,6 +15,10 @@ http://justinethier.github.io/husk-scheme/manual/node106.html
 JEdit regex to clean up kawa prompt when I copy/paste: .*kawa:\d{1,}\|\#  then \s\n or \#\|kawa:\d{1,}\|\#\s    
 
 Chicken Scheme interpreter with R7RS: csi -R r7rs    
+Or run csi and then type this in REPL:   
+```scheme
+ (require-extension r7rs)  
+```
 
 
 

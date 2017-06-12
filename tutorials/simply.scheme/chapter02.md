@@ -3,7 +3,7 @@ Exercises for Chapter two of "Simply Scheme": https://people.eecs.berkeley.edu/~
 Functions in this chapter:   
 
 |function    |arg 1 type|arg 2 type|arg3 type|result type|
-|---         | ---      |---       |---       |---       |
+|---         |---       |---       |---       |---       |
 |+           |number    |number    |          |number    |
 |-           |number    |number    |          |number    |
 |/           |number    |number    |          |number    |
@@ -14,58 +14,69 @@ Functions in this chapter:
 |\>          |number    |number    |          |boolean   |
 |and         |boolean   |boolean   |          |boolean   |
 |appearances |word      |sentence  |          |number    |
+|butfirst    |number    |          |          |number    |
+|butfirst    |sentence  |          |          |word      |
+|butfirst    |word      |          |          |*all but first letter in word*|
+|butlast     |number    |          |          |number    |
+|butlast     |sentence  |          |          |word      |
+|butlast     |word      |          |          |*all but last letter in word*|
 |cos         |number    |          |          |number    |
 |count       |*anything*|          |          |number    |
 |even?       |*anything*|          |          |boolean   |
 |equal?      |*anything*|*anything*|          |boolean   |
 |every       |*name of function*|*that function's inputs*|*anything*|
 |expt        |number    |number    |          |number    |
+|first       |number    |          |          |number    |
+|first       |sentence  |          |          |word      |
+|first       |word      |          |          |*first letter in word*|
 |if          |boolean   |*anything*|*anything*|*anything*|
+|item        |number    |sentence  |          |word      |
+|keep        |*name of function returning boolean*|word| |word      |
+|last        |number    |          |          |number    |
+|last        |sentence  |          |          |word      |
+|last        |word      |          |          |*last letter in word*|
+|max         |number    |number    |          |number    |
 |member?     |word      |sentence  |          |boolean   |
+|member?     |letter    |word      |          |boolean   |
 |not         |boolean   |          |          |boolean   |
+|number?     |*anything*|          |          |boolean   |
 |number-of-arguments|*name of function*||     |number    |
 |odd?        |*anything*|          |          |boolean   |
+|or          |boolean   |boolean   |          |boolean   |
 |quotient    |number    |number    |          |number    |
 |random      |number    |          |          |number    |
 |remainder   |number    |number    |          |number    |
+|round       |number    |          |          |number    |
+|sentence    |*anything*|*anything*|          |sentence  |
 |sqrt        |number    |          |          |number    |
 |vowel?      |*anything*|          |          |boolean   |
 |word        |*word or integer*|*word or integer*||word  |
 
 
-- butfirst
+
 - butlast
-- first
-- item
-- keep
-- last
-- max
-- not
-- number?
-- or
-- round
-- sentence
+
 
 For "and", "not" and "or", I have to enter the booleans as "#t" or "#f". That did not occur to me right away. Usually you get the values for the arguments from a function, or multiple functions. I guess this "functions" program does things differently.    
     
 Chapter two:   
 2.1:  
 
-|function|arg 1|arg 2|result|
-|--- | --- |--- |--- |
-|word|now|here|*nowhere*|
-|sentence|now|here|*(now here)*|
-|first|blackbird|~~none~~|*b*|
-|first|(blackbird)|~~none~~|*blackbird*|
-|*+*|3|4|7|
-|every|*first*|(thank you girl)|(hank ou irl)| 
-|member?|e|aardvark|*#F*|
-|member?|the|*(the best language is scheme)*|#t
-|keep|vowel?|(i will)|*(i)*|
-|keep|vowel?|*perihelion*|eieio|
-|last|()|~~none~~|~~*Argument(s) not in domain.*~~|	
-|*every*|last|(honey pie)|(y e)|
-|*keep*|*vowel?*|taxman|aa|
+|function|arg 1      |arg 2           |result       |
+|---     | ---       |---             |---          |
+|word    |now        |here            |*nowhere*    |
+|sentence|now        |here            |*(now here)* |
+|first   |blackbird  |~~none~~        |*b*          |
+|first   |(blackbird)|~~none~~        |*blackbird*  |
+|*+*     |3          |4               |7            |
+|every   |*first*    |(thank you girl)|(hank ou irl)| 
+|member? |e          |aardvark        |*#F*         |
+|member? |the        |*(the best language is scheme)*|#t|
+|keep    |vowel?     |(i will)        |*(i)*        |
+|keep    |vowel?     |*perihelion*    |eieio        |
+|last    |()         |~~none~~        |~~*Argument(s) not in domain.*~~|	
+|*every* |last       |(honey pie)     |(y e)        |
+|*keep*  |*vowel?*   |taxman          |aa           |
 
 2.2:   
 He talks about the domain (possible arguments) and range (return values) of functions. I have never heard those terms before. The domain of the vowel? function is a string (which he calls a word) or a list without the tick (which I think he calls a sentence). He also defines functions as a data type.     
