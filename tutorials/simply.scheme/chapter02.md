@@ -7,6 +7,7 @@ Functions in this chapter:
 |+           |number    |number    |          |number    |
 |-           |number    |number    |          |number    |
 |/           |number    |number    |          |number    |
+|*           |number    |number    |          |number    |
 |\<=         |number    |number    |          |boolean   |
 |\<          |number    |number    |          |boolean   |
 |=           |number    |number    |          |boolean   |
@@ -36,6 +37,7 @@ Functions in this chapter:
 |last        |sentence  |          |          |word      |
 |last        |word      |          |          |*last letter in word*|
 |max         |number    |number    |          |number    |
+|min         |number    |number    |          |number    |
 |member?     |word      |sentence  |          |boolean   |
 |member?     |letter    |word      |          |boolean   |
 |not         |boolean   |          |          |boolean   |
@@ -104,5 +106,18 @@ Argument: (Scheme is the best)
 Argument(s) not in domain.
 ```
 2.5: List the one-argument functions in this chapter for which the type of the return value is always different from the type of the argument.  
+As far as I can tell, only number-of-arguments fits that criteria.   
+
+2.6: List the one-argument functions in this chapter for which the type of the return value is sometimes different from the type of the argument.   
+butfirst, butlast, count, even?, first, last, odd, vowel?    
+
+2.7: Mathematicians sometimes use the term "operator" to mean a function of two arguments, both of the same type, that returns a result of the same type. Which of the functions you've seen in this chapter satisfy that definition?   
++, -, /, *, and, expt, max, min, or, quotient, remainder. Mostly math functions.    
+
+2.8: An operator f is commutative if f(a,b)=f(b,a) for all possible arguments A and B. For example, + is commutative, but word isn't. Which of the operators from Exercise 2.7 are commutative?    
++, *, and, max, min   
+
+2.9: An operator f is associative if f(f(a,b),c)=f(a,f(f(b,c)) for all possible arguments A, B, and C. For example, * is associative, but not /. Which of the operators from Exercise 2.7 are associative?    
+Again, I think the answer is: +, *, and, max, min   
 
 
