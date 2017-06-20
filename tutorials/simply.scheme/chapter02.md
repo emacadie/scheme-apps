@@ -56,9 +56,6 @@ Functions in this chapter:
 
 
 
-- butlast
-
-
 For "and", "not" and "or", I have to enter the booleans as "#t" or "#f". That did not occur to me right away. Usually you get the values for the arguments from a function, or multiple functions. I guess this "functions" program does things differently.    
     
 Chapter two:   

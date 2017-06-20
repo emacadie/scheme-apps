@@ -95,6 +95,23 @@ Here we go:
 (+ 6 4)
 10
 ```
+3.6: I made some diagrams.   
 
+3.7: What value is returned by (/ 1 3) in your version of Scheme? (Some Schemes return a decimal fraction like 0.33333, while others have exact fractional values like 1/3 built in.)   
+Result:   
+```
+#;18> (/ 1 3)
+1/3
+```
+
+3.8: Which of the functions that you explored in Chapter 2 will accept variable numbers of arguments?    
+It looks to me like none of them take variable numbers of arguments. I assume they are talking about the functions in the "functions" program. If they are talking about regular Scheme, then a lot of the functions take variable arguments, like many math functions (+, -, you name it).   
+
+3.9: The expression (+ 8 2) has the value 10. It is a compound expression made up of three atoms. For this problem, write five other Scheme expressions whose values are also the number ten:  
+- An atom 10
+- Another compound expression made up of three atoms (- 15 5)
+- A compound expression made up of four atoms (+ 5 3 2)
+- A compound expression made up of an atom and two compound subexpressions (+ (+ 4 3) (- 15 12))
+- Any other kind of expression  (count '(0 1 2 3 4 5 6 7 8 9))
 
 
