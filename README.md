@@ -23,5 +23,23 @@ Or run csi and then type this in REPL:
 
 
 Which Chicken eggs are installed: chicken-status -eggs  
+Install an egg: chicken-install EXTENSIONNAME 
+
+To get Scheme to work in emacs, add this to init.el:   
+```
+(setq scheme-program-name "csi -:c")
+```
+Then, to work with Scheme, c-x 2 to get another window, c-x o to go to the second one, and
+```
+M-x run-scheme
+```
+To get a REPL.   
+
+Directions from http://community.schemewiki.org/?emacs-tutorial:  
+C-x C-e: Send the last sexpr to your Scheme process  (note to self: put cursor after last paren)
+C-x h C-c C-r: Send the whole buffer. This first marks (cf. the tutorial) the whole buffer (C-x h), and then sends the region (C-c C-r). If you can't seem to remember C-x h like the present author, you can use M-< M-> as well, which moves to the beginning of the buffer, and then to the end. 
+
+!! Note that these commands assume your key bindings for :C-x C-e: and :C-x h C-c C-r: are correct!! 
+-- end quote
 
 

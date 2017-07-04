@@ -247,7 +247,7 @@ Next:
 ```
 You cannot call a function in the parameters of a function, only in the body.  
 To remedy, you will need the square function from above in your session, then change the parameters to just x and y:
-```
+
 ```
 #;2> (define (sum-of-squares x y)
   (+ (square x) (square y)))
@@ -255,5 +255,18 @@ To remedy, you will need the square function from above in your session, then ch
 25
 ```
 
+4.5: Write a procedure to convert a temperature from Fahrenheit to Celsius, and another to convert in the other direction. The two formulas are F=9⁄5C+32 and C=5⁄9(F-32).   
+```
+(define (c-to-f c)
+    (inexact (+ 32 (* (/ 9 5) c))))
+(define (f-to-c f)
+    (* (/ 5 9) (- f 32)))
+```
 
+
+4.6: Define a procedure fourth that computes the fourth power of its argument. Do this two ways, first using the multiplication function, and then using square and not (directly) using multiplication. 
+```
+(define (fourth x)
+    (* x (* x (* x x))))
+```
 

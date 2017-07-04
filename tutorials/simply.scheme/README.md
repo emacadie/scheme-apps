@@ -11,3 +11,11 @@ You load simply.scm first
 (load-relative "./functions.scm")   
   
 
+Here is a Racket module for Simply Scheme: http://www.hashcollision.org/simply-scheme/   
+https://github.com/dyoo/simply-scheme  
+
+One guy's solutions: https://github.com/buntine/Simply-Scheme-Exercises   
+
+https://github.com/pongsh/simply-scheme-exercises   
+(Neither have the answer to the "hotshot" question in 4.8)   
+
