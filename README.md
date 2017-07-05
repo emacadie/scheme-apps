@@ -20,8 +20,6 @@ Or run csi and then type this in REPL:
  (require-extension r7rs)  
 ```
 
-
-
 Which Chicken eggs are installed: chicken-status -eggs  
 Install an egg: chicken-install EXTENSIONNAME 
 
@@ -42,4 +40,5 @@ C-x h C-c C-r: Send the whole buffer. This first marks (cf. the tutorial) the wh
 !! Note that these commands assume your key bindings for :C-x C-e: and :C-x h C-c C-r: are correct!! 
 -- end quote
 
+Paredit cheat sheet: http://mumble.net/~campbell/emacs/paredit.html   
 
