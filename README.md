@@ -35,6 +35,7 @@ To get a REPL.
 
 Directions from http://community.schemewiki.org/?emacs-tutorial:  
 C-x C-e: Send the last sexpr to your Scheme process  (note to self: put cursor after last paren)
+Or: M-x scheme-send-last-sexp
 C-x h C-c C-r: Send the whole buffer. This first marks (cf. the tutorial) the whole buffer (C-x h), and then sends the region (C-c C-r). If you can't seem to remember C-x h like the present author, you can use M-< M-> as well, which moves to the beginning of the buffer, and then to the end. 
 
 !! Note that these commands assume your key bindings for :C-x C-e: and :C-x h C-c C-r: are correct!! 
@@ -42,3 +43,4 @@ C-x h C-c C-r: Send the whole buffer. This first marks (cf. the tutorial) the wh
 
 Paredit cheat sheet: http://mumble.net/~campbell/emacs/paredit.html   
 
+To get what command a key-binding is bound to, use: M-x describe-key and put in the key-binding, or M-x describe-bindings
