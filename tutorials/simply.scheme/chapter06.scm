@@ -117,28 +117,61 @@
 ;; Getting noon and midnight right is tricky. 
 (define (american-time number)
   (cond ((equal? number 0) (display-all "12 AM"))
-        ((equal? number 1) (display-all "1 AM"))
-        ((equal? number 2) (display-all "2 AM"))
-        ((equal? number 3) (display-all "3 AM"))
-        ((equal? number 4) (display-all "4 AM"))
-        ((equal? number 5) (display-all "5 AM"))
-        ((equal? number 6) (display-all "6 AM"))
-        ((equal? number 7) (display-all "7 AM"))
-        ((equal? number 8) (display-all "8 AM"))
-        ((equal? number 9) (display-all "9 AM"))
-        ((equal? number 10) (display-all "10 AM"))
-        ((equal? number 11) (display-all "11 AM"))
-        ((equal? number 12) (display-all "12 PM"))
-        ((equal? number 13) (display-all "1 PM"))
-        ((equal? number 14) (display-all "2 PM"))
-        ((equal? number 15) (display-all "3 PM"))
-        ((equal? number 16) (display-all "4 PM"))
-        ((equal? number 17) (display-all "5 PM"))
-        ((equal? number 18) (display-all "6 PM"))
-        ((equal? number 19) (display-all "7 PM"))
-        ((equal? number 20) (display-all "8 PM"))
-        ((equal? number 21) (display-all "9 PM"))
-        ((equal? number 22) (display-all "10 PM"))
-        ((equal? number 23) (display-all "11 PM"))
+        ((and (>= number 1) (<= number 12)) (display-all number " AM"))
+        ((and (>= number 13) (<= number 23)) (display-all (- number 12) " PM"))
         ((equal? number 24) (display-all "12 AM"))))
 
+(define (european-time time)
+  ;; (display-all "first time: " (first time))
+  (cond ((equal? (first time) "12")
+         (if (equal? (second time) "am")
+             (display-all "0")
+             (display-all "12")))
+   ((equal? (second time) "am") (display-all (first time)))
+   ((equal? (second time) "pm") (display-all (+ (first time) 12)))))
+
+;; 6.6  Write a predicate teen? that returns true if its argument is between 13 and 19.
+(define (teen? number)
+  (cond ((number? number)
+         (if (and (>= number 13) (<= number 19))
+             #t
+             #f))
+        (else #f)))
+
+;; 6.7  Write a procedure type-of that takes anything as its argument and returns one of the words word, sentence, number, or boolean:
+(define (type-of arg)
+  (cond ((boolean? arg) 'boolean)
+        ((number? arg) 'number)
+        ((sentence? arg) 'sentence)
+        ((word? arg) 'word)
+        (else 'nothing)))
+
+;; 6.8  Write a procedure indef-article that works like this:
+;; ** examples omitted **
+;; I only deal w/ words, not sentences
+(define (vowel? arg)
+  (cond ((or (equal? arg "a") (equal? arg "e") (equal? arg "i") (equal? arg "o") (equal? arg "u")) #t)
+        ((or (equal? arg "a") (equal? arg "E") (equal? arg "I") (equal? arg "O") (equal? arg "U")) #t)
+      (else #f)))
+      
+(define (indef-article arg)
+  (cond ((and (word? arg) (vowel? (first arg))) (display-all "an " arg))
+        ((word? arg) (display-all "a " arg))
+        (else arg)))
+
+;; 6.9  Sometimes you must choose the singular or the plural of a word: 1 book but 2 books.
+;; Write a procedure thismany that takes two arguments, a number and a singular noun, and combines them appropriately:
+;; load plural before loading this
+(define (thismany num thing)
+  (cond ((not (number? num)) (display-all "args " num " " thing " does not start with number"))
+        ((equal? num 1) (display-all "1 " thing))
+        (else (display-all num " " (plural thing)))))
+
+;; 6.10  Write a procedure sort2 that takes as its argument a sentence containing two numbers. It should return a sentence containing the same two numbers, but in ascending order:
+(define (sort2 nums)
+  (cond ((or (not (number? (first nums))) (not (number? (second nums)))) (display-all "one of your args is not a number: " nums))
+        ;; ((< num1 num2) (list num1 num2))
+        ((< (second nums) (first nums)) (display-all (list (second nums) (first nums))))
+        (else (nums))))
+
+        
