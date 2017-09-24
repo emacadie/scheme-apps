@@ -149,6 +149,7 @@
 ;; 6.8  Write a procedure indef-article that works like this:
 ;; ** examples omitted **
 ;; I only deal w/ words, not sentences
+;; there is a better vowel up above
 (define (vowel? arg)
   (cond ((or (equal? arg "a") (equal? arg "e") (equal? arg "i") (equal? arg "o") (equal? arg "u")) #t)
         ((or (equal? arg "a") (equal? arg "E") (equal? arg "I") (equal? arg "O") (equal? arg "U")) #t)
@@ -199,4 +200,38 @@
         ((and (not (= month 2)) (valid-month? month day)) #t)
         ((and (= month 2) (valid-feb-date? day year)) #t)
         (else #f)))
+
+;; 6.12  Make plural handle correctly words that end in y but have a vowel before the y, such as boy.
+;; Then teach it about words that end in x (box). What other special cases can you find?
+;; load vowel? from above
+(define (plural wd)
+  (if (equal? (last wd) 'y)
+      (word (bl wd) 'ies)
+      (word wd 's)))
+(define (plural-y wd)
+  (cond ((vowel? (last (butlast wd))) (word wd 's))
+        (else (word (butlast wd) 'ies))))
+(define (plural wd)
+  (cond ((not (word? wd)) word)
+        ((equal? (last wd) 'y) (plural-y wd))
+        ((equal? (last wd) 'x) (word wd 'es) )
+        (else (word wd 's))))
+
+;; 6.13  Write a better greet procedure that understands as many different kinds of names as you can think of:
+;; maybe I am a bad person, but I am skipping this one.
+
+;; 6.14  Write a procedure describe-time that takes a number of seconds as its argument and returns a more useful description of that amount of time:
+(define (describe-time time)
+  (cond ((not (number? time)) time)
+        ((not (positive? time)) time)
+        
+        ((>= time 31557600) (sentence (+ (quotient time 31557600) (inexact (/ (remainder time 31557600) 31557600))) 'YEARS))
+        ((>= time 86400) (sentence (+ (quotient time 86400) (inexact (/ (remainder time 86400) 86400))) 'DAYS))
+        ((>= time 3600) (sentence (+ (quotient time 3600) (inexact (/ (remainder time 3600) 3600))) 'HOURS))
+        ((>= time 60) (sentence (+ (quotient time 60) (inexact (/ (remainder time 60) 60))) 'MINUTES))
+        (else (sentence time 'SECONDS))))
+;; it seems to have an issue with large numbers
+
+
+
 
