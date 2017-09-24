@@ -174,4 +174,29 @@
         ((< (second nums) (first nums)) (display-all (list (second nums) (first nums))))
         (else (nums))))
 
-        
+;; Write a predicate valid-date? that takes three numbers as arguments, representing a month, a day of the month, and a year.
+;; Your procedure should return #t if the numbers represent a valid date (e.g., it isn't the 31st of September).
+;; February has 29 days if the year is divisible by 4, except that if the year is divisible by 100 it must also be divisible by 400. 
+;; uses divisible? defined above
+(define (valid-month? month day)
+  (cond ((and (not (= month 2)) (positive? day) (<= day 30) (member? month '(4 6 9 11))) #t)
+        ((and (not (= month 2)) (positive? day) (<= day 31) (member? month '(1 3 5 7 8 10 12))) #t)
+        (else #f)))
+
+(define (valid-feb-date? day year)
+  (cond ((<= day 28) #t)
+        ((and (= day 29) (divisible? year 100) (divisible? year 400)) #t)
+        ((and (= day 29) (divisible? year 100) (not (divisible? year 400)) ) #f)
+        ((and (= day 29) (divisible? year 4)) #t)
+        (else #f)))
+
+(define (valid-date? month day year)
+  (cond ((or (not (number? month)) (not (number? day)) (not (number? year)))
+         ;; (display-all "one of your args is not a number: " month " or " day " or " year )
+         #f)
+        ((> month 12) ;; (display-all "Month cannot be greater than 12, you entered " month)
+         #f)
+        ((and (not (= month 2)) (valid-month? month day)) #t)
+        ((and (= month 2) (valid-feb-date? day year)) #t)
+        (else #f)))
+

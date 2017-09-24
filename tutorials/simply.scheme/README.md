@@ -10,7 +10,7 @@ You load simply.scm first
 
 (load-relative "./simply.scm")   
 (load-relative "./functions.scm")
-Or:
+Or:   
 (load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/simply.scm")   
 (load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/functions.scm")   
   
