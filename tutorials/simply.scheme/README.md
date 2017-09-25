@@ -13,7 +13,8 @@ You load simply.scm first
 Or:   
 (load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/simply.scm")   
 (load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/functions.scm")   
-  
+(load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/chapter06.scm")   
+For guile, just use "load"  
 
 Here is a Racket module for Simply Scheme: http://www.hashcollision.org/simply-scheme/   
 https://github.com/dyoo/simply-scheme  
