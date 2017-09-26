@@ -61,9 +61,10 @@ For "and", "not" and "or", I have to enter the booleans as "#t" or "#f". That di
 Some of the functions in the chart above are part of R7RS, and some are unique to Simply Scheme.    
 Also: There are some aliases to some Simply Scheme functions:   
 |function|alias|
-|butfirst|bf|
-|butlast |bl|
-|sentence|se|
+|---     |---  |
+|butfirst|bf   |
+|butlast |bl   |
+|sentence|se   |
     
 Chapter two:   
 2.1:  
