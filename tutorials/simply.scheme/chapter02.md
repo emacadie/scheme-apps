@@ -57,6 +57,13 @@ Functions in this chapter:
 
 
 For "and", "not" and "or", I have to enter the booleans as "#t" or "#f". That did not occur to me right away. Usually you get the values for the arguments from a function, or multiple functions. I guess this "functions" program does things differently.    
+
+Some of the functions in the chart above are part of R7RS, and some are unique to Simply Scheme.    
+Also: There are some aliases to some Simply Scheme functions:   
+|function|alias|
+|butfirst|bf|
+|butlast |bl|
+|sentence|se|
     
 Chapter two:   
 2.1:  
