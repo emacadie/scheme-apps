@@ -114,4 +114,40 @@ GOLDEN
 (accumulate + '(2 3 4 5))
 ;; chicken gave 14
 
+;;  8.3  Describe each of the following functions in English. Make sure to include a description of the domain and range of each function. Be as precise as possible; for example, "the argument must be a function of one numeric argument" is better than "the argument must be a function."
+
+(define (f a)
+  (keep even? a))
+;; takes a list of numbers
+
+(define (g b)
+  (every b '(blue jay way)))
+;; takes a function that acts on words or sentences
+;; first last butfirst butlast
+
+(define (h c d)
+  (c (c d)))
+;; c is a function that acts on a collection, d is a collection
+;; like butfirst, butlast
+(define (i e)
+  (/ (accumulate + e) (count e)))
+;; takes a list of numbers, divides the total by the count
+
+accumulate
+;; like reduce in clojure
+;; takes a function and a collection, and it applies the function to each member of the collection
+;; returns a single value as a result
+
+sqrt
+;; take a number and squares it, returning a number
+
+repeated
+
+(repeated sqrt 3)
+
+(repeated even? 2)
+
+(repeated first 2)
+
+(repeated (repeated bf 3) 2)
 
