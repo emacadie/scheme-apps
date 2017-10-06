@@ -267,6 +267,52 @@ GOLDEN
 
 (true-for-all? even? '(2 6 3 4))
 ;; #F
-(define (true-for-all? pred func)
-  )
+(define (true-for-all? pred sntnc)
+  (cond ((equal? (count sntnc) (count (keep pred sntnc))))
+   (else #f)))
+
+;; 8.11  [12.6] Write a GPA procedure. It should take a sentence of grades as its argument and return the corresponding grade point average:
+
+(gpa '(A A+ B+ B))
+;; 3.67
+
+;; Hint: write a helper procedure base-grade that takes a grade as argument and returns 0, 1, 2, 3, or 4, 
+;; and another helper procedure grade-modifier that returns −.33, 0, or .33, depending on whether the grade has a minus, a plus, or neither.
+(define (base-grade grade)
+  (cond ((equal? (first grade) 'A) 4)
+        ((equal? (first grade) 'B) 3)
+        ((equal? (first grade) 'C) 2)
+        ((equal? (first grade) 'D) 1)
+        (else 0)))
+
+(define (modify-grade grade)
+  (cond ((equal? (last grade) '+) 0.33)
+        ((equal? (last grade) '-) -0.33)
+        (else 0)))
+
+(define (convert-grade-to-num grade)
+  (+ (base-grade grade) (modify-grade grade)))
+
+(define (gpa grades)
+  (/ (accumulate + (every convert-grade-to-num grades)) (count grades)))
+
+;; 8.12  [11.2] When you teach a class, people will get distracted if you say "um" too many times. 
+;; Write a count-ums that counts the number of times "um" appears in a sentence:
+
+(count-ums
+   '(today um we are going to um talk about functional um programming))
+;; 3
+
+(define (is-um wd)
+  (equal? 'um wd)
+
+(define (count-ums sntnc)
+  (count (keep is-um sntnc)))
+
+;; 8.13  [11.3] Write a procedure phone-unspell that takes a spelled version of a phone number, such as POPCORN, 
+;; and returns the real phone number, in this case 7672676. 
+;; You will need to write a helper procedure that uses an 8-way cond expression to translate a single letter into a digit.
+
+
+
 
