@@ -133,21 +133,140 @@ GOLDEN
   (/ (accumulate + e) (count e)))
 ;; takes a list of numbers, divides the total by the count
 
-accumulate
+;; accumulate
 ;; like reduce in clojure
 ;; takes a function and a collection, and it applies the function to each member of the collection
 ;; returns a single value as a result
 
-sqrt
+;; sqrt
 ;; take a number and squares it, returning a number
 
-repeated
-
+;; repeated
+;; takes a function and a number, and then, in an outer parentheses, args to the first function. The first function mentioned is called the specified number of times
+;; example:
+((repeated plural 4) 'computer)
+;; Like let or cond, you see two parentheses here, but for a different reason.
+;; also, I don't think the following examples quite work as intended.
 (repeated sqrt 3)
 
 (repeated even? 2)
 
 (repeated first 2)
-
+;; These three just print the generic status string:
+;; #<procedure (? x)>
+;; Kind of what I thought
 (repeated (repeated bf 3) 2)
+;; I think this will print three lists, or a nested list
+;; also prints ;; #<procedure (? x)>
+
+;; 8.4  Write a procedure choose-beatles that takes a predicate function as its argument and returns a sentence of just those Beatles (John, Paul, George, and Ringo) that satisfy the predicate. 
+;; so this sounds like filter/keep
+;; For example:
+(define (ends-vowel? wd) (vowel? (last wd)))
+
+(define (even-count? wd) (even? (count wd)))
+
+;; > 
+(choose-beatles ends-vowel?)
+;; (GEORGE RINGO)
+
+;; > 
+(choose-beatles even-count?)
+;; (JOHN PAUL GEORGE)
+
+(define (choose-beatles func)
+  (keep func (se 'john 'paul 'george 'ringo)))
+;; because "sentence" makes it a list
+
+;; 8.5  Write a procedure transform-beatles that takes a procedure as an argument, applies it to each of the Beatles, and returns the results in a sentence:
+;; this sounds like map, aka every
+
+(define (transform-beatles func)
+  (every func (se 'john 'paul 'george 'ringo)))
+
+(define (amazify name)
+  (word 'the-amazing- name))
+
+(transform-beatles amazify)
+;; (THE-AMAZING-JOHN THE-AMAZING-PAUL THE-AMAZING-GEORGE
+;;                   THE-AMAZING-RINGO)
+
+(transform-beatles butfirst)
+;; (OHN AUL EORGE INGO)
+
+;; 8.6  When you're talking to someone over a noisy radio connection, you sometimes have to spell out a word in order to get the other person to understand it. 
+;; But names of letters aren't that easy to understand either, 
+;; so there's a standard code in which each letter is represented by a particular word that starts with the letter. For example, instead of "B" you say "bravo."
+
+;; Write a procedure words that takes a word as its argument and returns a sentence of the names of the letters in the word:
+
+> (words 'cab)
+;; (CHARLIE ALPHA BRAVO)
+
+;; (You may make up your own names for the letters or look up the standard ones if you want.)
+
+;; Hint: Start by writing a helper procedure that figures out the name for a single letter.
+;; a map would come in handy here
+
+;; to get the letters of a word:
+;; (define (single letter) (word letter))
+(define (nato-letter letter)
+  (cond ((equal? letter 'a) 'alpha)
+        ((equal? letter 'b) 'bravo)
+        ((equal? letter 'c) 'charlie)
+        ((equal? letter 'd) 'delta)
+        ((equal? letter 'e) 'echo)        
+        (else 'null)))
+;; I could go to the end, but what's the point? 
+(define (words the-word)
+  (every nato-letter the-word))
+
+;;  8.7  [14.5][9] Write a procedure letter-count that takes a sentence as its argument and returns the total number of letters in the sentence:
+
+;; > 
+(letter-count '(fixing a hole))
+;; 11
+
+;; sounds like reduce, aka accumulate
+(define (letter-count the-sentence) 
+  (accumulate + (every count the-sentence)))
+
+;; 8.8  [12.5] Write an exaggerate procedure which exaggerates sentences:
+
+(exaggerate '(i ate 3 potstickers))
+;; (I ATE 6 POTSTICKERS)
+
+(exaggerate '(the chow fun is good here))
+;; (THE CHOW FUN IS GREAT HERE)
+(exaggerate '(but the egg drop soup is bad))
+
+;; It should double all the numbers in the sentence, and it should replace "good" with "great," "bad" with "terrible," and anything else you can think of.
+;; sounds like every with a dash of cond
+
+;; only works with lower-case
+(define (do-great-stuff the-word)
+  (cond ((equal? the-word 'good) 'great)
+        ((equal? the-word 'bad) 'terrible)
+        ((number? the-word) (* 2 the-word))
+        (else the-word)))
+
+(define (exaggerate sntnc)
+  (every do-great-stuff sntnc))
+
+;; 8.9  What procedure can you use as the first argument to every so that for any sentence used as the second argument, every returns that sentence?
+;; I tried "word" and it worked
+;; What procedure can you use as the first argument to keep so that for any sentence used as the second argument, keep returns that sentence?
+;; I tried "word?" and it worked
+;; What procedure can you use as the first argument to accumulate so that for any sentence used as the second argument, accumulate returns that sentence?
+;; I tried "sentence" and it worked
+
+;; 8.10  Write a predicate true-for-all? that takes two arguments, a predicate procedure and a sentence. It should return #t if the predicate argument returns true for every word in the sentence.
+
+(true-for-all? even? '(2 4 6 8))
+;; #T
+
+(true-for-all? even? '(2 6 3 4))
+;; #F
+(define (true-for-all? pred func)
+  )
 
