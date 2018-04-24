@@ -2,56 +2,58 @@ Exercises for Chapter two of "Simply Scheme": https://people.eecs.berkeley.edu/~
 
 Functions in this chapter:   
 
-|function    |arg 1 type|arg 2 type|arg3 type |result type|
-|---         |---       |---       |---       |---        |
-|+           |number    |number    |          |number     |
-|-           |number    |number    |          |number     |
-|/           |number    |number    |          |number     |
-|*           |number    |number    |          |number     |
-|\<=         |number    |number    |          |boolean    |
-|\<          |number    |number    |          |boolean    |
-|=           |number    |number    |          |boolean    |
-|\>=         |number    |number    |          |boolean    |
-|\>          |number    |number    |          |boolean    |
-|and         |boolean   |boolean   |          |boolean    |
-|appearances |word      |sentence  |          |number     |
-|butfirst    |number    |          |          |number     |
-|butfirst    |sentence  |          |          |word       |
-|butfirst    |word      |          |          |*all but first letter in word*|
-|butlast     |number    |          |          |number     |
-|butlast     |sentence  |          |          |word       |
-|butlast     |word      |          |          |*all but last letter in word*|
-|cos         |number    |          |          |number     |
-|count       |*anything*|          |          |number     |
-|even?       |*anything*|          |          |boolean    |
-|equal?      |*anything*|*anything*|          |boolean    |
+|function    |arg 1 type |arg 2 type|arg3 type |result type|
+|---         |---        |---       |---       |---        |
+|+           |number     |number    |          |number     |
+|-           |number     |number    |          |number     |
+|/           |number     |number    |          |number     |
+|*           |number     |number    |          |number     |
+|\<=         |number     |number    |          |boolean    |
+|\<          |number     |number    |          |boolean    |
+|=           |number     |number    |          |boolean    |
+|\>=         |number     |number    |          |boolean    |
+|\>          |number     |number    |          |boolean    |
+|and         |boolean    |boolean   |          |boolean    |
+|appearances |word       |sentence  |          |number     |
+|butfirst    |number     |          |          |number     |
+|butfirst    |sentence   |          |          |word       |
+|butfirst    |word       |          |          |*all but first letter in word*|
+|butlast     |number     |          |          |number     |
+|butlast     |sentence   |          |          |word       |
+|butlast     |word       |          |          |*all but last letter in word*|
+|cos         |number     |          |          |number     |
+|count       |*anything* |          |          |number     |
+|even?       |*anything* |          |          |boolean    |
+|equal?      |*anything* |*anything*|          |boolean    |
 |every       |*name of function*|*that function's inputs* |*anything*|
-|expt        |number    |number    |          |number     |
-|first       |number    |          |          |number     |
-|first       |sentence  |          |          |word       |
-|first       |word      |          |          |*first letter in word*|
-|if          |boolean   |*anything*|*anything*|*anything* |
-|item        |number    |sentence  |          |word       |
+|expt        |number     |number    |          |number     |
+|first       |number     |          |          |number     |
+|first       |sentence   |          |          |word       |
+|first       |word       |          |          |*first letter in word*|
+|if          |boolean    |*anything*|*anything*|*anything* |
+|item        |number     |sentence  |          |word       |
 |keep        |*name of function returning boolean*|word|  |word      |
-|last        |number    |          |          |number     |
-|last        |sentence  |          |          |word       |
-|last        |word      |          |          |*last letter in word*|
-|max         |number    |number    |          |number     |
-|min         |number    |number    |          |number     |
-|member?     |word      |sentence  |          |boolean    |
-|member?     |letter    |word      |          |boolean    |
-|not         |boolean   |          |          |boolean    |
-|number?     |*anything*|          |          |boolean    |
+|last        |number     |          |          |number     |
+|last        |sentence   |          |          |word       |
+|last        |word       |          |          |*last letter in word*|
+|max         |number     |number    |          |number     |
+|min         |number     |number    |          |number     |
+|member?     |word       |sentence  |          |boolean    |
+|member?     |letter     |word      |          |boolean    |
+|not         |boolean    |          |          |boolean    |
+|number?     |*anything* |          |          |boolean    |
 |number-of-arguments|*name of function*||     |number     |
-|odd?        |*anything*|          |          |boolean    |
-|or          |boolean   |boolean   |          |boolean    |
-|quotient    |number    |number    |          |number     |
-|random      |number    |          |          |number     |
-|remainder   |number    |number    |          |number     |
-|round       |number    |          |          |number     |
-|sentence    |*anything*|*anything*|          |sentence   |
-|sqrt        |number    |          |          |number     |
-|vowel?      |*anything*|          |          |boolean    |
+|odd?        |*anything* |          |          |boolean    |
+|or          |boolean    |boolean   |          |boolean    |
+|procedure?  |*anything* |          |          |           |
+|quotient    |number     |number    |          |number     |
+|random      |number     |          |          |number     |
+|remainder   |number     |number    |          |number     |
+|repeated    |*procedure*|number    |          |*procedure*|
+|round       |number     |          |          |number     |
+|sentence    |*anything* |*anything*|          |sentence   |
+|sqrt        |number     |          |          |number     |
+|vowel?      |*anything* |          |          |boolean    |
 |word        |*word or integer*|*word or integer*||word   |
 
 

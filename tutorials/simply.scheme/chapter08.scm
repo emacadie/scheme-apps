@@ -20,7 +20,6 @@
   (accumulate + (keep number? sent)))
  
 (add-numbers '(4 calling birds 3 french hens 2 turtle doves))
-
  
 (add-numbers '(1 for the money 2 for the show 3 to get ready
 		   and 4 to go))
