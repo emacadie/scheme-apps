@@ -1,5 +1,11 @@
 ;; Chapter Nine
 
+;; two functions that do the same thing
+;; one with lambda, one without
+(define (add-two-small x y) (+ x y) )
+(define add-two-big (lambda (x y) (+ x y)))
+
+
 ;;  9.1  What will Scheme print? Figure it out yourself before you try it on the computer.
 
 (lambda (x) (+ (* x 3) 4))
