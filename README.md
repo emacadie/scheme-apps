@@ -43,6 +43,12 @@ C-x h C-c C-r: Send the whole buffer. This first marks (cf. the tutorial) the wh
 !! Note that these commands assume your key bindings for :C-x C-e: and :C-x h C-c C-r: are correct!! 
 -- end quote
 
+To get readline with the Guile REPL, load these commands first:
+```scheme
+(use-modules (ice-9 readline))
+(activate-readline)
+```
+
 Paredit cheat sheet: http://mumble.net/~campbell/emacs/paredit.html   
 
 To get what command a key-binding is bound to, use: M-x describe-key and put in the key-binding, or M-x describe-bindings
