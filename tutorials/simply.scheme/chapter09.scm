@@ -135,7 +135,55 @@
       '_))
 
 ;; this sounds like we will need "every"
+;; from chapter 8:
+;; (define (double letter) (word letter letter))
+;; > (every double 'girl)
+;; (GG II RR LL)
 (define (hang the-word the-guesses)
-  (lambda ()))
+  (every (lambda (x) (hang-letter x the-guesses) ) the-word))
+; okay, so it returns a sentence with spaces, but I will take it
+
+;; 9.9  Write a procedure common-words that takes two sentences as arguments 
+;; and returns a sentence containing only those words that appear both in the first sentence and in the second sentence.
+;; keep and every? How heavy!!
+;; from chapter 8:
+;; For instance, the keep function takes a predicate and a sentence as arguments. 
+;; It returns a sentence containing only the words of the argument sentence for which the predicate is true.
+;; every takes a function, and a collection (or sentence)
+
+(define (common-words first-sen second-sen)
+  (keep (lambda (x) (member? x second-sen)) first-sen))
+
+(common-words '(this is good thing) '(what good can this little thing do ))
+;; so no need for every
+
+;; 9.10  In Chapter 2 we used a function called appearances that returns the number of times its first argument appears as a member of its second argument. 
+;; Implement appearances.
+;; this would be accumulate?
+;; no this is keep again
+(define (my-appearances first-arg second-arg)
+  (count (keep (lambda (x) (equal? x first-arg)) second-arg)))
+
+;; I keep wanting to accumulate every time!
+;; What can I do with bad Scheme jokes? Perhaps reduce the number?
+;; car car car, you're so funny, you such a cadr
+
+;; 9.11  Write a procedure unabbrev that takes two sentences as arguments. 
+;; It should return a sentence that's the same as the first sentence, 
+;; except that any numbers in the original sentence should be replaced with words from the second sentence. 
+;; A number 2 in the first sentence should be replaced with the second word of the second sentence, a 6 with the sixth word, and so on.
+
+;; > (unabbrev '(john 1 wayne fred 4) '(bill hank kermit joey))
+;; (JOHN BILL WAYNE FRED JOEY)
+
+;; > (unabbrev '(i 3 4 tell 2) '(do you want to know a secret?))
+;; (I WANT TO TELL YOU)
+
+(define (unabbrev first-sen second-sen))
+;; every something-with-second-sen first-send
+;; use item somehow: (item 4 '(this is a sentence))
+;; he said not to use helper functions, but in 9.8 he did, so I will too
+;; or we will have a nasty lambda
+ 
 
 
