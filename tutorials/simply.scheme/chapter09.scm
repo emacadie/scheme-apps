@@ -77,46 +77,65 @@
 ;; > ((sentence-version square) '(8 2 4 6))
 ;; (64 4 16 36)
 
-#| this is like
-(define (make-adder num)
-  (lambda (x) (+ x num)))
+;; this is like
+; (define (make-adder num)
+;  (lambda (x) (+ x num)))
 
-> ((make-adder 4) 7)
-11
-> (every (make-adder 6) '(2 4 8))
-(8 10 14)
-and
-(define (same-arg-twice fn)
-  (lambda (arg) (fn arg arg)))
+;> ((make-adder 4) 7)
+;11
+;> (every (make-adder 6) '(2 4 8))
+;(8 10 14)
+;and
+;(define (same-arg-twice fn)
+;  (lambda (arg) (fn arg arg)))
 
-> ((same-arg-twice word) 'hello)
-HELLOHELLO
+;> ((same-arg-twice word) 'hello)
+;HELLOHELLO
 
-> ((same-arg-twice *) 4)
-16
-so (same-arg-twice word) becomes
-(lambda (arg) (word arg arg))
-(define (flip fn)
-  (lambda (a b) (fn b a)))
-> ((flip -) 5 8)
-3
-> ((flip se) 'goodbye 'hello)
-(HELLO GOODBYE)
-It's a bit odd calling a function with two parens, but this is Scheme and not Clojure, so I guess we're good to go.
-|#
+;> ((same-arg-twice *) 4)
+;16
+;so (same-arg-twice word) becomes
+;(lambda (arg) (word arg arg))
+;(define (flip fn)
+;  (lambda (a b) (fn b a)))
+;> ((flip -) 5 8)
+;3
+;> ((flip se) 'goodbye 'hello)
+;(HELLO GOODBYE)
+;It's a bit odd calling a function with two parens, but this is Scheme and not Clojure, so I guess we're good to go.
+
 (define (sentence-version fn)
   (lambda (g) (every fn g)))
 ;; it works, but is it the best way?
 
-#|
- 9.7  Write a procedure called letterwords that takes as its arguments a letter and a sentence. 
-It returns a sentence containing only those words from the argument sentence that contain the argument letter:
 
-> (letterwords 'o '(got to get you into my life))
-(GOT TO YOU INTO)
-This sounds like keep
-|#
+; 9.7  Write a procedure called letterwords that takes as its arguments a letter and a sentence. 
+; It returns a sentence containing only those words from the argument sentence that contain the argument letter:
+
+; > (letterwords 'o '(got to get you into my life))
+; (GOT TO YOU INTO)
+; This sounds like keep
+
  (define (letterwords letter the-sntnc)
   (keep (lambda (x) (member? letter x)) the-sntnc))
+
+; 9.8  Suppose we're writing a program to play hangman. 
+; In this game one player has to guess a secret word chosen by the other player, one letter at a time. 
+; You're going to write just one small part of this program: 
+; a procedure that takes as arguments the secret word and the letters guessed so far, 
+; returning the word in which the guessing progress is displayed by including all the guessed letters along with underscores for the not-yet-guessed ones:
+
+; > (hang 'potsticker 'etaoi)
+; _OT_TI__E_
+ 
+; Hint: You'll find it helpful to use the following procedure that determines how to display a single letter: 
+(define (hang-letter letter guesses)
+  (if (member? letter guesses)
+      letter
+      '_))
+
+;; this sounds like we will need "every"
+(define (hang the-word the-guesses)
+  (lambda ()))
 
 

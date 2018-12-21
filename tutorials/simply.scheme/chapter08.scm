@@ -12,9 +12,9 @@
 ;; "accumulate transforms the entire word or sentence into a single result by combining all of the elements in some way. ""
 
 ;; another way of thinking about it:
-;; every      -> transform
-;; keep       -> select
-;; accumulate -> combine
+;; every      -> transform each member
+;; keep       -> select from collection
+;; accumulate -> combine into one result
 
 (define (add-numbers sent)
   (accumulate + (keep number? sent)))
