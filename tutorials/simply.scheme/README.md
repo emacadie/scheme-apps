@@ -24,3 +24,12 @@ One guy's solutions: https://github.com/buntine/Simply-Scheme-Exercises
 https://github.com/pongsh/simply-scheme-exercises   
 (Neither have the answer to the "hotshot" question in 4.8)   
 
+To use in Racket:   
+If not installed: raco pkg install simply-scheme  
+http://docs.racket-lang.org/manual@simply-scheme/index.html  
+https://pkgs.racket-lang.org/package/simply-scheme  
+https://github.com/jbclements/simply-scheme   
+You have to hit the "Run" arrow after you define your function. The only thing I do not like is that is clears your REPL window.   
+
+
+

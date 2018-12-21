@@ -13,6 +13,7 @@ Functions in this chapter:
 |=           |number     |number    |          |boolean    |
 |\>=         |number     |number    |          |boolean    |
 |\>          |number     |number    |          |boolean    |
+|accumulate  |*name of function*|*that function's inputs* |*some sort of combination*|
 |and         |boolean    |boolean   |          |boolean    |
 |appearances |word       |sentence  |          |number     |
 |butfirst    |number     |          |          |number     |
