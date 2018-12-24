@@ -24,6 +24,8 @@ One guy's solutions: https://github.com/buntine/Simply-Scheme-Exercises
 https://github.com/pongsh/simply-scheme-exercises   
 (Neither have the answer to the "hotshot" question in 4.8)   
 
+My solutions are intermingled with notes that I take along the way.    
+
 To use in Racket:   
 If not installed: raco pkg install simply-scheme  
 http://docs.racket-lang.org/manual@simply-scheme/index.html  

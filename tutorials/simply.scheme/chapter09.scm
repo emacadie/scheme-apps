@@ -166,7 +166,7 @@
 
 ;; I keep wanting to accumulate every time!
 ;; What can I do with bad Scheme jokes? Perhaps reduce the number?
-;; car car car, you're so funny, you such a cadr
+;; car car car, you're so funny, you're such a cadr
 
 ;; 9.11  Write a procedure unabbrev that takes two sentences as arguments. 
 ;; It should return a sentence that's the same as the first sentence, 
@@ -179,11 +179,106 @@
 ;; > (unabbrev '(i 3 4 tell 2) '(do you want to know a secret?))
 ;; (I WANT TO TELL YOU)
 
-(define (unabbrev first-sen second-sen))
-;; every something-with-second-sen first-send
+;; every something-with-second-sen first-sen
 ;; use item somehow: (item 4 '(this is a sentence))
 ;; he said not to use helper functions, but in 9.8 he did, so I will too
 ;; or we will have a nasty lambda
- 
+(define (unabbrev first-sen second-sen)
+  (every (lambda (x) (if (number? x)
+                         (item x second-sen)
+                         x) ) first-sen)) 
 
+;;  9.12  Write a procedure first-last whose argument will be a sentence. 
+;; It should return a sentence containing only those words in the argument sentence whose first and last letters are the same:
+; > (first-last '(california ohio nebraska alabama alaska massachusetts))
+; (OHIO ALABAMA ALASKA)
+(define (first-last first-sen)
+  (keep (lambda (x) (equal? (first x) (last x))) first-sen))
+
+;;  9.13  Write a procedure compose that takes two functions f and g as arguments. 
+;; It should return a new function, the composition of its input functions, which computes f(g(x)) when passed the argument x.
+;> ((compose sqrt abs) -25)
+; 5
+; > (define secondf (compose first bf))
+; > (secondf '(higher order function))
+; ORDER
+
+(define (compose first-func second-func )
+  (lambda (the-arg) (first-func (second-func the-arg))))
+;; maybe I am getting the hang of this
+
+;; 9.14  Write a procedure substitute that takes three arguments, two words and a sentence. 
+;; It should return a version of the sentence, but with every instance of the second word replaced with the first word:
+
+;> (substitute 'maybe 'yeah '(she loves you yeah yeah yeah))
+; (SHE LOVES YOU MAYBE MAYBE MAYBE)
+(define (substitute first-word second-word the-sent)
+  (every (lambda (x)
+           (if (equal? x second-word)
+               first-word
+               x)) the-sent))
+
+;; 9.15 Many functions are applicable only to arguments in a certain domain and result in error messages if given arguments outside that domain. 
+;; For example, sqrt may require a nonnegative argument in a version of Scheme that doesn't include complex numbers. 
+;; (In any version of Scheme, sqrt will complain if its argument isn't a number at all!) 
+;; Once a program gets an error message, it's impossible for that program to continue the computation.
+
+; Write a procedure type-check that takes as arguments a one-argument procedure f and a one-argument predicate procedure pred. 
+;; Type-check should return a one-argument procedure that first applies pred to its argument 
+; if that result is true, the procedure should return the value computed by applying f to the argument; 
+; if pred returns false, the new procedure should also return #f:
+; > (define safe-sqrt (type-check sqrt number?))
+; > (safe-sqrt 16)
+; 4
+; > (safe-sqrt 'sarsaparilla)
+; #F
+
+(define (type-check the-func the-pred)
+  (lambda (the-arg)
+    (if (the-pred the-arg)
+        (the-func the-arg)
+        #f)))
+
+;;  9.16  In the language APL, most arithmetic functions can be applied either to a number, 
+; with the usual result, or to a vector—the APL name for a sentence of numbers—in which case 
+; the result is a new vector in which each element is the result of applying the function to the corresponding element of the argument. 
+; For example, the function sqrt applied to 16 returns 4 as in Scheme, 
+; but sqrt can also be applied to a sentence such as (16 49) and it returns (4 7).
+
+; Write a procedure aplize that takes as its argument a one-argument procedure whose domain is numbers or words. 
+; It should return an APLized procedure that also accepts sentences:
+
+; > (define apl-sqrt (aplize sqrt))
+; > (apl-sqrt 36)
+; 6
+; > (apl-sqrt '(1 100 25 16))
+; (1 10 5 4)
+
+(define (aplize the-func)
+  (lambda (the-arg)
+    (if (sentence? the-arg)
+        (every the-func the-arg)
+        (the-func the-arg))))
+
+;; 9.17  Write keep in terms of every and accumulate. 
+(define (my-keep the-pred the-collection)
+  (every (lambda (x)
+           (if (the-pred x)
+               x
+               'false)) the-collection))
+;; I admit, I looked at another repo; I was kind of going towards this anyway
+;; I thought I would have to make a separate function; it's not as clunky as I thought
+(define (my-keep the-pred the-collection)
+  (accumulate se (every (lambda (x)
+              (if (the-pred x)
+                  x
+                  '())) the-collection)) )
+
+(define (my-keep-02 the-pred the-collection)
+  (every (lambda (x)
+           (if (the-pred x)
+               x
+               '())) the-collection))
+;; so you do not need the "accumulate"
+;; All I needed was the empty element at the end.
 
