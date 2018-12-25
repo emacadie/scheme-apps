@@ -16,6 +16,8 @@ Or:
 (load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/more.functions.scm")   
 For guile, just use "load"  
 
+2018-12-24: For some reason, this does not seem to work in Guile anymore.   
+
 Here is a Racket module for Simply Scheme: http://www.hashcollision.org/simply-scheme/   
 https://github.com/dyoo/simply-scheme  
 
