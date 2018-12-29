@@ -67,5 +67,21 @@
         (else 0)))
 ;; probably a way to do this with maps, but the book doesn't cover maps
 
+;; Write hand-dist-points, which takes a hand as its argument and returns the number of distribution points the hand is worth.
+; > (hand-dist-points '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3))
+; 1
+; > (hand-dist-points '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2))
+; 3
+;; call suit-counts, then suit-dist-points, with accumulate and +
+(define (hand-dist-points the-hand)
+  (accumulate + (every suit-dist-points (suit-counts the-hand))))
 
+;; Write a procedure bridge-val that takes a hand as its argument and returns the total number of points that the hand is worth.
+; > (bridge-val '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3))
+; 14
+; > (bridge-val '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2))
+; 8
+
+(define (bridge-val the-hand)
+  (+ (high-card-points the-hand) (hand-dist-points the-hand)))
 
