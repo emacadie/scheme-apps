@@ -14,6 +14,7 @@ Or:
 (load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/simply.scm")   
 (load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/functions.scm")   
 (load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/more.functions.scm")   
+(load-relative "/home/ericm/github/scheme-apps/tutorials/simply.scheme/ttt.scm")   
 For guile, just use "load"  
 
 2018-12-24: For some reason, this does not seem to work in Guile anymore.   
