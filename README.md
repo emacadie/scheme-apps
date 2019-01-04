@@ -43,6 +43,26 @@ C-x h C-c C-r: Send the whole buffer. This first marks (cf. the tutorial) the wh
 !! Note that these commands assume your key bindings for :C-x C-e: and :C-x h C-c C-r: are correct!! 
 -- end quote
 
+Some commands with the word "scheme" in them in emacs you can use with M-x:   
+- inferior-scheme-mode
+- geiser-set-scheme
+- run-scheme
+- scheme-compile-definition
+- scheme-compile-definition-and-go
+- scheme-compile-file 
+- scheme-compile-region 
+- scheme-compile-region-and-go
+- scheme-expand-current-form
+- scheme-load-file 
+- scheme-mode
+- scheme-send-definition
+- scheme-send-definition-and-go
+- scheme-send-last-sexp 
+- scheme-send-region 
+- scheme-send-region-and-go
+- scheme-trace-procedure
+- switch-to-scheme
+
 To get readline with the Guile REPL, load these commands first:
 ```scheme
 (use-modules (ice-9 readline))
