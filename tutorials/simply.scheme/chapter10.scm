@@ -73,6 +73,7 @@
 ;; board is ; 'oxo-oxx-xo_ 'oxooxxxo_
 ;; '____x____
 ; i-can-win? i-can-fork? i-can-advance?
+;; (new-tie-game? 'oxooxxxo_)
 (define (new-tie-game? position)
   (new-tie-with-triples (find-triples position)))
 ;; use authors' functions. I tried to use keep, but I could not get it to work
