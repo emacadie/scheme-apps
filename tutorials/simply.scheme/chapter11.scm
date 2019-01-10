@@ -129,6 +129,7 @@
 ; (10 9 8 7 6 5 4 3 2 1 BLASTOFF!)
 ; > (countdown 3)
 ; (3 2 1 BLASTOFF!)
+
 (define (cd0 num)
   (sentence 'BLASTOFF!))
 
@@ -144,4 +145,33 @@
 (define (cd4 num)
   (sentence '4 (cd3 (- num 1))))
 
+(define (countdown number)
+  (if (equal? 0 number) 
+      (sentence 'BLASTOFF!)
+      (sentence number (countdown (- number 1)))))
+
+;;  11.7  Write a procedure copies that takes a number and a word as arguments and returns a sentence containing that many copies of the given word:
+; > (copies 8 'spam)
+; (SPAM SPAM SPAM SPAM SPAM SPAM SPAM SPAM)
+(define (copies0 num the-word)
+  (sentence '()))
+
+(define (copies1 num the-word)
+  (sentence the-word))
+
+(define (copies2 num the-word)
+  (sentence the-word (copies1 (- num 1) the-word)))
+
+(define (copies3 num the-word)
+  (sentence the-word (copies2 (- num 1) the-word)))
+
+(define (copies4 num the-word)
+  (sentence the-word (copies3 (- num 1) the-word)))
+
+;; It is tedious typing them out, but then it's obvious
+(define (copies number the-word)
+  (if (equal? 0 number) 
+      (sentence '())
+      (sentence the-word (copies (- number 1) the-word))))
+ 
 
