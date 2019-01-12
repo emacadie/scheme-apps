@@ -109,12 +109,10 @@
   (sentence (first (first the-sent)) (initials1 (butfirst the-sent))))
 
 (define (initials3 the-sent)
-  (sentence (first (first the-sent)) (initials2 (butfirst the-sent)))
-)
+  (sentence (first (first the-sent)) (initials2 (butfirst the-sent))))
 
 (define (initials4 the-sent)
-  (sentence (first (first the-sent)) (initials3 (butfirst the-sent)))
-)
+  (sentence (first (first the-sent)) (initials3 (butfirst the-sent))))
 
 ;; Am i missing something? It seems like the same thing.
 ;; Unless I am also supposed to check for 0-length?
