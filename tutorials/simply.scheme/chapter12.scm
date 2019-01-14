@@ -106,16 +106,27 @@
         ((= (count nums) 1) (spell-digit nums))
         (else (word (spell-digit (first nums)) (spell-number (butfirst nums))))))
 
+
 ;; 12.8  Write a procedure numbers that takes a sentence as its argument and returns another sentence containing only the numbers in the argument:
 ;; > (numbers '(76 trombones and 110 cornets))
 ;; (76 110)
 ;; this is filter/keep
 (define (numbers the-sent)
   (cond ((empty? the-sent) '())
-        ()
-)
-)
+        ((and (equal? (count the-sent) 1) (number? (first the-sent))) (first the-sent))
+        ((and (equal? (count the-sent) 1) (not (number? (first the-sent)))) '())
+        ((and (> (count the-sent) 1) (number? (first the-sent))) (sentence (first the-sent) (numbers (butfirst the-sent))))
+        ((and (> (count the-sent) 1) (not (number? (first the-sent)))) (numbers (butfirst the-sent)))
+        (else '())))
 
+;; 12.9  Write a procedure real-words that takes a sentence as argument and returns all the "real" words of the sentence, 
+;; using the same rule as the real-word? procedure from Chapter 1
+;; from chapter 1
+(define (real-word? wd)
+  (not (member? wd '(a the an in of and for to with))))
 
+(define (real-words the-words)
+  
+)
 
 
