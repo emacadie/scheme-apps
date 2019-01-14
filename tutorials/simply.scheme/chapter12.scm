@@ -113,11 +113,28 @@
 ;; this is filter/keep
 (define (numbers the-sent)
   (cond ((empty? the-sent) '())
-        ((and (equal? (count the-sent) 1) (number? (first the-sent))) (first the-sent))
-        ((and (equal? (count the-sent) 1) (not (number? (first the-sent)))) '())
-        ((and (> (count the-sent) 1) (number? (first the-sent))) (sentence (first the-sent) (numbers (butfirst the-sent))))
-        ((and (> (count the-sent) 1) (not (number? (first the-sent)))) (numbers (butfirst the-sent)))
+        ; ((and (equal? (count the-sent) 1) (number? (first the-sent))) (first the-sent))
+        ; ((and (equal? (count the-sent) 1) (not (number? (first the-sent)))) '())
+        ; ((and (> (count the-sent) 1) (number? (first the-sent))) (sentence (first the-sent) (numbers (butfirst the-sent))))
+        ; ((and (> (count the-sent) 1) (not (number? (first the-sent)))) (numbers (butfirst the-sent)))
+        ;; added better conditions below
+        ((number? (first the-sent)) (sentence (first the-sent) (numbers (butfirst the-sent))))
+        ((not (number? (first the-sent))) (sentence (numbers (butfirst the-sent))))
         (else '())))
+
+;; I will include an answer from https://github.com/pongsh/simply-scheme-exercises/blob/master/12-the-leap-of-faith/12.8.scm
+(define (numbers2 sent)
+  (if (empty? sent)
+      '()
+      (if (number? (first sent))
+                    (se (first sent) (numbers2 (bf sent)))
+                    (se (numbers2 (bf sent))))))
+
+;; Simpler than mine, but I think it could be better. Replace compound "if" with "cond"
+(define (numbers3 sent)
+  (cond ((empty? sent) '())
+        ((number? (first sent)) (se (first sent) (numbers3 (bf sent))))
+        (else (se (numbers3 (bf sent))))))
 
 ;; 12.9  Write a procedure real-words that takes a sentence as argument and returns all the "real" words of the sentence, 
 ;; using the same rule as the real-word? procedure from Chapter 1
@@ -126,7 +143,72 @@
   (not (member? wd '(a the an in of and for to with))))
 
 (define (real-words the-words)
-  
-)
+  (cond ((empty? the-words) '())
+        ((real-word? (first the-words)) (sentence (first the-words) (real-words (butfirst the-words))))
+        ((not (real-word? (first the-words))) (sentence (real-words (butfirst the-words))))
+        (else '())))
+
+;; 12.10  Write a procedure remove that takes a word and a sentence as arguments and returns the same sentence, 
+;;but with all copies of the given word removed:
+;; > (remove 'the '(the song love of the loved by the beatles))
+;; (SONG LOVE OF LOVED BY BEATLES)
+
+(define (remove-word the-word the-sent)
+  (cond ((empty? the-sent) '())
+        ((equal? the-word (first the-sent)) (sentence (remove-word the-word (butfirst the-sent))))
+        ((not (equal? the-word (first the-sent))) (sentence (first the-sent) (remove-word the-word (butfirst the-sent))))
+        (else '())))
+
+;; I kept getting: "Error: call of non-procedure: the"
+;; because I had: (equal? (the-word) (first the-sent))
+
+;; 12.12  Write a procedure arabic which converts Roman numerals into Arabic numerals:
+; > (arabic 'MCMLXXI)
+;1971
+;> (arabic 'MLXVI)
+;1066
+;; You will probably find the roman-value procedure from Chapter 6 helpful. 
+;; Don't forget that a letter can reduce the overall value if the letter that comes after it has a larger value, such as the C in MCM.
+
+(define (roman-value letter)
+  (cond ((equal? letter 'I) 1)
+        ((equal? letter 'V) 5)
+        ((equal? letter 'X) 10)
+        ((equal? letter 'L) 50)
+        ((equal? letter 'C) 100)
+        ((equal? letter 'D) 500)
+        ((equal? letter 'M) 1000)
+        (else 'huh?)))
+
+(define (first-less-than-second the-nums)
+  (cond ((equal? (count the-nums) 1) #f)
+        ((< (roman-value (first the-nums)) (roman-value (first (butfirst the-nums)))) #t)
+        (else #f)))
+
+(define (subtract-first-from-second the-nums)
+  (- (roman-value (first (butfirst the-nums))) (roman-value (first the-nums))))
+
+(define (arabic the-nums)
+  (cond ((empty? the-nums) '())
+        ((equal? (count the-nums) 1) (roman-value the-nums))
+        ((first-less-than-second the-nums) (+ (subtract-first-from-second the-nums) (arabic (butfirst (butfirst the-nums)))))
+        ((not (first-less-than-second the-nums)) (+ (roman-value (first the-nums)) (arabic (butfirst the-nums))))))
+
+;;  12.13  Write a new version of the describe-time procedure from Exercise . Instead of returning a decimal number, it should behave like this:
+; > (describe-time 22222)
+; (6 HOURS 10 MINUTES 22 SECONDS)
+; > (describe-time 4967189641)
+; (1 CENTURIES 57 YEARS 20 WEEKS 6 DAYS 8 HOURS 54 MINUTES 1 SECONDS)
+; Can you make the program smart about saying 1 CENTURY instead of 1 CENTURIES? 
+
+;; from chapter 6
+(define (describe-time time)
+  (cond ((not (number? time)) time)
+        ((not (positive? time)) time)
+        ((>= time 31557600) (sentence (+ (quotient time 31557600) (inexact (/ (remainder time 31557600) 31557600))) 'YEARS))
+        ((>= time 86400) (sentence (+ (quotient time 86400) (inexact (/ (remainder time 86400) 86400))) 'DAYS))
+        ((>= time 3600) (sentence (+ (quotient time 3600) (inexact (/ (remainder time 3600) 3600))) 'HOURS))
+        ((>= time 60) (sentence (+ (quotient time 60) (inexact (/ (remainder time 60) 60))) 'MINUTES))
+        (else (sentence time 'SECONDS))))
 
 
