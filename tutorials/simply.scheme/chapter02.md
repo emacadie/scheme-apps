@@ -69,6 +69,8 @@ Also: There are some aliases to some Simply Scheme functions:
 |butfirst|bf   |
 |butlast |bl   |
 |sentence|se   |
+
+"first" is like "car", and "butfirst" is like "cdr".   
     
 Chapter two:   
 2.1:  

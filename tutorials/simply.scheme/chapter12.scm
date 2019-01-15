@@ -106,7 +106,6 @@
         ((= (count nums) 1) (spell-digit nums))
         (else (word (spell-digit (first nums)) (spell-number (butfirst nums))))))
 
-
 ;; 12.8  Write a procedure numbers that takes a sentence as its argument and returns another sentence containing only the numbers in the argument:
 ;; > (numbers '(76 trombones and 110 cornets))
 ;; (76 110)
@@ -244,4 +243,8 @@
 ;; The page also says it is not tail-call optimized, and the only thing to look out for is that you are not using an infinite sequence:
 ;; "There is no tail-call optimization and the use of self-calls for looping of unknown bounds is discouraged."
 ;; I wonder if there is a library that can check your recursive calls.
+
+;; In the Shido tutorial, Shido will have a wrapper procedure that calls the tail-recursive procedure.
+;; Also, look here: https://stackoverflow.com/questions/13664639/tail-recursive-functions-in-scheme
+;; https://stackoverflow.com/questions/33923/what-is-tail-recursion
 
