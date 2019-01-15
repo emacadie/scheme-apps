@@ -236,5 +236,12 @@
         ((< time 60)  (sentence time 'SECONDS))
         ; ((>= time 60) )
         (else (sentence (get-time-floor time) (get-time-measure time) (describe-time12 (- time (* (get-time-floor time) (get-time-multiplier time))))))))
-
+;; I did not do tail recursion. But then again, the authors did not mention tail-recursion.
+;; I don't think I got it when I did the other Scheme tutorials.
+;; But I was able to use loop-recur in Clojure, and I think that is similar to tail-recursion:
+;; from https://clojure.org/reference/special_forms#recur
+;; "recur in other than a tail position is an error."
+;; The page also says it is not tail-call optimized, and the only thing to look out for is that you are not using an infinite sequence:
+;; "There is no tail-call optimization and the use of self-calls for looping of unknown bounds is discouraged."
+;; I wonder if there is a library that can check your recursive calls.
 
