@@ -201,14 +201,40 @@
 ; (1 CENTURIES 57 YEARS 20 WEEKS 6 DAYS 8 HOURS 54 MINUTES 1 SECONDS)
 ; Can you make the program smart about saying 1 CENTURY instead of 1 CENTURIES? 
 
-;; from chapter 6
-(define (describe-time time)
+
+(define (get-time-measure time)
+  (cond ((>= time 3155760000) 'CENTURIES)
+        ((>= time 315576000) 'DECADES)
+        ((>= time 31557600) 'YEARS)
+        ((>= time 86400) 'DAYS)
+        ((>= time 3600) 'HOURS)
+        ((>= time 60) 'MINUTES)
+        (else 'SECONDS)))
+
+; quotient is like floor
+(define (get-time-floor time)
+  (cond ((>= time 3155760000) (quotient time 3155760000)) 
+        ((>= time 315576000) (quotient time 315576000)) 
+        ((>= time 31557600) (quotient time 31557600)) 
+        ((>= time 86400) (quotient time 86400))
+        ((>= time 3600) (quotient time 3600))
+        ((>= time 60) (quotient time 60))
+        (else 'SECONDS)))
+
+(define (get-time-multiplier time)
+  (cond ((>= time 3155760000) 3155760000) 
+        ((>= time 315576000) 315576000) 
+        ((>= time 31557600) 31557600) 
+        ((>= time 86400) 86400)
+        ((>= time 3600) 3600)
+        ((>= time 60) 60)
+        (else 'SECONDS)))
+
+(define (describe-time12 time)
   (cond ((not (number? time)) time)
         ((not (positive? time)) time)
-        ((>= time 31557600) (sentence (+ (quotient time 31557600) (inexact (/ (remainder time 31557600) 31557600))) 'YEARS))
-        ((>= time 86400) (sentence (+ (quotient time 86400) (inexact (/ (remainder time 86400) 86400))) 'DAYS))
-        ((>= time 3600) (sentence (+ (quotient time 3600) (inexact (/ (remainder time 3600) 3600))) 'HOURS))
-        ((>= time 60) (sentence (+ (quotient time 60) (inexact (/ (remainder time 60) 60))) 'MINUTES))
-        (else (sentence time 'SECONDS))))
+        ((< time 60)  (sentence time 'SECONDS))
+        ; ((>= time 60) )
+        (else (sentence (get-time-floor time) (get-time-measure time) (describe-time12 (- time (* (get-time-floor time) (get-time-multiplier time))))))))
 
 
