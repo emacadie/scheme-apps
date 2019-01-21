@@ -53,7 +53,7 @@
   (display-all "calling disjoint-pairsr with wd: " wd ", and outp: " outp)
   (cond ((empty? wd) (reverse outp) )
 	((= (count wd) 1) (se (reverse outp) wd))
-	(else (disjoint-pairsr (bf (bf wd)) (se (word (first wd) (first (bf wd))) outp )))))
+	(else (disjoint-pairsr (bf (bf wd)) (se (word (first wd) (first (bf wd))) outp)))))
 ;; tail recursive
 (define (disjoint-pairsr2 wd outp)
   (display-all "calling disjoint-pairsr with wd: " wd ", and outp: " outp)
@@ -134,8 +134,7 @@
   (if (empty? sent)
       outp
       ; (word (first sent) (scrunch-words (bf sent)))
-      (scrunch-words-r (bf sent) (word outp (first sent) ))
-))
+      (scrunch-words-r (bf sent) (word outp (first sent)))))
 
 ;; From the text:
 ;; What's the pattern? 
@@ -155,10 +154,9 @@
   (if (= (count sent) 1)
       (first sent)
       ; (max (first sent) (sent-max (bf sent)))
-      (sent-max-r )
-))
+      (sent-max-r )))
 
-;; combing patterns
+;; combining patterns
 (define (add-numbers sent)
   (cond ((empty? sent) 0)
 	    ((number? (first sent))
@@ -210,6 +208,7 @@
 	    (else (acronym-r (bf sent) outp))))
 
 ;; helper procedures
+;; This section says it is okay to have another function be a wrapper to your recursive function.
 (every-nth 3 '(with a little help from my friends))
 ;; defined like this:
 (define (every-nth n sent)
@@ -244,4 +243,141 @@
       (se (apply the-func (first sent))
 	  (every-something (bf sent)))))
 (every-something square '(2 3 4))
+
+;; tail-recursive every
+(define (every-tail-r sent outp)
+  (display-all "calling every-tail-r with sent: " sent ", outp: " outp)
+  (if (empty? sent)
+      outp ;; base case returns output
+      (every-tail-r (bf sent) (se outp (______ (first sent))))))
+
+(define (keep-if-something sent)
+  (cond ((empty? sent) '())
+	((______? (first sent))
+	 (se (first sent) (keep-if-something (bf sent))))
+	(else (keep-if-something (bf sent)))))
+;; tail-recursive keep
+(define (keep-tail-r sent outp)
+  (display-all "keep-tail-r with sent: " sent ", outp: " outp)
+  (cond ((empty? sent) outp)
+        ((______? (first sent))
+         (keep-tail-r (bf sent) (se outp (first sent))))
+        (else (keep-tail-r (bf sent) outp))))
+(define (accumulate-somehow sent)
+  (if (empty? sent)
+      ______
+      (______ (first sent)
+              (accumulate-somehow (bf sent)))))
+;; tail-recursive
+(define (accumulate-r sent outp)
+  (display-all "calling accumulate-r, sent: " sent ", outp: " outp)
+  (if (empty? sent)
+      outp
+      (accumulate-r (bf sent) (word outp (first sent)))))
+
+;; Exercises
+;; Classify each of these problems as a pattern (every, keep, or accumulate), 
+;; if possible, and then write the procedure recursively. 
+;; In some cases we've given an example of invoking the procedure we want you to write, instead of describing it.
+;; I will try to do these with tail-recursion.
+
+;; 14.1  
+;; > (remove-once 'morning '(good morning good morning))
+;; (GOOD GOOD MORNING)
+;; (It's okay if your solution removes the other MORNING instead, as long as it removes only one of them.) 
+;; This is sort of like "keep." The result has one less, so it's not "every", and there is more than one, so it's not "accumulate".
+
+(define (remove-once-r bad-word sent outp)
+  (display-all "calling remove-once-r with bad-word: " bad-word ", sent: " sent ", outp: " outp)
+  (cond ((empty? sent) outp)
+        ((equal? bad-word (first sent)) (sentence outp (butfirst sent)))
+        (else (remove-once-r bad-word (butfirst sent) (sentence  outp (first sent))))))
+
+;;  14.2  
+;; > (up 'town)
+; (T TO TOW TOWN)
+(define (up-r the-word outp)
+  (display-all "calling up-r with the-word: " the-word ", and outp: " outp)
+  (cond ( (= (count the-word) 0) outp)
+        ( (= (count outp) 0) (up-r (butfirst the-word) (sentence (first the-word))))
+        (else (up-r (butfirst the-word) (sentence outp (word (last outp) (first the-word)))))))
+;; This is kind of like every. 
+
+; 14.3  
+; > (remdup '(ob la di ob la da))              ;; remove duplicates
+; (OB LA DI DA)
+; (It's okay if your procedure returns (DI OB LA DA) instead, as long as it removes all but one instance of each duplicated word.)
+;; This is like "keep".
+(define (remove-dup-r sent outp)
+  (display-all "calling up-r with sent: " sent ", and outp: " outp)
+  (cond ((empty? sent) outp)
+        ((> (appearances (last sent) sent) 1) (remove-dup-r (butlast sent) outp))
+        (else (remove-dup-r (butlast sent) (sentence (last sent) outp)))))
+
+;;  14.4  
+;; > (odds '(i lost my little girl))
+;; (I MY GIRL)
+;; This is like "keep" again
+;; This needs a helper
+(define (odds the-sent)
+  (odds-r the-sent '() 1))
+
+(define (odds-r sent outp counter)
+  (display-all "odds are that you are calling odds-r with sent: " sent ", outp: " outp ", counter: " counter)
+  (cond ( (empty? sent) outp)
+        ((odd? counter) (odds-r (butfirst sent) (sentence outp (first sent)) (- counter 1)))
+        (else (odds-r (butfirst sent) outp (- counter 1)))))
+
+;;  14.5  [8.7] Write a procedure letter-count that takes a sentence as its argument and returns the total number of letters in the sentence:
+;; > (letter-count '(fixing a hole))
+;; 11
+;; This one is accumulate.
+;; When calling, set outp to 0
+;; Or make your own helper.
+(define (letter-count-r the-sent outp)
+  (cond ((empty? the-sent) outp)
+        (else (letter-count-r (butfirst the-sent) (+ outp (count (first the-sent)))))))
+
+;; 14.6  Write member?.
+;; This looks like accumulate
+(define (member-r the-word the-sent)
+  (member-r-helper the-word the-sent #f))
+(define (member-r-helper the-word the-sent outp)
+  (display-all "calling member-r-helper with the-word: " the-word ", the-sent: " the-sent ", outp: " outp)
+  (cond ((empty? the-sent) outp)
+        ((equal? the-word (first the-sent)) (member-r-helper the-word '() #t))
+        (else (member-r-helper the-word (butfirst the-sent) #f))))
+
+;; 14.7  Write differences, which takes a sentence of numbers as its argument 
+and returns a sentence containing the differences between adjacent elements. 
+;; (The length of the returned sentence is one less than that of the argument.)
+;; So we do not go all the way through.
+;; > (differences '(4 23 9 87 6 12))
+;; (19 -14 78 -81 6)
+;; Sort of like every
+(define (differences-r the-nums outp)
+  (display-all "calling differences-r with the-nums: " the-nums ", outp: " outp)
+  (cond ((equal? (count the-nums) 1) outp)
+        (else (differences-r (butfirst the-nums) (sentence outp (- (second the-nums) (first the-nums)))))))
+
+;; 14.8  Write expand, which takes a sentence as its argument. 
+;; It returns a sentence similar to the argument, 
+;; except that if a number appears in the argument, 
+;; then the return value contains that many copies of the following word:
+;; > (expand '(4 calling birds 3 french hens))
+;; (CALLING CALLING CALLING CALLING BIRDS FRENCH FRENCH FRENCH HENS)
+;; > (expand '(the 7 samurai))
+;; (THE SAMURAI SAMURAI SAMURAI SAMURAI SAMURAI SAMURAI SAMURAI)
+;; I will have to make a helper function, that can also be recursive.
+(define (print-n-times the-num the-word outp)
+  ; (display-all "calling print-n-times with the-num: " the-num ", the-word: " the-word ", outp: " outp)
+  (cond ((equal? 0 the-num) outp)
+        (else (print-n-times (- the-num 1) the-word (sentence the-word outp)))))
+(define (expand-r the-sent outp)
+  (cond ((equal? (count the-sent) 0) outp)
+        ((number? (first the-sent)) (expand-r (butfirst (butfirst the-sent)) (sentence outp (print-n-times (first the-sent) (second the-sent) '()))))
+        (else (expand-r (butfirst the-sent) (sentence outp (first the-sent))))))
+
+
+
 

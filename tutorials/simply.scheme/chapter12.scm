@@ -248,3 +248,9 @@
 ;; Also, look here: https://stackoverflow.com/questions/13664639/tail-recursive-functions-in-scheme
 ;; https://stackoverflow.com/questions/33923/what-is-tail-recursion
 
+;; A few bits of advice from the text:
+;;  If your function is supposed to return a number, it must return a number all the time, even in the base case. 
+;; You can use this idea to help you check the correctness of the base case expression.
+
+;; If your base case doesn't make sense in its own right, it probably means that you're trying to compensate for a mistake in the recursive case. 
+
