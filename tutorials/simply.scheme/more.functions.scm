@@ -10,7 +10,5 @@
 (define (trim-leading-zeros the-num)
   (if (not (equal? (first the-num) 0))
       the-num
-      (trim-leading-zeros (butfirst the-num))
-)
-)
+      (trim-leading-zeros (butfirst the-num))))
 

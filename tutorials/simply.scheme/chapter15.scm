@@ -150,20 +150,100 @@
 ;; (AADJPMM AADJPMN ...CCFLSOO)
 ;; (We're not showing you all 2187 words in this sentence.) You may assume there are no zeros or ones in the number, since those don't have letters.
 ;; Hint: This problem has a lot in common with the subsets example. 
-(define 2-table '(abc))
-(define 3-table '(def))
-(define 4-table '(ghi))
-(define 5-table '(jkl))
-(define 6-table '(mno))
-(define 7-table '(pqrs))
-(define 8-table '(tuv))
-(define 9-table '(wxyz))
+(define 2-table 'abc)
+(define 3-table 'def)
+(define 4-table 'ghi)
+(define 5-table 'jkl)
+(define 6-table 'mno)
+(define 7-table 'pqrs)
+(define 8-table 'tuv)
+(define 9-table 'wxyz)
 
-(define (phone-spell-r 'the-num outp)
+(define (get-letter root-num place-num)
+  (cond ((equal? root-num 2) (item place-num 2-table))
+        ((equal? root-num 3) (item place-num 3-table))
+        ((equal? root-num 4) (item place-num 4-table))
+        ((equal? root-num 5) (item place-num 5-table))
+        ((equal? root-num 6) (item place-num 6-table))
+        ((equal? root-num 7) (item place-num 7-table))
+        ((equal? root-num 8) (item place-num 8-table))
+        ((equal? root-num 9) (item place-num 9-table))
+        (else root-num)))
+
+(define (get-letter-max num)
+  (if (member? num '79)
+      4
+      3))
+
+(define (phone-spell-r the-num outp)
+  (display-all "calling phone-spell-r with the-num: " the-num ", outp: " outp)
   (cond ((empty? the-num) outp)
+        (else (phone-spell-r (butfirst the-num) 
+                             (sentence outp 
+                                       (get-letter (first the-num) 
+                                                   1))))))
+
+(define (get-first-spelling ph-num outp)
+  (display-all "calling get-first-spelling with ph-num: " ph-num ", outp: " outp)
+  (cond ((empty? ph-num) outp)
+        ;; "word" croaks if you send it an empty list
+        ((empty? outp) (get-first-spelling (butfirst ph-num)
+                                  (word (get-letter (first ph-num) 
+                                                    1))))
+        (else (get-first-spelling (butfirst ph-num)
+                                  (word outp 
+                                        (get-letter (first ph-num) 
+                                                    1))))))
+
+;; (try-something 2254876 aajgtpm  aajgtpm 3 6 '())
+;; returns (aajgtpm aajgtpn aajgtpo)
+(define (try-something orig-nums first-spelling first2 counter digit outp)
+  (display-all "try-something, orig-nums: " orig-nums ", first-spelling: " first-spelling ", first2: " first2 ", counter: " counter ", digit: " digit ", outp: " outp)
+  (cond ((equal? counter 0) outp)
+        (else (try-something orig-nums first-spelling first2 (- counter 1) digit (sentence (word (butlast first2) (get-letter digit counter)) outp)))
 )
+)
+(define (work-on-last-two orig-num))
+(define (phone-spell the-num)
+  (phone-spell-r the-num '())
 )
 
-(define (phone-spell 'the-num)
-  (phone-spell-r 'the-num '()))
+
+;; come back to this later
+;; 15.6  Let's say a gladiator kills a roach. 
+;; If we want to talk about the roach, we say "the roach the gladiator killed." 
+;; But if we want to talk about the gladiator, we say "the gladiator that killed the roach."
+
+;; People are pretty good at understanding even rather long sentences as long as they're straightforward: 
+;; "This is the farmer who kept the cock that waked the priest that married the man that kissed the maiden that milked the cow that tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built." 
+;; But even a short nested sentence is confusing: 
+;; "This is the rat the cat the dog worried killed." 
+;; Which rat was that?
+;; Write a procedure unscramble that takes a nested sentence as argument and returns a straightforward sentence about the same cast of characters:
+;; > (unscramble '(this is the roach the gladiator killed))
+;; (THIS IS THE GLADIATOR THAT KILLED THE ROACH)
+;;> (unscramble '(this is the rat the cat the dog the boy the girl saw owned chased bit))
+;; (THIS IS THE GIRL THAT SAW THE BOY THAT OWNED THE DOG THAT CHASED THE CAT THAT BIT THE RAT)
+;; You may assume that the argument has exactly the structure of these examples, 
+;; with no special cases like "that lay in the house" or "that Jack built."
+
+;; only works for those weird types of sentences
+;; this is the noun3 the noun2 the noun1 verb1 verb2
+(define (unscramble-r the-sent outp)
+  (display-all "unscramble-r with the-sent: " the-sent ", outp: " outp)
+  (cond ((empty? the-sent) outp)
+        ((equal? (count the-sent) 2) (unscramble-r '() 
+                                                   (sentence the-sent outp)))
+        (else (unscramble-r (sentence (butlast (butfirst (butfirst the-sent)))) 
+                            (sentence 'that 
+                                      (last the-sent) 
+                                      (first the-sent) 
+                                      (first (butfirst the-sent)) 
+                                      outp)))))
+
+(define (unscramble the-sent)
+  (sentence (first the-sent) 
+            (first (butfirst the-sent)) 
+            (unscramble-r (sentence (butfirst (butfirst the-sent))) 
+                          '())))
 
