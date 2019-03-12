@@ -256,6 +256,7 @@
 	((______? (first sent))
 	 (se (first sent) (keep-if-something (bf sent))))
 	(else (keep-if-something (bf sent)))))
+
 ;; tail-recursive keep
 (define (keep-tail-r sent outp)
   (display-all "keep-tail-r with sent: " sent ", outp: " outp)
@@ -263,6 +264,7 @@
         ((______? (first sent))
          (keep-tail-r (bf sent) (se outp (first sent))))
         (else (keep-tail-r (bf sent) outp))))
+
 (define (accumulate-somehow sent)
   (if (empty? sent)
       ______

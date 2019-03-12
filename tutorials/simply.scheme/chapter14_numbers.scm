@@ -54,7 +54,8 @@
          (display-all "exponent = 0, at least 2 chars in num, 2nd to last = 1") ;; handles teens
          (number-name-r (butlast (butlast the-num)) 
                         (+ 2 the-exp) 
-                        (sentence (get-teen-table (last the-num)) outp)))
+                        (sentence (get-teen-table (last the-num)) outp)
+                        0))
         ;; do saul and david here (thousands and tens of thousands)
         ;; for exp of anything divisible by 3, treat it like something less that 1000
         ;; and tack "thousand" or "million" on the end as needed
@@ -65,52 +66,62 @@
                         (+ 1 the-exp) 
                         (sentence (item (first the-num) number-table) 
                                   (exponent-helper the-exp 0) 
-                                  outp)))
+                                  outp)
+                        0))
         ((and (member? the-exp '(3 6 9 12)) (equal? (count the-num) 2))
          (display-all "dealing with tens of thousands")
          (number-name-r (butlast (butlast the-num)) 
                         (+ 2 the-exp) 
                         (sentence (number-name-r the-num 
                                                  0 
-                                                 '()) 
+                                                 '()
+                                                 0) 
                                   (exponent-helper the-exp 0) 
-                                  outp)))
+                                  outp)
+                        0))
         ((and (member? the-exp '(3 6 9 12)) (>= (count the-num) 3)) ; (equal? (count the-num) 3)
          (display-all "dealing with hundreds of thousands")
          (number-name-r (butlast (butlast (butlast the-num))) 
                         (+ 3 the-exp) 
                         (sentence (number-name-r (get-last-3 (trim-leading-zeros the-num)) 
                                                  0 
-                                                 '()) 
+                                                 '()
+                                                 0) 
                                   (exponent-helper the-exp 0) 
-                                  outp)))
+                                  outp)
+                        0))
 
        ((equal? (last the-num) 0)
          (display-all "the last part of num is 0")
          (number-name-r (butlast the-num) 
                         (+ 1 the-exp) 
-                        outp))
+                        outp
+                        0))
         ((equal? the-exp 0)
          (display-all "The exp is 0")
          (number-name-r (butlast the-num) 
                         (+ 1 the-exp) 
-                        (sentence (item (last the-num) number-table) outp)))
+                        (sentence (item (last the-num) number-table) outp)
+                        0))
                
         ((member? the-exp '(1)) 
          (display-all "the exponent is a member of '(1)")
          (number-name-r (butlast the-num) 
                         (+ 1 the-exp) 
-                        (sentence (item (last the-num) power-1-table) outp)))
+                        (sentence (item (last the-num) power-1-table) outp)
+                        0))
         (else
          (display-all "in the else")
          (number-name-r (butlast the-num) 
                         (+ 1 the-exp) 
-                        (sentence (item (last the-num) number-table) (exponent-helper the-exp (last the-num)) outp)))))
+                        (sentence (item (last the-num) number-table) (exponent-helper the-exp (last the-num)) outp)
+                        0))))
 
 (define (number-name the-num)
   (number-name-r (trim-leading-zeros (round (abs the-num))) 
                  0 
-                 '()))
+                 '()
+                 0))
 
 ;; Ugly, but done
 ;; I will try to take out the "depth" later

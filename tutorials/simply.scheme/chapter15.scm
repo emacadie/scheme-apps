@@ -200,9 +200,14 @@
 (define (try-something orig-nums first-spelling first2 counter digit outp)
   (display-all "try-something, orig-nums: " orig-nums ", first-spelling: " first-spelling ", first2: " first2 ", counter: " counter ", digit: " digit ", outp: " outp)
   (cond ((equal? counter 0) outp)
-        (else (try-something orig-nums first-spelling first2 (- counter 1) digit (sentence (word (butlast first2) (get-letter digit counter)) outp)))
-)
-)
+        (else (try-something orig-nums first-spelling 
+                             first2 
+                             (- counter 1) 
+                             digit 
+                             (sentence (word (butlast first2) 
+                                             (get-letter digit counter)) 
+                                       outp)))))
+
 (define (work-on-last-two orig-num))
 (define (phone-spell the-num)
   (phone-spell-r the-num '())
