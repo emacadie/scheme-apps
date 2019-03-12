@@ -1,13 +1,11 @@
 ;; break a string into sets of 3
 
-(define (exponent-helper the-ex the-num)
-  (display-all "calling exponent-helper with the-ex: " the-ex ", the-num: " the-num)
-  (cond ((equal? the-ex 0) the-num)
-        ((equal? the-ex 2) 'hundred)
-        ((equal? the-ex 3) 'thousand)
-        ((equal? the-ex 6) '(million))
-        ((equal? the-ex 9) '(billion))
-        ((equal? the-ex 12) '(trillion))))
+(define (exponent-helper group)
+  (display-all "calling exponent-helper with group: " group)
+  (cond ((equal? the-ex 2) 'thousand)
+        ((equal? the-ex 3) '(million))
+        ((equal? the-ex 4) '(billion))
+        ((equal? the-ex 5) '(trillion))))
 ; "item" in Simply Scheme starts counting a list at "1", not "0" like C
 (define number-table '(one two three four five six seven eight nine zero))
 
