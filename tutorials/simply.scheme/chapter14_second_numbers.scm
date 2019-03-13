@@ -1,25 +1,16 @@
 ;; break a string into sets of 3
 
-(define (exponent-helper group)
-  (display-all "calling exponent-helper with group: " group)
-  (cond ((equal? the-ex 2) 'thousand)
-        ((equal? the-ex 3) '(million))
-        ((equal? the-ex 4) '(billion))
-        ((equal? the-ex 5) '(trillion))))
+(define (exponent-helper num group)
+  (cond ((empty? num) '())
+        ((equal? group 1) (sentence num))
+        ((equal? group 2) (sentence num 'thousand))
+        ((equal? group 3) (sentence num 'million))
+        ((equal? group 4) (sentence num 'billion))
+        ((equal? group 5) (sentence num 'trillion))))
 ; "item" in Simply Scheme starts counting a list at "1", not "0" like C
 (define number-table '(one two three four five six seven eight nine zero))
 
-(define teen-table '(eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen))
-
-(define (get-teen-table the-num)
-  (if (equal? the-num 0) 
-      'ten
-      (item the-num teen-table)))
-
 (define power-1-table '(ten twenty thirty forty fifty sixty seventy eighty ninety))
-
-(define (power-1-helper the-num)
-  (item the-num power-1-table))
 
 (define (get-last-3 the-num)
   (word (last (butlast (butlast the-num)))
@@ -34,13 +25,10 @@
 (define (do-string-break num-string num-list)
   (cond ((<= (count num-string) 3)  (sentence num-string num-list))
         (else (do-string-break (butlast (butlast (butlast num-string)))
-                               (sentence (remove-leading-zeros 
-                                          (word (get-last-3 num-string)) 
-                                          "" )
+                               (sentence (remove-leading-zeros (word (get-last-3 num-string)) "")
                                          num-list)))))
 
 (define (get-new-teen-table n)
-  (display-all "get-new-teen-table: " n)
   (cond ((empty? n) 'ten) 
         ((equal? (first n) 'one) 'eleven)
         ((equal? (first n) 'two) 'twelve)
@@ -48,7 +36,6 @@
         (else (word (first n) 'teen))))
 
 (define (num-name2-work num-work output depth)
-  (display-all "num-name2-work with num-work: " num-work ", output: " output ", depth: " depth)
   (cond ((empty? num-work) output)
         ;; skip ending zero
         ((zero? (last num-work)) (num-name2-work (butlast num-work) output (+ 1 depth)))
@@ -59,9 +46,16 @@
         ((equal? depth 3) (num-name2-work (butlast num-work) (sentence (item (last num-work) number-table) 'hundred output) (+ 1 depth)))))
 
 (define (number-name-2 number)
-  (num-name2-work (last (do-string-break (number->string number) '())) 
-                  "" 
-                  1)
-)
-; break into threes
+  (num-name2-work (last (do-string-break (number->string number) '())) "" 1))
+
+(define (grand-num-name-worker the-num outp group)
+  (cond ((empty? the-num) outp)
+        (else (grand-num-name-worker (butlast the-num)
+                                     (sentence (exponent-helper (num-name2-work (last the-num) "" 1) group) outp) 
+                                     (+ 1 group)))))
+
+(define (grand-num-name-caller raw-num)
+  (keep (lambda (x) (not (empty? x)))
+        (grand-num-name-worker (do-string-break (number->string raw-num) '()) "" 1)))
+
 
