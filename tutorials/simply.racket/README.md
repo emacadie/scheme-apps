@@ -60,3 +60,11 @@ To get repl: M-x racket-run
 To run the tests:  
 M-x racket-test  
 
+RACKET_HOME=$HOME/racket/bin
+PATH=$MAVEN_HOME/bin:$JAVA_HOME/bin:/zEKM/android-sdk-linux/tools:$RACKET_HOME:$ANT_HOME/bin:$PATH
+
+
+RACKET_HOME=/cygdrive/c/'Program Files'/Racket
+PATH=$RACKET_HOME:$PATH
+/cygdrive/c/Program Files (x86)/
+
