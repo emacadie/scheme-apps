@@ -1,5 +1,7 @@
 #lang simply-scheme
 
+; Chapter 04: Defining your own procedures
+
 (se (butlast (bf "this"))
     "world")
 
