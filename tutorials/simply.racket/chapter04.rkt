@@ -22,8 +22,7 @@
 (define (fourth x)
     (* x (* x (* x x))))
 
-(define (square x)
-  (* x x))
+
 
 (define (fourth-with-square x)
   (square (square x)))
