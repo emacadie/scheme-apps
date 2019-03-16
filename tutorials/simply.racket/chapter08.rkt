@@ -55,12 +55,7 @@
 ;; It should double all the numbers in the sentence, and it should replace "good" with "great," "bad" with "terrible," and anything else you can think of.
 ;; sounds like every with a dash of cond
 ;; only works with lower-case
-(define (do-great-stuff the-word)
-  (cond [(equal? the-word 'good) 'great]
-        [(equal? the-word 'bad) 'terrible]
-        [(number? the-word) (* 2 the-word)]
-        [else the-word]))
-
+;; do-great-stuff in more-simply
 (define (exaggerate sntnc)
   (every do-great-stuff sntnc))
 
@@ -79,17 +74,8 @@
 ;; 8.11  [12.6] Write a GPA procedure. It should take a sentence of grades as its argument and return the corresponding grade point average:
 ;; Hint: write a helper procedure base-grade that takes a grade as argument and returns 0, 1, 2, 3, or 4, 
 ;; and another helper procedure grade-modifier that returns −.33, 0, or .33, depending on whether the grade has a minus, a plus, or neither.
-(define (base-grade grade)
-  (cond [(equal? (first grade) 'A) 4]
-        [(equal? (first grade) 'B) 3]
-        [(equal? (first grade) 'C) 2]
-        [(equal? (first grade) 'D) 1]
-        [else 0]))
+;; base-grade and modify-grade in more-simply
 
-(define (modify-grade grade)
-  (cond [(equal? (last grade) '+) 0.33]
-        [(equal? (last grade) '-) -0.33]
-        [else 0]))
 
 (define (convert-grade-to-num grade)
   (+ (base-grade grade) (modify-grade grade)))
@@ -108,17 +94,8 @@
 ;; 8.13  [11.3] Write a procedure phone-unspell that takes a spelled version of a phone number, such as POPCORN, 
 ;; and returns the real phone number, in this case 7672676. 
 ;; You will need to write a helper procedure that uses an 8-way cond expression to translate a single letter into a digit.
-(define (phone-letter lttr)
-  (cond [(member? lttr 'abc) 2]
-        [(member? lttr 'def) 3]
-        [(member? lttr 'ghi) 4]
-        [(member? lttr 'jkl) 5]
-        [(member? lttr 'mno) 6]
-        [(member? lttr 'pqrs) 7]
-        [(member? lttr 'tuv) 8]
-        [(member? lttr 'wxyz) 9]
-        [else 0]))
 
+; phone-letter in more-simply, also used in chapter 11
 (define (phone-unspell wd)
   (every phone-letter wd))
 

@@ -1,6 +1,10 @@
 #lang simply-scheme
 
-(provide divisible?
+(provide base-grade
+         divisible?
+         do-great-stuff
+         modify-grade
+         phone-letter
          plural
          simply-second
          square
@@ -8,8 +12,37 @@
 
 ; (module more-simply simply-scheme)
 
+(define (base-grade grade)
+  (cond [(equal? (first grade) 'A) 4]
+        [(equal? (first grade) 'B) 3]
+        [(equal? (first grade) 'C) 2]
+        [(equal? (first grade) 'D) 1]
+        [else 0]))
+
 (define (divisible? big little)
   (= (remainder big little) 0))
+
+(define (do-great-stuff the-word)
+  (cond [(equal? the-word 'good) 'great]
+        [(equal? the-word 'bad) 'terrible]
+        [(number? the-word) (* 2 the-word)]
+        [else the-word]))
+
+(define (modify-grade grade)
+  (cond [(equal? (last grade) '+)  0.33]
+        [(equal? (last grade) '-) -0.33]
+        [else 0]))
+
+(define (phone-letter lttr)
+  (cond [(member? lttr 'abc)  2]
+        [(member? lttr 'def)  3]
+        [(member? lttr 'ghi)  4]
+        [(member? lttr 'jkl)  5]
+        [(member? lttr 'mno)  6]
+        [(member? lttr 'pqrs) 7]
+        [(member? lttr 'tuv)  8]
+        [(member? lttr 'wxyz) 9]
+        [else 0]))
 
 (define (plural-y wd)
   (cond [(vowel? (last (butlast wd))) (word wd 's)]
