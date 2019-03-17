@@ -32,8 +32,8 @@
 ;; This is like "keep".
 (define (remove-dup-r sent outp)
   (cond [(empty? sent) outp]
-        [(> (appearances (last sent) sent) 1) (remove-dup-r (butlast sent) outp)]        [else (remove-dup-r (butlast sent) (sentence (last sent) outp))]
-))
+        [(> (appearances (last sent) sent) 1) (remove-dup-r (butlast sent) outp)]        
+        [else (remove-dup-r (butlast sent) (sentence (last sent) outp))]))
 
 ;;  14.4  
 ;; This is like "keep" again
@@ -150,8 +150,7 @@
 ;   (if (member? (first wd) 'aeiou)
 ;       (word wd 'ay)
 ;      (pigl (word (bf wd) (first wd)))))
-(define (pigl wd)
-  (pigl-r wd '_))
+
 (define (all-consonants? the-word)
   (if (zero? (count (keep vowel? the-word)))
       #t
@@ -160,12 +159,12 @@
 (define (remove-char the-char the-string)
   (keep (lambda (x) (not (equal? the-char x))) the-string))
 
+(define (pigl wd)
+  (remove-char '_ (pigl-r wd '_)))
+
 (define (pigl-r the-word outp)
-  (printf "calling pigl-r with the-word: ~a and outp: ~a \n" the-word outp)
-  (cond [(all-consonants? the-word) 
-         (word the-word 'ay)]
-        [(equal? (count the-word) 0) (keep (lambda (x) (not (equal? '_ x))) outp)]
-        [(member? (first the-word) 'aeiou) (word the-word (remove-char '_ outp) 'ay)]
+  (cond [(all-consonants? the-word) (word the-word 'ay)]
+        [(member? (first the-word) 'aeiou) (word the-word outp 'ay)]
         [else (pigl-r (butfirst the-word) (word outp (first the-word)))]))
 ;; I guess this is keep
 
@@ -173,19 +172,13 @@
 ;; It should return #t if two conditions are met: 
 ;; The two sentences must have the same number of words, 
 ;; and each word of the first sentence must have the same number of letters as the word in the corresponding position in the second sentence.
-;; > (same-shape? '(the fool on the hill) '(you like me too much))
-;; #T
-;; > (same-shape? '(the fool on the hill) '(and your bird can sing))
-;; #F
-;; > (same-shape? '(the fool on the hill) '(you like me too much) #f)
-;; > (same-shape? '(the fool on the hill) '(and your bird can sing) #f)
 ;; not tail-recursive
 (define (same-shape? first-sent second-sent outp)
   ; (display-all "calling same-shape? with first-sent: " first-sent ", second-sent: " second-sent ", outp: " outp)
-  (cond ((not (equal? (count first-sent) (count second-sent))) #f)
-        ((and (empty? first-sent) (empty? second-sent)) outp)
-        ((equal? (count (first first-sent)) (count (first second-sent))) (same-shape? (butfirst first-sent) (butfirst second-sent) #t))
-        (else #f)
+  (cond [(not (equal? (count first-sent) (count second-sent))) #f]
+        [(and (empty? first-sent) (empty? second-sent)) outp]
+        [(equal? (count (first first-sent)) (count (first second-sent))) (same-shape? (butfirst first-sent) (butfirst second-sent) #t)]
+        [else #f]
 ))
 ;; This is accumulate
 
@@ -201,13 +194,13 @@
 ;; (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '())
 ;; not tail recursive, lots of conditions
 (define (merge-r nums-a nums-b outp)
-  ; (display-all "calling merge-r with nums-a: " nums-a ", nums-b: " nums-b ", outp: " outp)
-  (cond ((and (empty? nums-a) (empty? nums-b)) outp)
-        ((empty? nums-a) (sentence outp nums-b))
-        ((empty? nums-b) (sentence outp nums-a))
-        ((< (first nums-a) (first nums-b)) (merge-r (butfirst nums-a) nums-b (sentence outp (first nums-a))))
-        ((< (first nums-b) (first nums-a)) (merge-r nums-a (butfirst nums-b) (sentence outp (first nums-b))))
-        (else outp)))
+  (cond [(and (empty? nums-a) (empty? nums-b)) outp]
+        [(empty? nums-a) (sentence outp nums-b)]
+        [(empty? nums-b) (sentence outp nums-a)]
+        [(< (first nums-a) (first nums-b)) (merge-r (butfirst nums-a) nums-b (sentence outp (first nums-a)))]
+        [(< (first nums-b) (first nums-a)) (merge-r nums-a (butfirst nums-b) (sentence outp (first nums-b)))]
+        [else outp]
+))
 
 ;; 14.16  Write a procedure syllables that takes a word as its argument and returns the number of syllables in the word, 
 ;; counted according to the following rule: 
@@ -232,10 +225,10 @@
 ;; call like this: (syllables-r 'some-word 0)
 (define (syllables-r the-word outp)
   ; (display-all "calling syllables-r with the-word: " the-word ", outp: " outp)
-  (cond ((or (empty? the-word) (equal? (count the-word) 1)) outp)
-        ((and (vowel? (first the-word)) (not (vowel? (first (butfirst the-word))))) (syllables-r (butfirst the-word) (+ 1 outp)))
+  (cond [(or (empty? the-word) (equal? (count the-word) 1)) outp]
+        [(and (vowel? (first the-word)) (not (vowel? (first (butfirst the-word))))) (syllables-r (butfirst the-word) (+ 1 outp))]
         ; ((and (not (vowel? (first the-word))) (vowel? (first (butfirst the-word)))) (syllables-r (butfirst the-word) (+ 1 outp)))
-        (else (syllables-r (butfirst the-word) outp))))
+        [else (syllables-r (butfirst the-word) outp)]))
 
 (module+ test
   (require rackunit)
@@ -295,16 +288,29 @@
   (printf "(progressive-squares? '(25 36 49 64)): ~a \n" (progressive-squares? '(25 36 49 64)))
   (check-equal? (progressive-squares? '(25 36 49 64)) #f "Error for: (progressive-squares? '(25 36 49 64))")
 
-  (printf "(pigl-r 'frzzmlpt): ~a \n" (pigl-r 'frzzmlpt '()))
-  (check-equal? (pigl-r 'frzzmlpt '()) 'frzzmlptay "Error for: (pigl 'frzzmlpt)")
+  (printf "(pigl 'frzzmlpt): ~a \n" (pigl 'frzzmlpt))
+  (check-equal? (pigl 'frzzmlpt) 'frzzmlptay "Error for: (pigl 'frzzmlpt)")
+  (printf "(pigl 'proper): ~a \n" (pigl 'proper))
+  (check-equal? (pigl 'proper) 'operpray "Error for: (pigl 'proper)")
+  (printf "(same-shape? '(the fool on the hill) '(you like me too much) #f): ~a \n"
+          (same-shape? '(the fool on the hill) '(you like me too much) #f))
+  (check-equal? (same-shape? '(the fool on the hill) '(you like me too much) #f) 
+                #t 
+                "Error for: (same-shape? '(the fool on the hill) '(you like me too much) #f)")
+  (printf "(same-shape? '(the fool on the hill) '(and your bird can sing) #f): ~a \n" (same-shape? '(the fool on the hill) '(and your bird can sing) #f)  )
+  (check-equal? (same-shape? '(the fool on the hill) '(and your bird can sing) #f) 
+                #f 
+                "Error for: (same-shape? '(the fool on the hill) '(and your bird can sing) #f)  ")
+
+  (printf "(merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '()): ~a \n" (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '()))
+  (check-equal? (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '()) 
+                '(3 4 6 7 9 12 18 24 36 40 50 99) 
+                "Error for: (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '())")
   ; (printf " : ~a \n"  )
   ; (check-equal?  "Error for: ")
 
 ) ;; end module+ test 
   ; (printf " : ~a \n"  )
   ; (check-equal?  "Error for: ")
-;; 14.13  What does the pigl procedure from Chapter 11 do if you invoke it with a word like "
-;" that has no vowels? 
-;; It goes in an infinite loop
-;; Fix it so that it returns "frzzmlptay."
+
 
