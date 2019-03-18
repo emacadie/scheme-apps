@@ -1,6 +1,7 @@
 #lang simply-scheme
 
 (provide base-grade
+         display-all
          divisible?
          do-great-stuff
          modify-grade
@@ -18,6 +19,10 @@
         [(equal? (first grade) 'C) 2]
         [(equal? (first grade) 'D) 1]
         [else 0]))
+
+(define (display-all . vs)
+  (for-each display vs)
+  (newline))
 
 (define (divisible? big little)
   (= (remainder big little) 0))

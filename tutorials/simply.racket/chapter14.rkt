@@ -199,8 +199,7 @@
         [(empty? nums-b) (sentence outp nums-a)]
         [(< (first nums-a) (first nums-b)) (merge-r (butfirst nums-a) nums-b (sentence outp (first nums-a)))]
         [(< (first nums-b) (first nums-a)) (merge-r nums-a (butfirst nums-b) (sentence outp (first nums-b)))]
-        [else outp]
-))
+        [else outp]))
 
 ;; 14.16  Write a procedure syllables that takes a word as its argument and returns the number of syllables in the word, 
 ;; counted according to the following rule: 
@@ -227,7 +226,7 @@
   ; (display-all "calling syllables-r with the-word: " the-word ", outp: " outp)
   (cond [(or (empty? the-word) (equal? (count the-word) 1)) outp]
         [(and (vowel? (first the-word)) (not (vowel? (first (butfirst the-word))))) (syllables-r (butfirst the-word) (+ 1 outp))]
-        ; ((and (not (vowel? (first the-word))) (vowel? (first (butfirst the-word)))) (syllables-r (butfirst the-word) (+ 1 outp)))
+        ((and (not (vowel? (first the-word))) (vowel? (first (butfirst the-word)))) (syllables-r (butfirst the-word) (+ 1 outp)))
         [else (syllables-r (butfirst the-word) outp)]))
 
 (module+ test
@@ -306,11 +305,11 @@
   (check-equal? (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '()) 
                 '(3 4 6 7 9 12 18 24 36 40 50 99) 
                 "Error for: (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '())")
-  ; (printf " : ~a \n"  )
+  ; (printf ": ~a \n"  )
   ; (check-equal?  "Error for: ")
 
 ) ;; end module+ test 
-  ; (printf " : ~a \n"  )
+  ; (printf ": ~a \n"  )
   ; (check-equal?  "Error for: ")
 
 
