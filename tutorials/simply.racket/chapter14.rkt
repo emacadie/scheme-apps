@@ -178,8 +178,7 @@
   (cond [(not (equal? (count first-sent) (count second-sent))) #f]
         [(and (empty? first-sent) (empty? second-sent)) outp]
         [(equal? (count (first first-sent)) (count (first second-sent))) (same-shape? (butfirst first-sent) (butfirst second-sent) #t)]
-        [else #f]
-))
+        [else #f]))
 ;; This is accumulate
 
 ;; 14.15  Write merge, a procedure that takes two sentences of numbers as arguments. 

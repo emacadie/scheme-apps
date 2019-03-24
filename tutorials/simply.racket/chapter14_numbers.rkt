@@ -89,6 +89,17 @@
   (check-true #t)
   ; (printf "(who '(sells out)): ~a \n" (who '(sells out)))
   ; (check-equal? (who '(sells out)) '(pete sells out roger sells out john sells out keith sells out) "Error for (who '(sells out))")
+
+  (printf "(do-string-break \"12345\" '()): ~a \n" (do-string-break "12345" '()))
+  (check-equal? (do-string-break "12345" '()) 
+                '(12 345)
+                "Error for: (do-string-break \"12345\" '())")
+
+  (printf "(get-last-3 '4567): ~a \n" (get-last-3 '4567))
+  (check-equal? (get-last-3 '4567) 
+                567 
+                "Error for: (get-last-3 '4567)")
+
   (printf "(grand-num-name-caller 1428425): ~a \n" (grand-num-name-caller 1428425))
   (check-equal? (grand-num-name-caller 1428425) 
                 '(one million four hundred twenty eight thousand four hundred twenty five)  
