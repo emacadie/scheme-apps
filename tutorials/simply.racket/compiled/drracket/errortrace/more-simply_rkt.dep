@@ -1,0 +1,1 @@
+("6.9" ("6b2816f25b6c9a8ea94ecdef55dec058f0c93091" . "76325d8cd1b85652799ace1e49498c41e115259b") (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"simply-scheme" #"lang" #"reader.rkt") (collects #"simply-scheme" #"main.rkt"))

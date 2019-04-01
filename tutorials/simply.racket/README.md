@@ -63,8 +63,14 @@ M-x racket-test
 RACKET_HOME=$HOME/racket/bin
 PATH=$MAVEN_HOME/bin:$JAVA_HOME/bin:/zEKM/android-sdk-linux/tools:$RACKET_HOME:$ANT_HOME/bin:$PATH
 
-
+```batchfile
 RACKET_HOME=/cygdrive/c/'Program Files'/Racket
 PATH=$RACKET_HOME:$PATH
-/cygdrive/c/Program Files (x86)/
+```
+
+Or try this:
+```batchfile
+set RACKET_HOME=C:\Program Files\Racket
+PATH=%RACKET_HOME%;%PATH%
+```
 
