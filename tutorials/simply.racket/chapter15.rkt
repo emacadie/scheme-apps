@@ -251,6 +251,11 @@
   (check-true #t)
   ; (printf "(who '(sells out)): ~a \n" (who '(sells out)))
   ; (check-equal? (who '(sells out)) '(pete sells out roger sells out john sells out keith sells out) "Error for (who '(sells out))")
+  (printf "(get-all-powers-of-2 33 '()): ~a \n" (get-all-powers-of-2 33 '()))
+  (check-equal? (get-all-powers-of-2 33 '()) '(1 6) "Error for: (get-all-powers-of-2 33 '())")
+  (printf "(closest-power-of-2 22 0): ~a \n" (closest-power-of-2 22 0))
+  (check-equal? (closest-power-of-2 22 0) 4 "Error for (closest-power-of-2 22 0)")
+
   (printf "(to-binary 9): ~a \n" (to-binary 9))
   (check-equal? (to-binary 9) 1001 "Error for: (to-binary 9)")
   (printf "(to-binary 23): ~a \n" (to-binary 23))
