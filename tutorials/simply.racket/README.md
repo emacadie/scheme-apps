@@ -74,3 +74,7 @@ set RACKET_HOME=C:\Program Files\Racket
 PATH=%RACKET_HOME%;%PATH%
 ```
 
+To put multiple expressions in a conditional/if branch: Use begin, not do   
+https://stackoverflow.com/questions/11263359/is-there-a-possibility-of-multiple-statements-inside-a-conditional-statements-b
+
+
