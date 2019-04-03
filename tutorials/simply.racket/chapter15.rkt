@@ -18,6 +18,11 @@
 ;; I don't know what this says about me, but I have already come across that. 
 ;; Perhaps because I am trying to make everything tail-recursive.
 
+;; more words of wisdom from the text:
+;; You may be thinking that you never would have thought of that yourself. 
+;; But we're just following the method: 
+;; Look at the smaller case and see how it fits into the original problem.
+
 ;; 15.1  Write a procedure to-binary:
 ; > (to-binary 9)
 ;; 1001
@@ -157,54 +162,67 @@
 (define 8-table 'tuv)
 (define 9-table 'wxyz)
 
-(define (get-letter root-num place-num)
-  (cond ((equal? root-num 2) (item place-num 2-table))
-        ((equal? root-num 3) (item place-num 3-table))
-        ((equal? root-num 4) (item place-num 4-table))
-        ((equal? root-num 5) (item place-num 5-table))
-        ((equal? root-num 6) (item place-num 6-table))
-        ((equal? root-num 7) (item place-num 7-table))
-        ((equal? root-num 8) (item place-num 8-table))
-        ((equal? root-num 9) (item place-num 9-table))
-        (else root-num)))
-
 (define (get-letter-max num)
   (if (member? num '79)
       4
       3))
 
+(define (get-letter root-num place-in-table)
+  (cond [(not (number? place-in-table)) root-num]
+        [(not (positive? place-in-table)) root-num]
+        [(> place-in-table (get-letter-max root-num)) root-num ]
+        [(equal? root-num 2) (item place-in-table 2-table)]
+        [(equal? root-num 3) (item place-in-table 3-table)]
+        [(equal? root-num 4) (item place-in-table 4-table)]
+        [(equal? root-num 5) (item place-in-table 5-table)]
+        [(equal? root-num 6) (item place-in-table 6-table)]
+        [(equal? root-num 7) (item place-in-table 7-table)]
+        [(equal? root-num 8) (item place-in-table 8-table)]
+        [(equal? root-num 9) (item place-in-table 9-table)]
+        [else root-num]))
+;; gotta be recursive
+(define (for-one-number the-num place '())
+  (cond []
+)
+  
+)
+
+(define (get-first-list first-num)
+  
+)
+
 (define (phone-spell-r the-num outp)
   (display-all "calling phone-spell-r with the-num: " the-num ", outp: " outp)
-  (cond ((empty? the-num) outp)
-        (else (phone-spell-r (butfirst the-num) 
+  (cond [(empty? the-num) outp]
+        [else (phone-spell-r (butfirst the-num) 
                              (sentence outp 
                                        (get-letter (first the-num) 
-                                                   1))))))
+                                                   1)))]))
 
 (define (get-first-spelling ph-num outp)
   (display-all "calling get-first-spelling with ph-num: " ph-num ", outp: " outp)
-  (cond ((empty? ph-num) outp)
+  (cond [(empty? ph-num) outp]
         ;; "word" croaks if you send it an empty list
-        ((empty? outp) (get-first-spelling (butfirst ph-num)
+        [(empty? outp) (get-first-spelling (butfirst ph-num)
                                   (word (get-letter (first ph-num) 
-                                                    1))))
-        (else (get-first-spelling (butfirst ph-num)
+                                                    1)))]
+        [else (get-first-spelling (butfirst ph-num)
                                   (word outp 
                                         (get-letter (first ph-num) 
-                                                    1))))))
+                                                    1)))]))
 
 ;; (try-something 2254876 aajgtpm  aajgtpm 3 6 '())
 ;; returns (aajgtpm aajgtpn aajgtpo)
 (define (try-something orig-nums first-spelling first2 counter digit outp)
   (display-all "try-something, orig-nums: " orig-nums ", first-spelling: " first-spelling ", first2: " first2 ", counter: " counter ", digit: " digit ", outp: " outp)
-  (cond ((equal? counter 0) outp)
-        (else (try-something orig-nums first-spelling 
+  (cond [(equal? counter 0) outp]
+        [else (try-something orig-nums first-spelling 
                              first2 
                              (- counter 1) 
                              digit 
                              (sentence (word (butlast first2) 
                                              (get-letter digit counter)) 
-                                       outp)))))
+                                       outp))]))
 
 ; (define (work-on-last-two orig-num))
 (define (phone-spell the-num)
@@ -218,11 +236,14 @@
 ;; But if we want to talk about the gladiator, we say "the gladiator that killed the roach."
 
 ;; People are pretty good at understanding even rather long sentences as long as they're straightforward: 
-;; "This is the farmer who kept the cock that waked the priest that married the man that kissed the maiden that milked the cow that tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built." 
+;; "This is the farmer who kept the cock that waked the priest that married the man that kissed 
+;; the maiden that milked the cow that tossed the dog that worried the cat that killed the rat 
+;; that ate the malt that lay in the house that Jack built." 
 ;; But even a short nested sentence is confusing: 
 ;; "This is the rat the cat the dog worried killed." 
 ;; Which rat was that?
-;; Write a procedure unscramble that takes a nested sentence as argument and returns a straightforward sentence about the same cast of characters:
+;; Write a procedure unscramble that takes a nested sentence as argument and returns 
+;; a straightforward sentence about the same cast of characters:
 ;; You may assume that the argument has exactly the structure of these examples, 
 ;; with no special cases like "that lay in the house" or "that Jack built."
 
@@ -230,15 +251,14 @@
 ;; this is the noun3 the noun2 the noun1 verb1 verb2
 (define (unscramble-r the-sent outp)
   ; (display-all "unscramble-r with the-sent: " the-sent ", outp: " outp)
-  (cond ((empty? the-sent) outp)
-        ((equal? (count the-sent) 2) (unscramble-r '() 
-                                                   (sentence the-sent outp)))
-        (else (unscramble-r (sentence (butlast (butfirst (butfirst the-sent)))) 
+  (cond [(empty? the-sent) outp]
+        [(equal? (count the-sent) 2) (unscramble-r '() (sentence the-sent outp))]
+        [else (unscramble-r (sentence (butlast (butfirst (butfirst the-sent)))) 
                             (sentence 'that 
                                       (last the-sent) 
                                       (first the-sent) 
                                       (first (butfirst the-sent)) 
-                                      outp)))))
+                                      outp))]))
 
 (define (unscramble the-sent)
   (sentence (first the-sent) 
@@ -251,6 +271,11 @@
   (check-true #t)
   ; (printf "(who '(sells out)): ~a \n" (who '(sells out)))
   ; (check-equal? (who '(sells out)) '(pete sells out roger sells out john sells out keith sells out) "Error for (who '(sells out))")
+  (printf "(get-all-powers-of-2 33 '()): ~a \n" (get-all-powers-of-2 33 '()))
+  (check-equal? (get-all-powers-of-2 33 '()) '(1 6) "Error for: (get-all-powers-of-2 33 '())")
+  (printf "(closest-power-of-2 22 0): ~a \n" (closest-power-of-2 22 0))
+  (check-equal? (closest-power-of-2 22 0) 4 "Error for (closest-power-of-2 22 0)")
+
   (printf "(to-binary 9): ~a \n" (to-binary 9))
   (check-equal? (to-binary 9) 1001 "Error for: (to-binary 9)")
   (printf "(to-binary 23): ~a \n" (to-binary 23))
