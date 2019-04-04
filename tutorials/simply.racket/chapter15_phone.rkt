@@ -205,13 +205,13 @@
 (define (phone-spell the-num)
   (phone-spell-r the-num '())
 )
-
-; (build-num-ltter-map 2345678 '())
-(define (build-num-ltter-map the-num outp)
-  (cond [(empty? the-num) outp]
-        [else (build-num-ltter-map (butfirst the-num) (sentence outp (table-item (first the-num))))]))
-
+; line 208
 ;; try with some higher-order functions, then convert
+; (first-combine 'a 'def)
+; (first-combine 'a '(def ghi))
+;; combines a list with a letter
+(define (first-combine lttr list-b)
+  (every (lambda (x) (word x lttr)) list-b))
 ;; combine abc with def
 ; (higher-combine 'abc 'def)
 ; (higher-combine 'abc '(def jgk))
@@ -219,14 +219,33 @@
 ;; (higher-combine (higher-combine (higher-combine (higher-combine (higher-combine (higher-combine 'def 'mno) 'wxyz) 'wxyz) 'def) 'jkl) 'mno)
 
 (define (higher-combine list-a list-b)
-  (every (lambda (x) (first-combine x list-a))  list-b)
-)
-; (first-combine 'a 'def)
-; (first-combine 'a '(def ghi))
-;; combines a list with a letter
-(define (first-combine lttr list-b)
-  (every (lambda (x) (word x lttr)) list-b)
-)
+  (every (lambda (x) (first-combine x list-a)) list-b))
+
+; (build-num-lttr-list 2345678 '())
+;; returns '(abc def ghi jkl mno pqrs tuv)
+(define (build-num-lttr-list the-num outp)
+  (cond [(empty? the-num) outp]
+        [else (build-num-lttr-list (butfirst the-num) 
+                                   (sentence outp 
+                                             (table-item (first the-num))))]))
+;; get a list from build-num-lttr-list
+; (try-phone-with-higher (build-num-lttr-list 2345678 '()) '())
+(define (try-phone-with-higher lttr-list outp)
+  (cond [(empty? lttr-list) outp]
+        [(empty? outp) (try-phone-with-higher (butfirst (butfirst lttr-list)) 
+                                              (higher-combine (first lttr-list) 
+                                                              (simply-second lttr-list)))]
+        [else (try-phone-with-higher (butfirst lttr-list) 
+                                     (higher-combine outp 
+                                                     (first lttr-list)))]))
+;; call this
+(define (first-phone-spell pnum)
+  (try-phone-with-higher (build-num-lttr-list pnum '()) '()))
+;; same number of results as the other person, 
+;; but although it took me a while,
+;; according to githib they gave up and came back six years later
+;; although they did adhere to the text's solution better
+
 
 (module+ test
   (require rackunit)
