@@ -83,9 +83,12 @@
 ;; Hint: This problem has a lot in common with the subsets example. 
 (define big-table '(1 'abc 'def 'ghi 'jkl 'mno 'pqrs 'tuv 'wxyz))
 (define (table-item num)
-  (cond [(equal? num 0) 0]
-        [(member? num '123456789) (item num big-table) ]
+  (cond [(member? num '01) num]
+        [(member? num '123456789) (item 2 (item num big-table)) ]
         [else 0]))
+
+
+
 (define 2-table 'abc)
 (define 3-table 'def)
 (define 4-table 'ghi)
@@ -136,7 +139,7 @@
                               (sentence outp 
                                         (word input 
                                               (get-letter num num-place))))]))
-
+; (spell-phone-num 2345678 0 '() '())
 (define (spell-phone-num pnum num input outp)
   (cond [(empty? pnum) outp] 
         [(empty? outp) (spell-phone-num (butfirst pnum) 
@@ -149,9 +152,12 @@
                                (sentence outp (get-letter-list (first pnum) 
                                                                1 
                                                                (first outp) 
-                                                               '() ))
-)]
-                       
+                                                               '() )))]))
+;; combine 'abc and 'abc
+;; (combine-two-lists)
+(define (combine-two-lists first-list outp)
+  (cond [(empty? first-list) outp]
+        [else (combine-two-lists (butfirst first-list))]
 )
 )
 
@@ -200,6 +206,27 @@
   (phone-spell-r the-num '())
 )
 
+; (build-num-ltter-map 2345678 '())
+(define (build-num-ltter-map the-num outp)
+  (cond [(empty? the-num) outp]
+        [else (build-num-ltter-map (butfirst the-num) (sentence outp (table-item (first the-num))))]))
+
+;; try with some higher-order functions, then convert
+;; combine abc with def
+; (higher-combine 'abc 'def)
+; (higher-combine 'abc '(def jgk))
+; (higher-combine (higher-combine (higher-combine 'def 'mno) 'wxyz) 'wxyz)
+;; (higher-combine (higher-combine (higher-combine (higher-combine (higher-combine (higher-combine 'def 'mno) 'wxyz) 'wxyz) 'def) 'jkl) 'mno)
+
+(define (higher-combine list-a list-b)
+  (every (lambda (x) (first-combine x list-a))  list-b)
+)
+; (first-combine 'a 'def)
+; (first-combine 'a '(def ghi))
+;; combines a list with a letter
+(define (first-combine lttr list-b)
+  (every (lambda (x) (word x lttr)) list-b)
+)
 
 (module+ test
   (require rackunit)
