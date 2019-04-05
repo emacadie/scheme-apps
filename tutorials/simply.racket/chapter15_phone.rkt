@@ -62,14 +62,14 @@
   (every (lambda (x) (first-combine x list-a)) list-b))
 
 ; (higher-combine-r 'abc 'def '())
-(define (higher-combine-r list-a list-b outp)
+(define (recurs-combine list-a list-b outp)
   (if (empty? list-b)
       outp ;; base case returns output
-      (higher-combine-r list-a 
-                        (bf list-b) 
-                        (se outp 
-                            (first-combine (first list-b) 
-                                           list-a )))))
+      (recurs-combine list-a 
+                      (bf list-b) 
+                      (se outp 
+                          (first-combine-r (first list-b) 
+                                           list-a '() )))))
 
 ; (build-num-lttr-list 2345678 '())
 ;; returns '(abc def ghi jkl mno pqrs tuv)
@@ -88,7 +88,20 @@
         [else (try-phone-with-higher (butfirst lttr-list) 
                                      (higher-combine outp 
                                                      (first lttr-list)))]))
-;; call this
+
+;; get a list from build-num-lttr-list
+; (try-phone-with-recursion (build-num-lttr-list 2345678 '()) '())
+(define (try-phone-with-recursion lttr-list outp)
+  (cond [(empty? lttr-list) outp]
+        [(empty? outp) (try-phone-with-recursion (butfirst (butfirst lttr-list)) 
+                                                 (recurs-combine (first lttr-list) 
+                                                                 (simply-second lttr-list)
+                                                                 '()))]
+        [else (try-phone-with-recursion (butfirst lttr-list) 
+                                        (recurs-combine outp 
+                                                        (first lttr-list)
+                                                        '()))]))
+;; Call this
 ;; (first-phone-spell 1234567)
 (define (first-phone-spell pnum)
   (try-phone-with-higher (build-num-lttr-list pnum '()) '()))
@@ -96,6 +109,38 @@
 ;; but although it took me a while,
 ;; according to githib they gave up and came back six years later
 ;; although they did follow the text's recommendation better
+
+;; their solution
+;; from https://github.com/buntine/Simply-Scheme-Exercises/blob/master/15-advanced-recursion/15-5.scm
+(define (letters-o n)
+  (cond ((= n 2) (se 'a 'b 'c))
+        ((= n 3) (se 'd 'e 'f))
+        ((= n 4) (se 'g 'h 'i))
+        ((= n 5) (se 'j 'k 'l))
+        ((= n 6) (se 'm 'n 'o))
+        ((= n 7) (se 'p 'q 'r 's))
+        ((= n 8) (se 't 'u 'v))
+        ((= n 9) (se 'w 'x 'y 'z))
+        (else n)))
+
+(define (prepend-every-o letter sent)
+  (if (empty? sent)
+      '()
+      (se (word letter (first sent))
+          (prepend-every-o letter (bf sent)))))
+
+(define (prepend-each-o a b)
+  (if (empty? a)
+    '()
+    (se (prepend-each-o (bf a) b)
+        (prepend-every-o (first a) b))))
+
+(define (phone-spell-o n)
+  (if (empty? n)
+    (se "")
+    (se
+      (prepend-each-o (letters-o (first n))
+                      (phone-spell-o (bf n))))))
 
 (module+ test
   (require rackunit)
@@ -121,10 +166,10 @@
   (check-equal? (higher-combine 'abc 'def) '(ad bd cd ae be ce af bf cf) "Error for: (higher-combine 'abc 'def)")
   (printf "(higher-combine 'abc '(def jgk)): ~a \n" (higher-combine 'abc '(def jgk)))
   (check-equal? (higher-combine 'abc '(def jgk)) '(adef bdef cdef ajgk bjgk cjgk)  "Error for: (higher-combine 'abc '(def jgk))")
-  (printf "(higher-combine-r 'abc 'def '()): ~a \n" (higher-combine-r 'abc 'def '()))
-  (check-equal? (higher-combine-r 'abc 'def '()) '(ad bd cd ae be ce af bf cf) "Error for: (higher-combine-r 'abc 'def '())")
-  (printf "(higher-combine-r 'abc '(def jgk)'()): ~a \n" (higher-combine-r 'abc '(def jgk)'()))
-  (check-equal? (higher-combine-r 'abc '(def jgk)'()) '(adef bdef cdef ajgk bjgk cjgk) "Error for: (higher-combine-r 'abc '(def jgk)'())")
+  (printf "(recurs-combine 'abc 'def '()): ~a \n" (recurs-combine 'abc 'def '()))
+  (check-equal? (recurs-combine 'abc 'def '()) '(ad bd cd ae be ce af bf cf) "Error for: (recurs-combine 'abc 'def '())")
+  (printf "(recurs-combine 'abc '(def jgk)'()): ~a \n" (recurs-combine 'abc '(def jgk)'()))
+  (check-equal? (recurs-combine 'abc '(def jgk)'()) '(adef bdef cdef ajgk bjgk cjgk) "Error for: (recurs-combine 'abc '(def jgk)'())")
 
   (printf "(build-num-lttr-list 2345678 '()): ~a \n" (build-num-lttr-list 2345678 '()))
   (check-equal? (build-num-lttr-list 2345678 '()) '(abc def ghi jkl mno pqrs tuv) "Error for: (build-num-lttr-list 2345678 '())")
@@ -3051,6 +3096,31 @@ begjopv
   cfilosv)
                 "Error for: (try-phone-with-higher (build-num-lttr-list 2345678 '()) '())")
 
+(define start-my-phone-h (current-inexact-milliseconds))
+(define my-list-h (try-phone-with-higher (build-num-lttr-list 2345678 '()) '())) 
+(define stop-my-phone-h (current-inexact-milliseconds))
+
+(define start-my-phone-r (current-inexact-milliseconds))
+(define my-list-r (try-phone-with-recursion (build-num-lttr-list 2345678 '()) '())) 
+(define stop-my-phone-r (current-inexact-milliseconds))
+(define start-their-phone (current-inexact-milliseconds))
+(define their-list (phone-spell-o 2345678))
+(define stop-their-phone (current-inexact-milliseconds))
+
+(printf "My start time h:  ~a, my stop time h:  ~a\n" start-my-phone-h stop-my-phone-h)
+(printf "My start time r:  ~a, my stop time r:  ~a\n" start-my-phone-r stop-my-phone-r)
+(printf "Their start time: ~a, their stop time: ~a\n" start-their-phone stop-their-phone)
+(printf "My execution time h:  ~a \n" (- stop-my-phone-h start-my-phone-h))
+(printf "My execution time r:  ~a \n" (- stop-my-phone-r start-my-phone-r))
+(printf "Their execution time: ~a \n" (- stop-their-phone start-their-phone))
+;; I don't know how accurate this is. Usually theirs is a bit faster (like 690 ms vs 710 ms).
+;; But sometimes mine comes in at 750 ms and theirs at 800 ms.
+;; those times are with printing the list to the screen
+;; Put it in a value, it's more like 45 to 47 ms
+;; Again, theirs is usually a bit faster, but not by much.
+;; Doing this: (try-phone-with-higher (build-num-lttr-list 2345678 '()) '())
+;; seems a bit faster than calling build-num-lttr-list, putting it in a value,
+;; and calling try-phone-with-higher using the value
   ; (printf ": ~a \n" )
   ; (check-equal?  "Error for: ")
 
