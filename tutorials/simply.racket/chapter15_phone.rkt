@@ -123,24 +123,54 @@
         ((= n 9) (se 'w 'x 'y 'z))
         (else n)))
 
+; (prepend-every-o 'q '(well how are you))
+; gives: '(qwell qhow qare qyou)
 (define (prepend-every-o letter sent)
   (if (empty? sent)
       '()
       (se (word letter (first sent))
           (prepend-every-o letter (bf sent)))))
-
+;; (prepend-each-o '(hey- man-) '(how are you))
+;; '(man-how man-are man-you hey-how hey-are hey-you)
 (define (prepend-each-o a b)
   (if (empty? a)
     '()
     (se (prepend-each-o (bf a) b)
         (prepend-every-o (first a) b))))
-
+;; Not tail recursive, I do not think it can be tail recursive.
 (define (phone-spell-o n)
   (if (empty? n)
     (se "")
     (se
       (prepend-each-o (letters-o (first n))
                       (phone-spell-o (bf n))))))
+
+;; convert theirs to tail recursive
+;; (prepend-every-r 'q '(well how are you) '())
+;; gives '(qwell qhow qare qyou)
+(define (prepend-every-r letter sent outp)
+  (if (empty? sent)
+      outp
+      (prepend-every-r letter (bf sent) (se outp (word letter (first sent))))))
+;; (prepend-each-r '(hey- man-) '(how are you) '())
+;; gives '(man-how man-are man-you hey-how hey-are hey-you)
+(define (prepend-each-r a b outp)
+  (if (empty? a)
+    outp
+    (se (prepend-each-r (bf a) b outp)
+        (prepend-every-r (first a) b '()))))
+
+(define (phone-spell-r n outp)
+  (if (empty? n)
+    outp
+    (phone-spell-r (bf n) (se (prepend-each-r (letters-o (first n)) (bf n) outp))
+                   )
+    ;(se     
+    ;  (prepend-each-r (letters-o (first n))
+    ;                  (phone-spell-r (bf n) '())
+    ;                  outp))
+))  
+;; I can't get this to work. So maybe I don't get the text's recommendation.
 
 (module+ test
   (require rackunit)
@@ -3096,15 +3126,17 @@ begjopv
   cfilosv)
                 "Error for: (try-phone-with-higher (build-num-lttr-list 2345678 '()) '())")
 
+(define p-num 2345678)
+
 (define start-my-phone-h (current-inexact-milliseconds))
-(define my-list-h (try-phone-with-higher (build-num-lttr-list 2345678 '()) '())) 
+(define my-list-h (try-phone-with-higher (build-num-lttr-list p-num '()) '())) 
 (define stop-my-phone-h (current-inexact-milliseconds))
 
 (define start-my-phone-r (current-inexact-milliseconds))
-(define my-list-r (try-phone-with-recursion (build-num-lttr-list 2345678 '()) '())) 
+(define my-list-r (try-phone-with-recursion (build-num-lttr-list p-num '()) '())) 
 (define stop-my-phone-r (current-inexact-milliseconds))
 (define start-their-phone (current-inexact-milliseconds))
-(define their-list (phone-spell-o 2345678))
+(define their-list (phone-spell-o p-num))
 (define stop-their-phone (current-inexact-milliseconds))
 
 (printf "My start time h:  ~a, my stop time h:  ~a\n" start-my-phone-h stop-my-phone-h)
@@ -3121,6 +3153,8 @@ begjopv
 ;; Doing this: (try-phone-with-higher (build-num-lttr-list 2345678 '()) '())
 ;; seems a bit faster than calling build-num-lttr-list, putting it in a value,
 ;; and calling try-phone-with-higher using the value
+;; So if you make it an 8 or 9 digit number, my versions are noticeably faster.
+;; Still, it bugs me that I could not convert the text's recommended algo.
   ; (printf ": ~a \n" )
   ; (check-equal?  "Error for: ")
 
