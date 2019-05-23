@@ -205,7 +205,28 @@
 
 ;; In the Shido tutorial, Shido will have a wrapper procedure that calls the tail-recursive procedure.
 ;; Also, look here: https://stackoverflow.com/questions/13664639/tail-recursive-functions-in-scheme
+#|
+(define (factorial X)
+      (cond
+            ((eqv? X 1) 1)
+            ((number? X)(* X (factorial (- X 1))))))
+Not tail-recursive since the inner call to factorial is used in a call to *
+
+Tail-recursive:
+(define (factorial x acc)
+  (if (zero? x)
+      acc
+      (factorial (sub1 x) (* x acc))))
+The last call to factorial is not tail-recursive because it is on the last line, 
+but because its result is not fed into another function.
+|#
 ;; https://stackoverflow.com/questions/33923/what-is-tail-recursion
+
+;; this one references the Scheme standard:
+;; https://stackoverflow.com/questions/18817102/how-do-i-detect-functions-that-i-can-apply-tail-call-optimisation-to
+
+;; Apparently DR Racket can check for tail-recursion:
+;; https://stackoverflow.com/questions/12925369/racket-identifying-tail-recursion
 
 ;; A few bits of advice from the text:
 ;;  If your function is supposed to return a number, it must return a number all the time, even in the base case. 
