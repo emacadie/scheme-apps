@@ -32,7 +32,17 @@
   (count (keep (lambda (x) (equal? rank x)) (every butfirst card-list))))
 
 (define (rank-counts rank-sentence)
-  (every (lambda (x) (count-rank x rank-sentence)) '(a 2 3 4 5 6 7 8 9 10 j q k a)))
+  (every (lambda (x) (count-rank x rank-sentence)) '(a 2 3 4 5 6 7 8 9 10 j q k)))
+
+(define (check-flush card-list)
+  (check-flush-work (suit-counts card-list)))
+
+(define (check-flush-work list-suit-counts)
+  (cond [(equal? 0 (appearances 5 list-suit-counts))  'none]
+        [(equal? 5 (first list-suit-counts))          'clubs]
+        [(equal? 5 (simply-second list-suit-counts))  'diamonds]
+        [(equal? 5 (last (butlast list-suit-counts))) 'hearts]
+        [(equal? 5 (last list-suit-counts))           'spades]))
 
 (module+ test
   (require rackunit)
@@ -42,31 +52,16 @@
   (check-equal? (count-suit 's '(sa s10 hq ck c4)) 
                 2 
                 "Error for: (count-suit 's '(sa s10 hq ck c4))")
-  (printf "(count-suit 'c '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3)): ~a \n" 
-          (count-suit 'c '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3)) )
-  (check-equal? (count-suit 'c '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3)) 
+  (printf "(count-suit 'c '(c3 d8 dj c10 d5)): ~a \n" 
+          (count-suit 'c '(c3 d8 dj c10 d5)))
+  (check-equal? (count-suit 'c '(c3 d8 dj c10 d5)) 
                 2 
-                "Error for: (count-suit 'c '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3))")
-  (printf "(count-suit 'd '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2)): ~a \n" (count-suit 'd '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2)))
-  (check-equal? (count-suit 'd '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2)) 
-                5 
-                "Error for: (count-suit 'd '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2))")
-
-  (printf "(suit-counts '(sa s10 hq ck c4)): ~a \n" (suit-counts '(sa s10 hq ck c4)))
-  (check-equal? (suit-counts '(sa s10 hq ck c4)) 
-                '(2 0 1 2) 
-                "Error for: (suit-counts '(sa s10 hq ck c4))")
-  (printf "(suit-counts '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3)): ~a \n" (suit-counts '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3)))
-  (check-equal? (suit-counts '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3)) 
-                '(2 3 3 5) 
-                "Error for: (suit-counts '(sa s10 s7 s6 s2 hq hj h9 ck c4 dk d9 d3))")
-  (printf "(suit-counts '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2)): ~a \n" (suit-counts '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2)))
-  (check-equal? (suit-counts '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2)) 
-                '(2 5 1 5) 
-                "Error for: (suit-counts '(h3 d7 sk s3 c10 dq d8 s9 s4 d10 c7 d4 s2))")
-  (printf "(suit-counts '(s4 s5 s9 c4 h6 h5)): ~a \n" (suit-counts '(s4 s5 s9 c4 h6 h5)))
-  (check-equal? (suit-counts '(s4 s5 s9 c4 h6 h5)) '(1 0 2 3) "Error for (suit-counts '(s4 s5 s9 c4 h6 h5))")
-  (define suit-count-a (suit-counts '(s4 s5 s9 c4 h6 h5)))
+                "Error for: (count-suit 'c '(c3 d8 dj c10 d5))")
+  (printf "(count-suit 'd '(c3 d8 dj c10 d5)): ~a \n" (count-suit 'd '(c3 d8 dj c10 d5)))
+  (check-equal? (count-suit 'd '(c3 d8 dj c10 d5)) 
+                3 
+                "Error for: (count-suit 'd '(c3 d8 dj c10 d5))")
+   
   (printf "(num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5))): ~a \n" (num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5))))
   (check-equal? (num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5))) 1 "Error for (num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5)))")
 
@@ -79,6 +74,15 @@
 (printf "(num-spades (suit-counts '(s4 s5 s9 c4 h6 h5))): ~a \n" (num-spades (suit-counts '(s4 s5 s9 c4 h6 h5))))
 (check-equal? (num-spades (suit-counts '(s4 s5 s9 c4 h6 h5))) 3 "Error for (num-spades (suit-counts '(s4 s5 s9 c4 h6 h5)))")
 
+;; hands that we can use
+(printf "(suit-counts '(c3 d8 dj c10 d5)): ~a\n" (suit-counts '(c3 d8 dj c10 d5)))
+(check-equal? (suit-counts '(c3 d8 dj c10 d5)) '(2 3 0 0) "Error for (suit-counts '(c3 d8 dj c10 d5))")
+(printf "(suit-counts '(s5 cj ca h2 h7)): ~a\n" (suit-counts '(s5 cj ca h2 h7))
+)
+(check-equal? (suit-counts '(s5 cj ca h2 h7))  '(2 0 2 1) "Error for (suit-counts '(s5 cj ca h2 h7))")
+
+(printf "(suit-counts '(h8 d4 d10 c10 ha)): ~a\n" (suit-counts '(h8 d4 d10 c10 ha)))
+(check-equal? (suit-counts '(h8 d4 d10 c10 ha))  '(1 2 2 0) "Error for (suit-counts '(h8 d4 d10 c10 ha))")
 
   ; (printf ": ~a \n" )
   ; (check-equal?  "Error for: ")

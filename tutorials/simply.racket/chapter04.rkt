@@ -1,6 +1,7 @@
 #lang simply-scheme
 
 ; Chapter 04: Defining your own procedures
+(require "more-simply.rkt")
 
 (se (butlast (bf "this"))
     "world")
