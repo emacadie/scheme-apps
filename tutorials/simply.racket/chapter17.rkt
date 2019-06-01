@@ -110,17 +110,21 @@ I had "rest-of-nums" in parens by mistake
 
 ;; Use max2 to implement max, 
 ;; a procedure that takes one or more numeric arguments and returns the largest of them. 
+;; tail recursion not working
+;; If I get to the last element in the list, it sends it as a list to max2, not as a number.
+;; I have been unable to figure it out.
+;; ** A minute later ** -> caar seems to work
 (define (my-max number . rest-of-nums)
   (printf "-- Calling my-max with number: ~a and rest-of-nums: ~a" number rest-of-nums)
   (printf " count of rest-of-nums is: ~a \n" (count rest-of-nums))
   (printf "(car rest-of-nums) is ~a \n" (car rest-of-nums))
-  (printf "Here is (max2 number (car rest-of-nums)): ~a\n" (max2 number (car rest-of-nums)))
+  ; (printf "Here is (max2 number (car rest-of-nums)): ~a\n" (max2 number (car rest-of-nums)))
   (cond [(null? rest-of-nums) number]
         ; [(= (count rest-of-nums) 1) (apply max2 (append number (car rest-of-nums)) )]
         [(= (count rest-of-nums) 1) (begin
                                       (printf "count of rest-of-nums is 1\n")
                                       ; (apply max2 (append number (car rest-of-nums)) )
-                                      (max2 number (car rest-of-nums))
+                                      (max2 number (caar rest-of-nums))
                                       )] ; okay
         ; [(= (count rest-of-nums) 1) (printf "(count rest-of-nums) is 1\n")]
         [(= (max2 number (car rest-of-nums)) number) 
@@ -128,7 +132,8 @@ I had "rest-of-nums" in parens by mistake
          (begin (printf "(max2 ~a (car ~a)) is: ~a\n" number rest-of-nums (max2 number (car rest-of-nums)))
                 (printf "here is (cdr rest-of-nums): ~a \n" (cdr rest-of-nums))
                 ; (my-max number (cdr rest-of-nums))
-                (apply my-max (list number (cdr rest-of-nums)))
+                (my-max number (append '() (cdr rest-of-nums)))
+                ; (apply my-max (list number (cdr rest-of-nums)))
            )]
         ; [(= (car rest-of-nums) (max2 number (car rest-of-nums))) (my-max (car rest-of-nums) (cdr rest-of-nums))]
         ; [(= (car rest-of-nums) (max2 number (car rest-of-nums))) (apply my-max rest-of-nums)]
@@ -141,8 +146,15 @@ I had "rest-of-nums" in parens by mistake
          
   )
 )
+; this seems to work
+(define (reduce-max number . more-nums)
+  (reduce max2 (append (list number) more-nums))
+)
 
-
+(define (simply-max number . more-nums)
+  (cond [(null? more-nums) number]
+)
+)
 
 (define (my-max2 number . more-nums)
   (printf "Hello: number is: ~a\n" number)
