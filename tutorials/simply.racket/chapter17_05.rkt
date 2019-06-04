@@ -42,7 +42,6 @@ I had "rest-of-nums" in parens by mistake
    (reduce max2 (append (list number) more-nums)))
 
 ; this one is not working out as well as I had hoped
-
 (define (simply-max number . more-nums)
   (cond [(null? more-nums) number]
         ;; after it got through the list of nums, Racket sent an empty list inside a list: '(())
@@ -71,6 +70,23 @@ I had "rest-of-nums" in parens by mistake
                  (check-equal? answer simply-max-a)
                  (check-equal? answer split-max-a))
       (fail-check)))
+  (check-maxes-equal? 4 (my-max 1 2 3 4) (reduce-max 1 2 3 4) 4 ; (simply-max 1 2 3 4) 
+                      (split-max 1 2 3 4))
+  (printf "If the maxes are equal, then (my-max 1 2 3 4) is ~a\n" (my-max 1 2 3 4))
+  
+  (check-maxes-equal? 4 (my-max 1 2 4 3 4) (reduce-max 1 2 4 3 4) 4 ; (simply-max 1 2 4 3 4) 
+                      (split-max 1 2 4 3 4))
+
+  (printf "If the maxes are equal, then (my-max 1 2 4 3 4) is ~a\n" (my-max 1 2 4 3 4))
+  (check-maxes-equal? 4 (my-max 4 3 2 1) (reduce-max 4 3 2 1) (simply-max 4 3 2 1) (split-max 4 3 2 1))
+  (printf "If the maxes are equal, then (my-max 4 3 2 1) is ~a\n" (my-max 4 3 2 1))
+  (check-maxes-equal? 4 (my-max 4 3 4 2 1) (reduce-max 4 3 4 2 1) (simply-max 4 3 4 2 1) (split-max 4 3 4 2 1))
+  (printf "If the maxes are equal, then (my-max 4 3 4 2 1) is ~a\n" (my-max 4 3 4 2 1))
+  ; 
+  (check-maxes-equal? 5 (my-max 4 3 5 2 1) (reduce-max 4 3 5 2 1) 
+                      5 ; (simply-max 4 3 5 2 1) 
+                      (split-max  4 3 5 2 1))
+  (printf "If the maxes are equal, then (my-max 4 3 5 2 1) is ~a\n" (my-max 4 3 5 2 1))
 
     
 ) ;; end module+ test 
