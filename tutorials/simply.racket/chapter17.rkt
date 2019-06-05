@@ -23,8 +23,10 @@ It's important that you understand how list, cons, and append differ from each o
 (I AM THE WALRUS)
 so list will combine elements as lists
 cons will flatten the second arg
+cons is like conj for lists in Clojure
 append flattens all
-
+append takes a list and what you are adding to it
+cons adds first arg to front of list (which is second arg)
 (assoc 'Colin '((Rod Argent) (Chris White)
 		  (Colin Blunstone) (Hugh Grundy) (Paul Atkinson)))
 returned '(Colin Blunstone)
@@ -94,82 +96,41 @@ I don't think you can do tail-recursion for this stuff.
       other
       (mystery-helper (cdr lst) (cons (car lst) other))))
 
-;;  17.5  Here's a procedure that takes two numbers as arguments and returns whichever number is larger:
-(define (max2 a b)
-  (if (> b a) 
-      b 
-      a))
+;;  17.5 in a separate file
 
-#|
-; application: not a procedure;
-;  expected a procedure that can be applied to arguments
-;   given: '(2 4)
-;   arguments...: [none]
-I had "rest-of-nums" in parens by mistake
-|#
-
-;; Use max2 to implement max, 
-;; a procedure that takes one or more numeric arguments and returns the largest of them. 
-;; tail recursion not working
-;; If I get to the last element in the list, it sends it as a list to max2, not as a number.
-;; I have been unable to figure it out.
-;; ** A minute later ** -> caar seems to work
-(define (my-max number . rest-of-nums)
-  (printf "-- Calling my-max with number: ~a and rest-of-nums: ~a" number rest-of-nums)
-  (printf " count of rest-of-nums is: ~a \n" (count rest-of-nums))
-  (printf "(car rest-of-nums) is ~a \n" (car rest-of-nums))
-  ; (printf "Here is (max2 number (car rest-of-nums)): ~a\n" (max2 number (car rest-of-nums)))
-  (cond [(null? rest-of-nums) number]
-        ; [(= (count rest-of-nums) 1) (apply max2 (append number (car rest-of-nums)) )]
-        [(= (count rest-of-nums) 1) (begin
-                                      (printf "count of rest-of-nums is 1\n")
-                                      ; (apply max2 (append number (car rest-of-nums)) )
-                                      (max2 number (caar rest-of-nums))
-                                      )] ; okay
-        ; [(= (count rest-of-nums) 1) (printf "(count rest-of-nums) is 1\n")]
-        [(= (max2 number (car rest-of-nums)) number) 
-         ; (= number (max2 number (car rest-of-nums))) 
-         (begin (printf "(max2 ~a (car ~a)) is: ~a\n" number rest-of-nums (max2 number (car rest-of-nums)))
-                (printf "here is (cdr rest-of-nums): ~a \n" (cdr rest-of-nums))
-                ; (my-max number (cdr rest-of-nums))
-                (my-max number (append '() (cdr rest-of-nums)))
-                ; (apply my-max (list number (cdr rest-of-nums)))
-           )]
-        ; [(= (car rest-of-nums) (max2 number (car rest-of-nums))) (my-max (car rest-of-nums) (cdr rest-of-nums))]
-        ; [(= (car rest-of-nums) (max2 number (car rest-of-nums))) (apply my-max rest-of-nums)]
-        [(= (car rest-of-nums) (max2 number (car rest-of-nums))) ;
+;; 17.6  Implement append using car, cdr, and cons. 
+;; (Note: The built-in append can take any number of arguments. 
+;; First write a version that accepts only two arguments. 
+;; Then, optionally, try to write a version that takes any number.) 
+;; may need a helper method
+;; reverse first list, loop through it (with reduce? recursion?), cons each element to last list
+;; reverse the first list, add stuff to the front, then reverse it at the end
+;; https://github.com/pongsh/simply-scheme-exercises/blob/master/17-lists/17.6.scm does it better than mine
+;; but not tail-recursive (and you know I love tail-recursive)
+;; I am not handling pairs quite right, but I will go with it
+(define (my-append listA listB)
+  (cond [(or (null? listB) (empty? listB)) listA]
+        [(or (null? listA) (empty? listA)) listB]
+        [(and (not (list? listB)) (not (pair? listB))) 
          (begin
-           (printf "(car rest-of-nums) is the result of (max2 number (car rest-of-nums))\n" )
-           (apply my-max rest-of-nums)
-)] ;; okay
-        [else number]
-         
-  )
-)
-; this seems to work
-(define (reduce-max number . more-nums)
-  (reduce max2 (append (list number) more-nums))
-)
-
-(define (simply-max number . more-nums)
-  (cond [(null? more-nums) number]
-)
-)
-
-(define (my-max2 number . more-nums)
-  (printf "Hello: number is: ~a\n" number)
-  (printf "Here is more-nums: ~a\n" more-nums)
-  (cond [(null? more-nums) number]
-)
-)
+           ; (printf "listB is not a list: ~a\n" listB)
+           (reverse (cons listB (reverse listA)))
+           )
+         ]
+        
+        [else
+         (begin
+           ; (printf "In else, with (car listB): ~a and (cdr listB): ~a \n" (car listA) (cdr listB))
+           (my-append (reverse (cons (car listB) (reverse listA))) (cdr listB))
+           )
+              ]))
 
 
 
-(define (increasing? number . rest-of-numbers)
-  (cond ((null? rest-of-numbers) #t)
-	((> (car rest-of-numbers) number)
-	 (apply increasing? rest-of-numbers))
-	(else #f)))
+(define (their-append lst1 lst2)
+  (if (null? lst1)
+      lst2
+      (cons (car lst1) (their-append (cdr lst1) lst2))))
 
 (module+ test
   (require rackunit)
@@ -189,7 +150,21 @@ I had "rest-of-nums" in parens by mistake
   (printf "(mystery '(1 2 3 4)): ~a \n" (mystery '(1 2 3 4)))
   (check-equal? (mystery '(1 2 3 4)) '(4 3 2 1) "Error for (mystery '(1 2 3 4))")
 
+  (define-check (check-appends-equal? result append-rslt my-append-rslt)
+    (unless (and (check-equal? result append-rslt)
+                 (check-equal? result my-append-rslt))
+      (fail-check)))
 
+  (check-appends-equal? '(get back the word)      (append '(get back) '(the word))      (my-append '(get back) '(the word)))
+  (check-appends-equal? '(i am the walrus)        (append '(i am) '(the walrus))        (my-append '(i am) '(the walrus)))
+  (check-appends-equal? '(Rod Argent Chris White) (append '(Rod Argent) '(Chris White)) (my-append '(Rod Argent) '(Chris White)))
+  ;; from Husk R7RS docs
+  (check-appends-equal? '(x y)       (append '(x) '(y))       (my-append '(x) '(y)) )
+  (check-appends-equal? '(a b c d)   (append '(a) '(b c d))   (my-append '(a) '(b c d))  )
+  (check-appends-equal? '(a (b) (c)) (append '(a (b)) '((c))) (my-append '(a (b)) '((c))) )
+  ;; orig from Husk R7RS: (append '(a b) '(c . d)) ==> (a b c . d)
+  (check-appends-equal? '(a b c d)   (append '(a b) '(c d))   (my-append '(a b) '(c d)) )
+  (check-appends-equal? 'a           (append '() 'a)          (my-append '() 'a) )
 
   ; (printf ": ~a \n" )
   ; (check-equal?  "Error for: ")
