@@ -1,5 +1,7 @@
 Now trying Simply Scheme with Racket, on the command line
 
+repo for "Simply Scheme": https://people.eecs.berkeley.edu/~bh/ss-toc2.html   
+
 A big part of the reason is that I want to be able to run some tests.  
 I can run tests in Clojure, but Scheme is not as good in this area.  
 

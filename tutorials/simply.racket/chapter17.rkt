@@ -109,19 +109,21 @@ I don't think you can do tail-recursion for this stuff.
 ;; but not tail-recursive (and you know I love tail-recursive)
 ;; I am not handling pairs quite right, but I will go with it
 (define (my-append listA listB)
-  ; (printf "Calling my-append with listA: ~a and listB: ~a \n" listA listB)
+  (printf "Calling my-append with listA: ~a and listB: ~a \n" listA listB)
   (cond [(or (null? listB) (empty? listB)) listA]
         [(or (null? listA) (empty? listA)) listB]
-        [(and (not (list? listB)) (not (pair? listB))) 
+        [(and (not (list? listB)) (not (pair? listB))) (reverse (cons listB (reverse listA)))
+
          (begin
-           ; (printf "listB is not a list: ~a\n" listB)
+           (printf "listB is not a list: ~a\n" listB)
            (reverse (cons listB (reverse listA)))
            )
+
          ]
         
         [else
          (begin
-           ; (printf "In else, with (car listB): ~a and (cdr listB): ~a \n" (car listA) (cdr listB))
+           (printf "In else, with (car listB): ~a and (cdr listB): ~a \n" (car listA) (cdr listB))
            (my-append (reverse (cons (car listB) (reverse listA))) (cdr listB))
            )
               ]))
@@ -156,11 +158,14 @@ I don't think you can do tail-recursion for this stuff.
   (if (null? lst1)
       lst2
       (cons (car lst1) (their-append (cdr lst1) lst2))))
+
 (define (their-multi-append lst . rest-of-list )
   (if (null? rest-of-list)
       lst
       (apply their-multi-append (cons (their-append lst (car rest-of-list)) 
                                       (cdr rest-of-list)))))
+
+
 
 ;; 17.7  Append may remind you of sentence. 
 ;; They're similar, except that append works only with lists as arguments, whereas sentence will accept words as well as lists. 
@@ -178,7 +183,7 @@ I don't think you can do tail-recursion for this stuff.
 ;; I will still check that if it's a list it does not have a sublist
 (define (list-with-sublists the-list)
   (cond [(not (list? the-list)) #f]
-        [(= 0 (keep list? the-list)) #f]
+        [(= 0 (count (keep list? the-list))) #f]
         [else #t])) 
 
 
@@ -199,7 +204,7 @@ chapter17.rkt/test> (append '(what is this) (list 're))
 '(what is this re)
 |#
 
-(define (sent-via-append list-a list-b)
+(define (sentence-via-append list-a list-b)
   (append (list-or-item list-a) (list-or-item list-b))
 )
 
@@ -239,6 +244,28 @@ chapter17.rkt/test> (append '(what is this) (list 're))
   ;; orig from Husk R7RS: (append '(a b) '(c . d)) ==> (a b c . d)
   (check-appends-equal? '(a b c d)   (append '(a b) '(c d))   (my-append '(a b) '(c d)) )
   (check-appends-equal? 'a           (append '() 'a)          (my-append '() 'a) )
+  (check-appends-equal? '(1 2 3 4 5 '(10 11 12)) (append '(1 2 3) '(4 5 '(10 11 12))) (my-append '(1 2 3) '(4 5 '(10 11 12))) )
+;;
+(define (check-three-appends-equal? result their-append-rsl my-append-rsl)
+  (unless (and (check-equal? result their-append-rsl)
+               (check-equal? result my-append-rsl))
+    (fail-check)))
+
+(check-three-appends-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
+; (check-three-appends-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) 4 5 6 '(7 8 9)) (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
+
+;; I may try append-m-lists-reduce
+
+(check-equal? (sentence 'hello 'world) (sentence-via-append 'hello 'world) 
+)
+ (check-equal? (sentence 'hello '(this is a ren)) 
+                   (sentence-via-append 'hello '(this is a ren))
+ )
+(check-equal? (sentence '(what is this) '(this is a ren)) (sentence-via-append '(what is this) '(this is a ren)))
+(check-equal? (sentence '(what is this) 're) (sentence-via-append '(what is this) 're))
+
+(check-equal? (sentence '(what is this) (list 're)) (sentence-via-append '(what is this) (list 're)))
+
 
   ; (printf ": ~a \n" )
   ; (check-equal?  "Error for: ")
