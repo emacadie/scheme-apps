@@ -109,24 +109,10 @@ I don't think you can do tail-recursion for this stuff.
 ;; but not tail-recursive (and you know I love tail-recursive)
 ;; I am not handling pairs quite right, but I will go with it
 (define (my-append listA listB)
-  (printf "Calling my-append with listA: ~a and listB: ~a \n" listA listB)
   (cond [(or (null? listB) (empty? listB)) listA]
         [(or (null? listA) (empty? listA)) listB]
-        [(and (not (list? listB)) (not (pair? listB))) (reverse (cons listB (reverse listA)))
-
-         (begin
-           (printf "listB is not a list: ~a\n" listB)
-           (reverse (cons listB (reverse listA)))
-           )
-
-         ]
-        
-        [else
-         (begin
-           (printf "In else, with (car listB): ~a and (cdr listB): ~a \n" (car listA) (cdr listB))
-           (my-append (reverse (cons (car listB) (reverse listA))) (cdr listB))
-           )
-              ]))
+        [(and (not (list? listB)) (not (pair? listB))) (reverse (cons listB (reverse listA))) ]
+        [else (my-append (reverse (cons (car listB) (reverse listA))) (cdr listB))])) ; line 129
 
 ;; again, not perfect, does not handle pairs too well, but I think I will take it
 ;; Isn't a pair just a list anyway?
@@ -134,22 +120,14 @@ I don't think you can do tail-recursion for this stuff.
 ;; they are different
 ;; But the book said they are pretty much the same
 (define (append-multi-lists listA . listB)
-  ; (printf "-- calling append-multi-lists with listA: ~a and listB: ~a\n" listA listB)
   (cond [(or (null? listB) (empty? listB)) listA]
         [(or (null? listA) (empty? listA)) (apply append-multi-lists listB)] ;; could this be done with car and cdr?
-        ; [(or (null? listA) (empty? listA)) (append-multi-lists (car listB) (cdr listB))] ;; could this be done with car and cdr?
+        
         [(and (= (count listB) 1 ) (list? (car listB)) (empty? (car listB))) listA]
-        [else
-         (begin
-           ; (printf "In the else, car listB: ~a cdr listB: ~a\n" (car listB) (cdr listB))
-           ; (append-multi-lists (my-append listA (car listB)) (cdr listB))
-           (apply append-multi-lists (my-append listA (car listB)) (cdr listB))
-           )]))
+        [else  (apply append-multi-lists (my-append listA (car listB)) (cdr listB))]))
 
 ;; This works with lists, but not if some of the items are solo numbers
 (define (append-m-lists-reduce list-a . list-b)
-  (printf "calling append-m-lists-reduce with list-a: ~a and list-b: ~a\n" list-a list-b)
-  (printf "here is our appended lists: ~a\n" (append '() list-a list-b))
   (my-append list-a (reduce my-append list-b))
   ; (reduce append (cons list-a list-b))
 )
@@ -194,32 +172,93 @@ I don't think you can do tail-recursion for this stuff.
   (append (list-or-item list-a) (list-or-item list-b)))
 
 (define (multi-sentence-append list-a . list-b)
-  (printf "calling multi-sentence-append with list-a: ~a and list-b: ~a \n" list-a list-b)
   (cond [(null? list-b) (sentence-via-append list-a '())]
         [(null? list-a) (apply multi-sentence-append list-b)]
         ;; again getting empty list in a list '(())
         [(and (= 1 (count list-b)) (list? (car list-b)) (empty? (car list-b)) ) list-a]
-        [else (begin
-                (printf "in else: (car list-b) is ~a and (cdr list-b) is ~a \n" (car list-b) (cdr list-b))
-                (multi-sentence-append (sentence-via-append list-a (car list-b)) (cdr list-b))
-                ) 
-              ]
-)
-)
+        [else (multi-sentence-append (sentence-via-append list-a (car list-b)) (cdr list-b)) ])) ; line 206
+
 ; once again, winnin' with the 'duce!!
 (define (multi-sentence-reduce list-a . list-b)
   (reduce sentence-via-append (cons list-a list-b)))
-; (reduce max2 (append (list number) more-nums))
-; (multi-sentence-append 'hello 'there 'big 'guy)
-; (sentence 'hello 'there '(big guy))
-; '(hello there big guy)
-; (multi-sentence-append 'hello '(there big) 'guy) - works
-; (multi-sentence-append 'hello 'there '(big guy)) - does not work
-;; (multi-sentence-append '(hello there) 'big 'guy) - works
+
+;;  17.8  Write member.
+;; I don't think you can use higher-order functions, because I think you have to go through the entire collection with HOF
+(define (new-member item-a list-a)
+  (cond [(null? list-a) #f]
+        [(equal? item-a (car list-a)) list-a]
+        [else (new-member item-a (cdr list-a))]))
+
+(define (simply-member item-a list-a)
+  (cond [(null? list-a) #f]
+        [(equal? item-a (first list-a)) list-a]
+        [else (new-member item-a (butfirst list-a))]))
+
+;; 17.9  Write list-ref. 
+;; The list equivalent of item is called list-ref (short for "reference")
+; it's different in that it counts items from zero instead of from one and takes its arguments in the other order
+;; okay, I looked at the other solutions, and yes, decrementing is more efficient
+(define (my-list-ref list-a num-a)
+  ;(list-ref-helper list-a num-a 0)
+  (cond [(null? list-a) #f] 
+        [(equal? num-a 0) (car list-a)]
+        [else (my-list-ref (cdr list-a) (- num-a 1))]))
+
+(define (list-ref-helper list-a num-a counter)
+  (cond [(null? list-a) #f] 
+        [(equal? num-a counter) (car list-a)]
+        [else (list-ref-helper (cdr list-a) num-a (+ 1 counter))]))
+
+;; 17.10  Write length. 
+(define (my-length list-a . counter)
+  (cond [(null? counter) (my-length list-a 0)]
+        [(null? list-a) (car counter)]
+        [else (my-length-helper (cdr list-a) (+ 1 (car counter)))])
+  ;(my-length-helper list-a 0)
+)
+
+(define (my-length-helper list-a counter)
+  (cond [(null? list-a) counter]
+        [else (my-length-helper (cdr list-a) (+ 1 counter))]))
+
+;; From https://github.com/buntine/Simply-Scheme-Exercises/blob/master/17-lists/17-10.scm
+(define (length3 lst)
+  (reduce +
+          (map (lambda (n) 1) lst)))
+; Simply Scheme's reduce does not take a starting value
+; Nevertheless, very clever, sir.
+
+;; 17.11  Write before-in-list?, which takes a list and two elements of the list. 
+;; It should return #t if the second argument appears in the list argument before the third argument:
+; > (before-in-list? '(back in the ussr) 'in 'ussr) returns #T
+; > (before-in-list? '(back in the ussr) 'the 'back) returns #F
+;; let's compare the length of our members
+(define (before-in-list? list-a item-a item-b)
+  (cond [(or (null? item-a) (null? item-b)) #f]
+        [(or (not (new-member item-a list-a)) (not (new-member item-b list-a))) #f]
+        ; earlier item will have longer list from member
+        [(> (length (new-member item-a list-a))
+            (length (new-member item-b list-a))) #t]
+        [else #f]))
+
+;; 17.12  Write a procedure called flatten that takes as its argument a list, possibly including sublists, 
+; but whose ultimate building blocks are words (not Booleans or procedures). 
+; It should return a sentence containing all the words of the list, in the order in which they appear in the original:
+
+; > (flatten '(((a b) c (d e)) (f g) ((((h))) (i j) k)))
+
+; (A B C D E F G H I J K)
+
+
+
 
 (module+ test
   (require rackunit)
   (check-true #t)
+  (define (check-three-things-equal? result their-append-rsl my-append-rsl)
+  (unless (and (check-equal? result their-append-rsl)
+               (check-equal? result my-append-rsl))
+    (fail-check)))
   ;; they said the dot is not part of the actual list, so I guess this is okay
   (printf "(f1 '(a b c) '(d e f)): ~a \n" (f1 '(a b c) '(d e f)))
   (check-equal? (f1 '(a b c) '(d e f)) '((b c . d)) "Error for (f1 '(a b c) '(d e f))")
@@ -235,64 +274,60 @@ I don't think you can do tail-recursion for this stuff.
   (printf "(mystery '(1 2 3 4)): ~a \n" (mystery '(1 2 3 4)))
   (check-equal? (mystery '(1 2 3 4)) '(4 3 2 1) "Error for (mystery '(1 2 3 4))")
 
-  (define-check (check-appends-equal? result append-rslt my-append-rslt)
-    (unless (and (check-equal? result append-rslt)
-                 (check-equal? result my-append-rslt))
-      (fail-check)))
-
-  (check-appends-equal? '(get back the word)      (append '(get back) '(the word))      (my-append '(get back) '(the word)))
-  (check-appends-equal? '(i am the walrus)        (append '(i am) '(the walrus))        (my-append '(i am) '(the walrus)))
-  (check-appends-equal? '(Rod Argent Chris White) (append '(Rod Argent) '(Chris White)) (my-append '(Rod Argent) '(Chris White)))
+  (check-three-things-equal? '(get back the word)      (append '(get back) '(the word))      (my-append '(get back) '(the word)))
+  (check-three-things-equal? '(i am the walrus)        (append '(i am) '(the walrus))        (my-append '(i am) '(the walrus)))
+  (check-three-things-equal? '(Rod Argent Chris White) (append '(Rod Argent) '(Chris White)) (my-append '(Rod Argent) '(Chris White)))
   ;; from Husk R7RS docs
-  (check-appends-equal? '(x y)                    (append '(x) '(y))                    (my-append '(x) '(y)) )
-  (check-appends-equal? '(a b c d)                (append '(a) '(b c d))                (my-append '(a) '(b c d))  )
-  (check-appends-equal? '(a (b) (c))              (append '(a (b)) '((c)))              (my-append '(a (b)) '((c))) )
+  (check-three-things-equal? '(x y)                    (append '(x) '(y))                    (my-append '(x) '(y)) )
+  (check-three-things-equal? '(a b c d)                (append '(a) '(b c d))                (my-append '(a) '(b c d))  )
+  (check-three-things-equal? '(a (b) (c))              (append '(a (b)) '((c)))              (my-append '(a (b)) '((c))) )
   ;; orig from Husk R7RS: (append '(a b) '(c . d)) ==> (a b c . d)
-  (check-appends-equal? '(a b c d)                (append '(a b) '(c d))                (my-append '(a b) '(c d)) )
-  (check-appends-equal? 'a                        (append '() 'a)                       (my-append '() 'a) )
-  (check-appends-equal? '(1 2 3 4 5 '(10 11 12))  (append '(1 2 3) '(4 5 '(10 11 12)))  (my-append '(1 2 3) '(4 5 '(10 11 12))) )
-;; Maybe I don't really need this
-(define (check-three-appends-equal? result their-append-rsl my-append-rsl)
-  (unless (and (check-equal? result their-append-rsl)
-               (check-equal? result my-append-rsl))
-    (fail-check)))
+  (check-three-things-equal? '(a b c d)                (append '(a b) '(c d))                (my-append '(a b) '(c d)) )
+  (check-three-things-equal? 'a                        (append '() 'a)                       (my-append '() 'a) )
+  (check-three-things-equal? '(1 2 3 4 5 '(10 11 12))  (append '(1 2 3) '(4 5 '(10 11 12)))  (my-append '(1 2 3) '(4 5 '(10 11 12))) )
 
-(define (check-three-things-equal? result their-append-rsl my-append-rsl)
-  (unless (and (check-equal? result their-append-rsl)
-               (check-equal? result my-append-rsl))
-    (fail-check)))
+  (check-three-things-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
+  (check-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
+  ; (check-three-appends-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) 4 5 6 '(7 8 9)) (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
+  (check-equal? '(1 2 3 4 5 6 7 8 9)  (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
 
-(check-three-appends-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
-(check-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
-; (check-three-appends-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) 4 5 6 '(7 8 9)) (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
-(check-equal? '(1 2 3 4 5 6 7 8 9)  (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
-
-;; I may try append-m-lists-reduce
-
-(check-equal? (sentence 'hello 'world) (sentence-via-append 'hello 'world))
-(check-equal? (sentence 'hello '(this is a ren)) (sentence-via-append 'hello '(this is a ren)))
-(check-equal? (sentence '(what is this) '(this is a ren)) (sentence-via-append '(what is this) '(this is a ren)))
-(check-equal? (sentence '(what is this) 're) (sentence-via-append '(what is this) 're))
-(check-equal? (sentence '(what is this) (list 're)) (sentence-via-append '(what is this) (list 're)))
-(check-equal? (sentence 'hello) (sentence-via-append 'hello '(this is a '(deep list) bro)))
-(check-equal? (sentence 'hello) (sentence-via-append '(this is a '(deep list) bro) 'hello))
-(check-equal? (sentence 'hello) (sentence-via-append 'hello '()))
-(check-equal? (sentence 'hello) (sentence-via-append '() 'hello))
-(check-equal? (sentence 'hello 4) (sentence-via-append 'hello 4))
-(check-equal? (sentence 'hello 4) (sentence-via-append 'hello '(4)))
-(check-three-things-equal? '(hello there bug guy) (multi-sentence-append 'hello 'there 'bug 'guy) (sentence 'hello 'there 'bug 'guy))
-(check-three-things-equal? '(hello there bug guy) (multi-sentence-reduce 'hello 'there 'bug 'guy) (sentence 'hello 'there 'bug 'guy))
-(check-three-things-equal? '(hello there bug guy) (sentence 'hello 'there '(bug guy)) (multi-sentence-reduce 'hello 'there '(bug guy)))
-(check-three-things-equal? '(hello there bug guy) (multi-sentence-reduce 'hello '(there bug) 'guy) (sentence 'hello 'there '(bug guy)) )
-(check-three-things-equal? '(hello there bug guy) (sentence 'hello '(there bug) 'guy) (multi-sentence-reduce 'hello 'there '(bug guy)) )
-(check-three-things-equal? '(hello there bug guy) (multi-sentence-append '(hello there) 'bug 'guy) (multi-sentence-reduce '(hello there) 'bug 'guy) )
-;; multi-sentence-reduce goes a bit beyond sentence, ignoring deep lists
-;; Winnin' with the 'duce!
-(check-equal? '(hello world this is a list okay) (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list)) )
-(check-equal? '(hello world this is a list okay this is fine) (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list) '(this is fine)))
-
-  ; (printf ": ~a \n" )
-  ; (check-equal?  "Error for: ")
+  (check-equal? (sentence 'hello 'world)                    (sentence-via-append 'hello 'world))
+  (check-equal? (sentence 'hello '(this is a ren))          (sentence-via-append 'hello '(this is a ren)))
+  (check-equal? (sentence '(what is this) '(this is a ren)) (sentence-via-append '(what is this) '(this is a ren)))
+  (check-equal? (sentence '(what is this) 're)              (sentence-via-append '(what is this) 're))
+  (check-equal? (sentence '(what is this) (list 're))       (sentence-via-append '(what is this) (list 're)))
+  (check-equal? (sentence 'hello)                           (sentence-via-append 'hello '(this is a '(deep list) bro)))
+  (check-equal? (sentence 'hello)                           (sentence-via-append '(this is a '(deep list) bro) 'hello))
+  (check-equal? (sentence 'hello)                           (sentence-via-append 'hello '()))
+  (check-equal? (sentence 'hello)                           (sentence-via-append '() 'hello))
+  (check-equal? (sentence 'hello 4)                         (sentence-via-append 'hello 4))
+  (check-equal? (sentence 'hello 4)                         (sentence-via-append 'hello '(4)))
+  (check-three-things-equal? '(hello there bug guy) (sentence 'hello 'there 'bug 'guy)  (multi-sentence-append 'hello 'there 'bug 'guy) )
+  (check-three-things-equal? '(hello there bug guy) (sentence 'hello 'there 'bug 'guy)  (multi-sentence-reduce 'hello 'there 'bug 'guy) )
+  (check-three-things-equal? '(hello there bug guy) (sentence 'hello 'there '(bug guy)) (multi-sentence-reduce 'hello 'there '(bug guy)))
+  (check-three-things-equal? '(hello there bug guy) (sentence 'hello 'there '(bug guy)) (multi-sentence-reduce 'hello '(there bug) 'guy))
+  (check-three-things-equal? '(hello there bug guy) (sentence 'hello '(there bug) 'guy) (multi-sentence-reduce 'hello 'there '(bug guy)))
+  (check-three-things-equal? '(hello there bug guy) (multi-sentence-append '(hello there) 'bug 'guy) (multi-sentence-reduce '(hello there) 'bug 'guy) )
+  ;; multi-sentence-reduce goes a bit beyond sentence, ignoring deep lists
+  ;; Winnin' with the 'duce!
+  (check-equal? '(hello world this is a list okay) (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list)) )
+  (check-equal? '(hello world this is a list okay this is fine) (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list) '(this is fine)))
+  ; new-member, simply-member
+  (check-three-things-equal? '(d e f g) (member 'd '(a b c d e f g))  (new-member 'd '(a b c d e f g)))
+  (check-three-things-equal? '(d e f g) (member 'd '(a b c d e f g))  (simply-member 'd '(a b c d e f g)))
+  (check-three-things-equal? #f         (member 'h '(a b c d e f g))  (new-member 'h '(a b c d e f g)))
+  (check-three-things-equal? #f         (member 'h '(a b c d e f g))  (simply-member 'h '(a b c d e f g)))
+  ;; from Husk docs
+  (check-three-things-equal? '((a) c)   (member (list 'a) '(b (a) c)) (new-member (list 'a) '(b (a) c)))
+  (check-three-things-equal? '((a) c)   (member (list 'a) '(b (a) c)) (simply-member (list 'a) '(b (a) c)))
+  (check-three-things-equal? 'best (list-ref '(Lisp is the best language) 3) (my-list-ref '(Lisp is the best language) 3))
+  (check-three-things-equal? 'c    (list-ref '(a b c d) 2)                   (my-list-ref '(a b c d) 2) ) 
+  (check-three-things-equal? 3 (length '(a b c)) (my-length '(a b c)))
+  (check-three-things-equal? 3 (length '(a (b) (c d e)))  (my-length '(a (b) (c d e))) )
+  (check-three-things-equal? 0 (length '())  (my-length '()) )
+  (check-equal? #t (before-in-list? '(back in the ussr) 'in 'ussr))
+  (check-equal? #f (before-in-list? '(back in the ussr) 'the 'back))
+  (check-equal? #f (before-in-list? '(back in the ussr) 'in 'usa))
 
 ) ;; end module+ test 
   ; (printf ": ~a \n"  )
