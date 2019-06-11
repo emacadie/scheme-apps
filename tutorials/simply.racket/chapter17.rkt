@@ -96,7 +96,7 @@ I don't think you can do tail-recursion for this stuff.
       other
       (mystery-helper (cdr lst) (cons (car lst) other))))
 
-;;  17.5 in a separate file
+;; 17.5 in a separate file
 
 ;; 17.6  Implement append using car, cdr, and cons. 
 ;; (Note: The built-in append can take any number of arguments. 
@@ -121,8 +121,7 @@ I don't think you can do tail-recursion for this stuff.
 ;; But the book said they are pretty much the same
 (define (append-multi-lists listA . listB)
   (cond [(or (null? listB) (empty? listB)) listA]
-        [(or (null? listA) (empty? listA)) (apply append-multi-lists listB)] ;; could this be done with car and cdr?
-        
+        [(or (null? listA) (empty? listA)) (apply append-multi-lists listB)] ;; could this be done with car and cdr?      
         [(and (= (count listB) 1 ) (list? (car listB)) (empty? (car listB))) listA]
         [else  (apply append-multi-lists (my-append listA (car listB)) (cdr listB))]))
 
@@ -241,16 +240,89 @@ I don't think you can do tail-recursion for this stuff.
             (length (new-member item-b list-a))) #t]
         [else #f]))
 
+#|
+(define (flatten lst)
+  (cond [(null? lst) 0]
+        [(word? (car lst))
+         (begin
+           (printf "Here is car list in word branch: ~a\n" (car lst))
+         (+ 1 (flatten (cdr lst)))  
+          )       
+         ]
+        [else (+ (flatten (car lst))
+                 (flatten (cdr lst)))]))
+|#
+
 ;; 17.12  Write a procedure called flatten that takes as its argument a list, possibly including sublists, 
 ; but whose ultimate building blocks are words (not Booleans or procedures). 
 ; It should return a sentence containing all the words of the list, in the order in which they appear in the original:
 
-; > (flatten '(((a b) c (d e)) (f g) ((((h))) (i j) k)))
-
+; > (flatten2 '(((a b) c (d e)) (f g) ((((h))) (i j) k)) '())
 ; (A B C D E F G H I J K)
+; (flatten2 '(((the man) in ((the) moon)) ate (the) potstickers) '())
+; (flatten2 '(the man (in ((the) moon)) ate (the) potstickers) '())
+(define (flatten2 lst outp)
+  ; (printf "--- calling flatten2 with lst: ~a and outp: ~a\n" lst outp)
+  (cond [(null? lst) outp]
+        
+        [(word? (car lst))
+         (begin
+           ; (printf "Here is car list in word branch: ~a -- here is (cdr lst): ~a\n" (car lst) (cdr lst))
+         ; (+ 1 (flatten (cdr lst)))
+           (flatten2 (cdr lst) (append outp (list (car lst))) )
+          )       
+         ]
+        [else
+         (begin 
+           ; (printf "in else, with (car lst):~a -- (cdr lst):~a -- outp:~a \n" (car lst) (cdr lst) outp)
+           (append (flatten2 (car lst) outp)
+                 (flatten2 (cdr lst) '()) )
+           )
+         
+]))
+
+; 17.13  Here is a procedure that counts the number of words anywhere within a structured list:
+(define (deep-count lst)
+  (cond [(null? lst) 0]
+        [(word? (car lst)) (+ 1 (deep-count (cdr lst)))]
+        [else (+ (deep-count (car lst))
+                 (deep-count (cdr lst)))]))
+; (deep-count '(((the man) in ((the) moon)) ate (the) potstickers))
+; (deep-count '(the man (in ((the) moon)) ate (the) potstickers))
+
+; Although this procedure works, it's more complicated than necessary. Simplify it. 
+;; let's try this, based on "deep-appearances":
+(define (deep-count-again structure)
+  (if (word? structure)
+      1
+      (reduce +
+	      (map (lambda (sublist) (deep-count-again sublist))
+		   structure))))
+;; (deep-count-again '(((the man) in ((the) moon)) ate (the) potstickers))
+;; from https://github.com/buntine/Simply-Scheme-Exercises/blob/master/17-lists/17-13.scm
+;; he does pretty much the same thing, adding a cond clause for null
+(define (deep-count-buntine lst)
+   (cond [(null? lst) 0]
+         [(word?  1)]
+         [else (reduce + (map (lambda (n) (deep-count-buntine n)) lst))]))
 
 
-
+;; 17.14  Write a procedure branch that takes as arguments a list of numbers and a nested list structure. 
+; It should be the list-of-lists equivalent of item, like this:
+; > (branch '(3) '((a b) (c d) (e f) (g h)))
+; (E F)
+; > (branch '(3 2) '((a b) (c d) (e f) (g h)))
+; F
+; > (branch '(2 3 1 2) '((a b) ((c d) (e f) ((g h) (i j)) k) (l m)))
+; H
+; In the last example above, the second element of the list is
+; ((C D) (E F) ((G H) (I J)) K)
+; The third element of that smaller list is ((G H) (I J)); the first element of that is (G H); and the second element of that is just H. 
+(define (branch num-list nested-list)
+  (cond [(null? num-list)  nested-list]
+        [else (branch (cdr num-list) 
+                      (my-list-ref nested-list 
+                                   (- (car num-list) 1)))]))
 
 (module+ test
   (require rackunit)
@@ -328,6 +400,17 @@ I don't think you can do tail-recursion for this stuff.
   (check-equal? #t (before-in-list? '(back in the ussr) 'in 'ussr))
   (check-equal? #f (before-in-list? '(back in the ussr) 'the 'back))
   (check-equal? #f (before-in-list? '(back in the ussr) 'in 'usa))
+
+  (check-equal? '(a b c d e f g h i j k) (flatten2 '(((a b) c (d e)) (f g) ((((h))) (i j) k)) '()) )
+; (A B C D E F G H I J K)
+  (check-equal? '(the man in the moon ate the potstickers) (flatten2 '(((the man) in ((the) moon)) ate (the) potstickers) '()) )
+  (check-equal? '(the man in the moon ate the potstickers) (flatten2 '(the man (in ((the) moon)) ate (the) potstickers) '()) )
+
+  (check-equal? '(e f) (branch '(3) '((a b) (c d) (e f) (g h))) )
+  (check-equal? 'f (branch '(3 2) '((a b) (c d) (e f) (g h))))
+  (check-equal? 'h (branch '(2 3 1 2) '((a b) ((c d) (e f) ((g h) (i j)) k) (l m))))
+  (check-equal? 'h (branch '(2 3 1 2) '((a b) ((c d) (e f) ((g h z) (i j)) k) (l m))))
+
 
 ) ;; end module+ test 
   ; (printf ": ~a \n"  )

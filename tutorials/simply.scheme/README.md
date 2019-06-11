@@ -22,10 +22,10 @@ For guile, just use "load"
 Here is a Racket module for Simply Scheme: http://www.hashcollision.org/simply-scheme/   
 https://github.com/dyoo/simply-scheme  
 
-One guy's solutions: https://github.com/buntine/Simply-Scheme-Exercises   
-
-https://github.com/pongsh/simply-scheme-exercises   
-(Neither have the answer to the "hotshot" question in 4.8)   
+Other people'e solutions: 
+- https://github.com/buntine/Simply-Scheme-Exercises   
+- https://github.com/pongsh/simply-scheme-exercises   
+- https://github.com/sanjeevs/Simply-Scheme-Exercises
 
 My solutions are intermingled with notes that I take along the way.    
 
