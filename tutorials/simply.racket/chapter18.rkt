@@ -19,6 +19,14 @@ Nodes can be parents, siblings, children
 Mutual recursion
 initialization procedure calls its helper procedure
 helper procedure calls itself and the initialization procedure
+init procedure takes tree as its arg, checks if a node is a leaf (or some other check)
+else it calls the helper procedure with the tree as a list
+helper procedure: if the tree is null, return false
+else: call init procedure on the car of tree, call itself on cdr of tree
+That is the most general pattern
+
+Trees as lists: "In other words, a tree is a list whose first element is the datum and whose remaining elements are subtrees."
+
 |#
 
 ;; 17.2  For each of the following examples, write a procedure of two arguments that, 
