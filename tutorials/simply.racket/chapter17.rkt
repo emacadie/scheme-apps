@@ -142,9 +142,15 @@ I don't think you can do tail-recursion for this stuff.
       lst
       (apply their-multi-append (cons (their-append lst (car rest-of-list)) 
                                       (cdr rest-of-list)))))
+;; buntine's
+(define (buntine-append a b)
+  (if (null? b)
+    a
+    (buntine-append (cons (car b) a) (cdr b))))
 
 ;; 17.7  Append may remind you of sentence. 
 ;; They're similar, except that append works only with lists as arguments, whereas sentence will accept words as well as lists. 
+;; Actually, in R7RS Scheme and Racket append will take a word as the second arg
 ;; Implement sentence using append. 
 ;; (Note: The built-in sentence can take any number of arguments. 
 ;; First write a version that accepts only two arguments. 
@@ -370,8 +376,9 @@ I don't think you can do tail-recursion for this stuff.
   (check-three-things-equal? '(1 2 3 4 5 '(10 11 12))  (append '(1 2 3) '(4 5 '(10 11 12)))  (my-append '(1 2 3) '(4 5 '(10 11 12))) )
 
   (check-three-things-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
-  (check-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
-  ; (check-three-appends-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) 4 5 6 '(7 8 9)) (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
+  (check-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) )
+  (check-three-things-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
+  ; (check-three-things-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) 4 5 6 '(7 8 9)) (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
   (check-equal? '(1 2 3 4 5 6 7 8 9)  (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
 
   (check-equal? (sentence 'hello 'world)                    (sentence-via-append 'hello 'world))
@@ -395,11 +402,12 @@ I don't think you can do tail-recursion for this stuff.
   ;; Winnin' with the 'duce!
   (check-equal? '(hello world this is a list okay) (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list)) )
   (check-equal? '(hello world this is a list okay this is fine) (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list) '(this is fine)))
+  
   ; new-member, simply-member
   (check-three-things-equal? '(d e f g) (member 'd '(a b c d e f g))  (new-member 'd '(a b c d e f g)))
-  (check-three-things-equal? '(d e f g) (member 'd '(a b c d e f g))  (simply-member 'd '(a b c d e f g)))
+  (check-three-things-equal? '(e f g)   (member 'e '(a b c d e f g))  (simply-member 'e '(a b c d e f g)))
   (check-three-things-equal? #f         (member 'h '(a b c d e f g))  (new-member 'h '(a b c d e f g)))
-  (check-three-things-equal? #f         (member 'h '(a b c d e f g))  (simply-member 'h '(a b c d e f g)))
+  (check-three-things-equal? #f         (member 3 '(a b c d e f g))   (simply-member 3 '(a b c d e f g)))
   ;; from Husk docs
   (check-three-things-equal? '((a) c)   (member (list 'a) '(b (a) c)) (new-member (list 'a) '(b (a) c)))
   (check-three-things-equal? '((a) c)   (member (list 'a) '(b (a) c)) (simply-member (list 'a) '(b (a) c)))
