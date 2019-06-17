@@ -415,6 +415,7 @@ I don't think you can do tail-recursion for this stuff.
   (check-three-things-equal? 'c    (list-ref '(a b c d) 2)                   (my-list-ref '(a b c d) 2) ) 
   (check-three-things-equal? 3 (length '(a b c)) (my-length '(a b c)))
   (check-three-things-equal? 3 (length '(a (b) (c d e)))  (my-length '(a (b) (c d e))) )
+  (check-three-things-equal? 3 (length '(a (b) (c d '(f g h) e)))  (my-length '(a (b) (c d '(f g h) e))) )
   (check-three-things-equal? 0 (length '())  (my-length '()) )
   (check-equal? #t (before-in-list? '(back in the ussr) 'in 'ussr))
   (check-equal? #f (before-in-list? '(back in the ussr) 'the 'back))
