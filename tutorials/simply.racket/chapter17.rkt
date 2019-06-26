@@ -4,6 +4,18 @@
 
 (require "more-simply.rkt")
 
+(provide flatten2
+         ;display-all
+         ;divisible?
+         ;do-great-stuff
+         ;modify-grade
+         ;phone-letter
+         ;plural
+         ;simply-second
+         ;square
+         ;vowel?
+)
+
 (butfirst '(This is chapter 17 lists))
 
 ;; Chapter 17 Lists
@@ -250,14 +262,19 @@ I don't think you can do tail-recursion for this stuff.
 ; It should return a sentence containing all the words of the list, in the order in which they appear in the original:
 ; so I based it on their functions (see 17.13), but I had to add an arg
 ; and it's not tail recursive
-; > (flatten2 '(((a b) c (d e)) (f g) ((((h))) (i j) k)) '())
+; > (flatten2 '(((a b) c (d e)) (f g) ((((h))) (i j) k)))
 ; (A B C D E F G H I J K)
-; (flatten2 '(((the man) in ((the) moon)) ate (the) potstickers) '())
-; (flatten2 '(the man (in ((the) moon)) ate (the) potstickers) '())
-(define (flatten2 lst outp)
+; (flatten2 '(((the man) in ((the) moon)) ate (the) potstickers))
+; (flatten2 '(the man (in ((the) moon)) ate (the) potstickers))
+
+(define (flatten2 lst)
+  (flatten2-work lst '()))
+
+(define (flatten2-work lst outp)
   (cond [(null? lst) outp]
-        [(word? (car lst)) (flatten2 (cdr lst) (append outp (list (car lst))))]
-        [else (append (flatten2 (car lst) outp) (flatten2 (cdr lst) '()))]))
+        [(word? (car lst)) (flatten2-work (cdr lst) (append outp (list (car lst))))]
+        [else (append (flatten2-work (car lst) outp) 
+                      (flatten2-work (cdr lst) '()))]))
 
 ; buntine and sanjeevs used reduce, looking very similar to what is in 17.13 (I did 17.13 first)
 ; I should have seen that, given that the directions mention words and I saw that the cond-based function from 17.13 was the basis for flatten
@@ -422,13 +439,13 @@ I don't think you can do tail-recursion for this stuff.
   (check-equal? #f (before-in-list? '(back in the ussr) 'in 'usa))
 
   (check-three-things-equal? '(a b c d e f g h i j k) 
-                             (flatten2 '(((a b) c (d e)) (f g) ((((h))) (i j) k)) '()) 
+                             (flatten2 '(((a b) c (d e)) (f g) ((((h))) (i j) k))) 
                              (flatten-reduce '(((a b) c (d e)) (f g) ((((h))) (i j) k))) )
   (check-three-things-equal? '(the man in the moon ate the potstickers) 
-                             (flatten2 '(((the man) in ((the) moon)) ate (the) potstickers) '()) 
+                             (flatten2 '(((the man) in ((the) moon)) ate (the) potstickers)) 
                              (flatten-reduce '(((the man) in ((the) moon)) ate (the) potstickers)))
   (check-three-things-equal? '(the man in the moon ate the potstickers) 
-                             (flatten2 '(the man (in ((the) moon)) ate (the) potstickers) '()) 
+                             (flatten2 '(the man (in ((the) moon)) ate (the) potstickers)) 
                              (flatten-reduce '(the man (in ((the) moon)) ate (the) potstickers)))
 
   (check-equal? '(e f) (branch '(3) '((a b) (c d) (e f) (g h))) )
