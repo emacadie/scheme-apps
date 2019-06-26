@@ -27,6 +27,14 @@ Other people'e solutions:
 - https://github.com/pongsh/simply-scheme-exercises   
 - https://github.com/sanjeevs/Simply-Scheme-Exercises
 
+A few more that I found:
+- https://github.com/rk1165/simply_scheme
+- https://github.com/hosoe-masaki/SimplyScheme - this one looks comprehensive
+- https://github.com/mengsince1986/Simply-Scheme-exercises/tree/master/SS%20Exercises
+
+
+A lot of people have started, but not all finish.  
+
 My solutions are intermingled with notes that I take along the way.    
 
 To use in Racket:   

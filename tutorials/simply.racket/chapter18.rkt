@@ -3,7 +3,9 @@
 ; Chapter 18: Lists
 
 (require "more-simply.rkt")
-(require "chapter17.rkt")
+; (require "chapter17.rkt"
+(require (prefix-in ch17: "chapter17.rkt"))
+; (prefix-in tcp: racket/tcp)
 (butfirst '(This is chapter 18 trees))
 
 ;; Chapter 18 Trees
@@ -191,7 +193,7 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
   (null? (children node)))
 
 (define (count-depth tree)
-  (reduce max (flatten2 (count-depth-work tree 0 '()))))
+  (reduce max (ch17:flatten2 (count-depth-work tree 0 '()))))
 
 (define (count-depth-work tree num num-list)
   (if (leaf? tree)
@@ -219,7 +221,7 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
   (if (null? tree)
     '()
     (cons (find-depth (car tree) d)
-(find-depth-in-forest (cdr tree) d)))) 
+          (find-depth-in-forest (cdr tree) d)))) 
 
 ;; we get the same answer
 ;; hard to test, hard to make quick trees
@@ -240,7 +242,7 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
   (if (null? forest)
       (+ 1 num)
       (+ (count-nodes-tree (car forest) num)
-            (count-nodes-in-forest (cdr forest) num ))))
+         (count-nodes-in-forest (cdr forest) num ))))
 
 ;; https://github.com/buntine/Simply-Scheme-Exercises/blob/master/18-trees/18-4.scm
 (define (count-nodes-b tree)
@@ -261,6 +263,19 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
 ;; and returns a copy of the tree, but with all the leaf nodes of the original tree removed. 
 ;; (If the argument to prune is a one-node tree, in which the root node has no children, 
 ;; then prune should return #f because the result of removing the root node wouldn't be a tree.) 
+
+(define (prune tree)
+  (printf "-- Calling prune with tree: ~a\n" tree)
+  (if (not (leaf? tree))
+    (+ 1 (prune-nodes-in-forest-b (children tree)))
+    ; null
+    0))
+
+(define (prune-nodes-in-forest-b tree)
+  (if (null? tree)
+    0
+    (+ (prune (car tree))
+       (prune-nodes-in-forest-b (cdr tree)))))
 
 
 
