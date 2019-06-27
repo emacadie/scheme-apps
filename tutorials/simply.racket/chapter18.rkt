@@ -264,18 +264,83 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
 ;; (If the argument to prune is a one-node tree, in which the root node has no children, 
 ;; then prune should return #f because the result of removing the root node wouldn't be a tree.) 
 
+(define small-world-tree
+  (make-node
+   'world
+   (list (make-node
+          'italy
+          (cities '(venezia riomaggiore firenze roma)))
+         (make-node
+          '(united states)
+          (list (make-node
+                 'california
+                 (cities '(berkeley (san francisco) gilroy)))
+                (make-node
+                 'massachusetts
+                 (cities '(cambridge amherst sudbury)))
+                (make-node 'ohio (cities '(kent)))))
+         (make-node 'zimbabwe (cities '(harare hwange)))
+         (make-node
+          'australia
+          (list
+           (make-node 'victoria (cities '(melbourne)))
+           (make-node '(new south wales) (cities '(sydney)))
+           (make-node 'queensland
+                      (cities '(cairns (port douglas)))))))))
+
+(define tiny-world-tree
+  (make-node
+   'world
+   (list (make-node 'zimbabwe (cities '(harare hwange)))
+         (make-node
+          'australia
+          (list
+           (make-node 'victoria (cities '(melbourne)))
+           (make-node '(new south wales) (cities '(sydney)))
+           (make-node 'queensland
+                      (cities '(cairns (port douglas)))))))))
+
 (define (prune tree)
   (printf "-- Calling prune with tree: ~a\n" tree)
   (if (not (leaf? tree))
-    (+ 1 (prune-nodes-in-forest-b (children tree)))
+      (begin
+        (printf "the tree is not a leaf \n")
+        (+ 1 (prune-nodes (children tree))))
     ; null
-    0))
+      (begin
+        (printf "the tree is a leaf \n")
+        0)))
 
-(define (prune-nodes-in-forest-b tree)
+(define (prune-nodes tree)
+  (printf "== Calling prune-nodes with tree: ~a \n" tree)
   (if (null? tree)
     0
-    (+ (prune (car tree))
-       (prune-nodes-in-forest-b (cdr tree)))))
+    (begin
+      (printf "Tree is not null, calling prune with ~a and prune-nodes with ~a \n" (car tree) (cdr tree))
+      (+ (prune (car tree))
+       (prune-nodes (cdr tree)))
+      )))
+
+(define (prune-t tree)
+  (printf "-- Calling prune-t with tree: ~a\n" tree)
+  (if (not (leaf? tree))
+      (begin
+        (printf "the tree is not a leaf \n")
+        (make-node (car tree) (prune-nodes-t (children tree))))
+    ; null
+      (begin
+        (printf "the tree is a leaf \n")
+        0)))
+
+(define (prune-nodes-t tree)
+  (printf "== Calling prune-nodes-t with tree: ~a \n" tree)
+  (if (null? tree)
+    0
+    (begin
+      (printf "Tree is not null, calling prune-t with ~a and prune-nodes-t with ~a \n" (car tree) (cdr tree))
+      (make-node (prune-t (car tree))
+       (prune-nodes-t (cdr tree)))
+      )))
 
 
 
