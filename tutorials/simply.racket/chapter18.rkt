@@ -300,59 +300,68 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
            (make-node 'queensland
                       (cities '(cairns (port douglas)))))))))
 
-(define (prune tree)
-  (printf "-- Calling prune with tree: ~a\n" tree)
-  (if (not (leaf? tree))
-      (begin
-        (printf "the tree is not a leaf \n")
-        (+ 1 (prune-nodes (children tree))))
-    ; null
-      (begin
-        (printf "the tree is a leaf \n")
-        0)))
-
-(define (prune-nodes tree)
-  (printf "== Calling prune-nodes with tree: ~a \n" tree)
-  (if (null? tree)
-    0
-    (begin
-      (printf "Tree is not null, calling prune with ~a and prune-nodes with ~a \n" (car tree) (cdr tree))
-      (+ (prune (car tree))
-       (prune-nodes (cdr tree)))
-      )))
-
 (define (not-empty x)
   (not (empty? x)))
 
 (define (prune-t tree)
-  (printf "-- Calling prune-t with tree: ~a\n" tree)
   (if (not (leaf? tree))
-      (begin
-        (printf "the tree is not a leaf \n")
-        (make-node (car tree) 
-                   (filter not-empty (prune-nodes-t (children tree)))
-))
-    ; null
-      (begin
-        (printf "the tree is a leaf \n")
-        null)))
+      (make-node (car tree) (filter not-empty (prune-nodes-t (children tree))))
+      null))
 
 (define (prune-nodes-t tree)
-  (printf "== Calling prune-nodes-t with tree: ~a \n" tree)
   (if (null? tree)
     null
-    (begin
-      (printf "Tree is not null, calling prune-t with ~a and prune-nodes-t with ~a \n" (car tree) (cdr tree))
-      (make-node (prune-t (car tree))
-       (prune-nodes-t (cdr tree)))
-      )))
+    (make-node (prune-t (car tree)) (prune-nodes-t (cdr tree)))))
 
-(define (use-num x)
-  (cond [(not (odd? x)) (printf "It's even: ~a \n" x)]
-        [else (printf "In the else: ~a \n" x)]
+;; mine is actually the shortest of them all (maybe; I also have not-empty)
+; although I do prefer cond to if
+;; buntine says he used filter, and then tried this
+; https://github.com/buntine/Simply-Scheme-Exercises/blob/master/18-trees/18-5.scm
+(define (prune-b tree)
+  (cond ((leaf? tree) #f)
+        (else (make-node (datum tree) (prune-forest-b (children tree))))))
+
+(define (prune-forest-b forest)
+  (cond  ((null? forest) '())
+         ((leaf? (car forest)) (prune-forest-b (cdr forest)))
+         (else (make-node (prune-b (car forest)) (prune-forest-b (cdr forest))))))
+
+;; 18.6 Write a program parse-scheme that parses a Scheme arithmetic expression 
+; into the same kind of tree that parse produces for infix expressions. 
+; Assume that all procedure invocations in the Scheme expression have two arguments.
+; The resulting tree should be a valid argument to compute:
+; > (compute (parse-scheme '(* (+ 4 3) 2)))
+; 14
+; (compute (parse '((4 + 3) * 2)))
+;; (parse '((4 + 3) * 2))
+;; gives: '(* (+ (4) (3)) (2))
+;; Is this a trick question?
+; (You can solve this problem without the restriction to two-argument invocations 
+;; if you rewrite compute so that it doesn't assume 
+;; every branch node has two children.) 
+
+;; compute and function-named-by included up above
+
+(define (is-operator? oper)
+  (cond [(member? oper '+-/*) #t]
+        [else #f]))
+
+(define (parse-scheme expr) 
+  (printf "Calling parse-scheme with ~a \n" expr)
+  (if (leaf? expr)
+      (make-node (car expr) (parse-scheme (cdr expr)))
+      expr
 )
 )
 
+; (define (parse-scheme-tree expr)
+#|
+'(+ 
+  (- 
+    (+ 4 (* 3 7)) 
+    (/ 5 (+ 3 4))) 
+  6)
+|#
 (module+ test
   (require rackunit)
   (check-true #t)
