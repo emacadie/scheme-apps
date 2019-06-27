@@ -321,28 +321,37 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
        (prune-nodes (cdr tree)))
       )))
 
+(define (not-empty x)
+  (not (empty? x)))
+
 (define (prune-t tree)
   (printf "-- Calling prune-t with tree: ~a\n" tree)
   (if (not (leaf? tree))
       (begin
         (printf "the tree is not a leaf \n")
-        (make-node (car tree) (prune-nodes-t (children tree))))
+        (make-node (car tree) 
+                   (filter not-empty (prune-nodes-t (children tree)))
+))
     ; null
       (begin
         (printf "the tree is a leaf \n")
-        0)))
+        null)))
 
 (define (prune-nodes-t tree)
   (printf "== Calling prune-nodes-t with tree: ~a \n" tree)
   (if (null? tree)
-    0
+    null
     (begin
       (printf "Tree is not null, calling prune-t with ~a and prune-nodes-t with ~a \n" (car tree) (cdr tree))
       (make-node (prune-t (car tree))
        (prune-nodes-t (cdr tree)))
       )))
 
-
+(define (use-num x)
+  (cond [(not (odd? x)) (printf "It's even: ~a \n" x)]
+        [else (printf "In the else: ~a \n" x)]
+)
+)
 
 (module+ test
   (require rackunit)
