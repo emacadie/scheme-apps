@@ -1,26 +1,35 @@
 #lang simply-scheme
 
-; Chapter 17: Lists
+; Chapter 19 Higher Order Functions
 
 (require "more-simply.rkt")
+(require (prefix-in ch17: "chapter17.rkt"))
 
-(provide flatten2
-         my-append
-         ;display-all
-         ;divisible?
-         ;do-great-stuff
-         ;modify-grade
-         ;phone-letter
-         ;plural
-         ;simply-second
-         ;square
-         ;vowel?
-)
 
-(butfirst '(This is chapter 17 lists))
+(butfirst '(This is chapter 19 Higher Order Functions))
 
-;; Chapter 17 Lists
-;; for procedures like cadar and cddadr, read the a's and d's from right to left
+;; Chapter 19 Higher Order Functions
+
+;; from chapter 14
+(define (every-something sent)
+  (if (empty? sent)
+      '()
+      (se (printf (first sent)) (every-something (bf sent)))))
+
+;; tail-recursive
+;; (every-something-r (lambda (x) (* 2 x)) '(1 2 3) '())
+(define (every-something-r func sent outp)
+  (printf "Calling every-something-r with sent ~a and outp ~a \n" sent outp)
+  (cond [(null? sent) outp]
+        [(and (empty? outp)) (every-something-r func 
+                                                (cdr sent) 
+                                                (list (func (car sent))))]
+        ; [(empty? outp) (every-something-r (cdr sent) (list (* 2 (car sent))))]
+        [else (every-something-r func 
+                                 (cdr sent) 
+                                 (ch17:my-append outp 
+                                                 (func (car sent))))]))
+
 
 #|
 From the text:
@@ -121,16 +130,10 @@ I don't think you can do tail-recursion for this stuff.
 ;; https://github.com/pongsh/simply-scheme-exercises/blob/master/17-lists/17.6.scm does it better than mine
 ;; but not tail-recursive (and you know I love tail-recursive)
 ;; I am not handling pairs quite right, but I will go with it
-(define (not-list-or-pair thing)
-  (and (not (list? thing)) (not (pair? thing))))
-
-(define (null-or-empty? thing)
-  (or (null? thing) (empty? thing)))
-
 (define (my-append listA listB)
-  (cond [(null-or-empty? listB) listA]
-        [(null-or-empty? listA) listB]
-        [(not-list-or-pair listB) (reverse (cons listB (reverse listA)))]
+  (cond [(or (null? listB) (empty? listB)) listA]
+        [(or (null? listA) (empty? listA)) listB]
+        [(and (not (list? listB)) (not (pair? listB))) (reverse (cons listB (reverse listA))) ]
         [else (my-append (reverse (cons (car listB) (reverse listA))) (cdr listB))])) ; line 129
 
 ;; again, not perfect, does not handle pairs too well, but I think I will take it
@@ -139,8 +142,8 @@ I don't think you can do tail-recursion for this stuff.
 ;; they are different
 ;; But the book said they are pretty much the same
 (define (append-multi-lists listA . listB)
-  (cond [(null-or-empty? listB) listA]
-        [(null-or-empty? listA) listB (apply append-multi-lists listB)] ;; could this be done with car and cdr?      
+  (cond [(or (null? listB) (empty? listB)) listA]
+        [(or (null? listA) (empty? listA)) (apply append-multi-lists listB)] ;; could this be done with car and cdr?      
         [(and (= (count listB) 1 ) (list? (car listB)) (empty? (car listB))) listA]
         [else  (apply append-multi-lists (my-append listA (car listB)) (cdr listB))]))
 

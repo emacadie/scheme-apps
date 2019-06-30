@@ -336,6 +336,7 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
 ;; (parse '((4 + 3) * 2))
 ;; gives: '(* (+ (4) (3)) (2))
 ;; Is this a trick question?
+;; I think I am going to skip, since this is parsed by the current program
 ; (You can solve this problem without the restriction to two-argument invocations 
 ;; if you rewrite compute so that it doesn't assume 
 ;; every branch node has two children.) 
