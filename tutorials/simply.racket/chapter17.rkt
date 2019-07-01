@@ -6,15 +6,6 @@
 
 (provide flatten2
          my-append
-         ;display-all
-         ;divisible?
-         ;do-great-stuff
-         ;modify-grade
-         ;phone-letter
-         ;plural
-         ;simply-second
-         ;square
-         ;vowel?
 )
 
 (butfirst '(This is chapter 17 lists))
@@ -127,9 +118,14 @@ I don't think you can do tail-recursion for this stuff.
 (define (null-or-empty? thing)
   (or (null? thing) (empty? thing)))
 
+;; can now append two items into a list
+;; So I can win with the 'duce!!
+;; Intended to take two items
 (define (my-append listA listB)
   (cond [(null-or-empty? listB) listA]
         [(null-or-empty? listA) listB]
+        ;; added 2019-07-01
+        [(and (not-list-or-pair listA) (not-list-or-pair listB)) (list listA listB)]
         [(not-list-or-pair listB) (reverse (cons listB (reverse listA)))]
         [else (my-append (reverse (cons (car listB) (reverse listA))) (cdr listB))])) ; line 129
 
@@ -146,9 +142,7 @@ I don't think you can do tail-recursion for this stuff.
 
 ;; This works with lists, but not if some of the items are solo numbers
 (define (append-m-lists-reduce list-a . list-b)
-  (my-append list-a (reduce my-append list-b))
-  ; (reduce append (cons list-a list-b))
-)
+  (my-append list-a (reduce my-append list-b)))
 
 ;; from https://github.com/pongsh/simply-scheme-exercises/blob/master/17-lists/17.6.scm
 (define (their-append lst1 lst2)
