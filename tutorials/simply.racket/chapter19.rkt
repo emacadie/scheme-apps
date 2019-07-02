@@ -12,17 +12,33 @@
 
 ;; from chapter 14, tail-recursive
 ;; (every-something-r (lambda (x) (* 2 x)) '(1 2 3) '())
-(define (my-every func sent)
-  (every-something-r func sent '()))
-(define (every-something-r func sent outp)
+(define (my-map func sent)
+  (my-map-r func sent '()))
+(define (my-map-r func sent outp)
+  (cond [(null? sent) (reverse outp)]
+        [else (my-map-r func 
+                        (cdr sent) 
+                        (cons (func (car sent)) outp))]))
+
+#| 
+(define (map fn lst)
+  (if (null? lst)
+      '()
+      (cons (fn (car lst)) (map fn (cdr lst)))))
+|#
+
+(define (every2 func sent outp)
   (cond [(null? sent) outp]
-        [(empty? outp) (every-something-r func 
-                                          (cdr sent) 
-                                          (list (func (car sent))))]
-        [else (every-something-r func 
-                                 (cdr sent) 
-                                 (ch17:my-append outp 
-                                                 (func (car sent))))]))
+        [(empty? outp) (every2 func 
+                               (cdr sent) 
+                               (list (func (car sent))))]
+        [else (begin
+                (printf "in else, with car sent: ~a \n" (car sent))
+                (every2 func 
+                        (cdr sent) 
+                        (ch17:my-append outp 
+                                        (func (car sent)))))]))
+
 ; from chapter 14 - tail recursive
 (define (my-keep predicate sent)
   (keep-r predicate sent '()))
@@ -40,11 +56,11 @@
                       outp)]))
 
 ; from chapter 14, tail-recursive
-(define (my-accumulate func sent start)
+(define (my-reduce func start sent)
   (cond [(empty? sent) start]
-        [else (my-accumulate func 
-                             (cdr sent) 
-                             (func start (car sent)))]))
+        [else (my-reduce func
+                         (func start (car sent))
+                         (cdr sent) )]))
 
 #|
 From the text:
@@ -108,9 +124,22 @@ I don't think you can do tail-recursion for this stuff.
   (unless (and (check-equal? result their-append-rsl)
                (check-equal? result my-append-rsl))
     (fail-check)))
-  (check-equal? (my-every (lambda (x) (* 2 x)) '(1 2 3) ) '(2 4 6))
-  (check-equal? (my-keep even? '(1 2 3 4 5 6)) '(2 4 6))
-  (check-equal? (my-accumulate max '(23 54 45 85 65) 0) 85)
+  (check-three-things-equal? (my-map (lambda (x) (* 2 x)) '(1 2 3) ) 
+                             (map (lambda (x) (* 2 x)) '(1 2 3) ) 
+                             '(2 4 6))
+  (check-three-things-equal? (my-map (lambda (n) (expt n n)) '(1 2 3 4 5))
+                             (map (lambda (n) (expt n n)) '(1 2 3 4 5))
+                             '(1 4 27 256 3125))
+  (check-three-things-equal? (my-keep even? '(1 2 3 4 5 6)) 
+                             (filter even? '(1 2 3 4 5 6))
+                             '(2 4 6))
+  (check-three-things-equal? (my-reduce max 0 '(23 54 45 85 65)) 
+                             (reduce max '(23 54 45 85 65))
+                             85)
+  (check-three-things-equal? (my-reduce * 1 '(1 2 3 4 5))
+                             (reduce * '(1 2 3 4 5))
+                             120)
+
 
 ) ;; end module+ test 
   ; (printf ": ~a \n"  )
