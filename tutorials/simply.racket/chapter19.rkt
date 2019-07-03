@@ -62,60 +62,24 @@
                          (func start (car sent))
                          (cdr sent) )]))
 
-#|
-From the text:
-It's important that you understand how list, cons, and append differ from each other:
 
-> (list '(i am) '(the walrus))
-((I AM) (THE WALRUS))
+;; 19.2  Write keep. Don't forget that keep has to return a sentence if 
+;; its second argument is a sentence, and a word if its second argument is a word.
 
-> (cons '(i am) '(the walrus))
-((I AM) THE WALRUS)
+;; (Hint: it might be useful to write a combine procedure 
+;; that uses either word or sentence depending on the types of its arguments.) 
+;; from chapter 14
+(define (keep-ch19 the-pred sent)
+  (cond [(word? sent) (reduce word (keep-ch19-work the-pred sent))]
+        [else (keep-ch19-work the-pred sent)]))
 
-> (append '(i am) '(the walrus))
-(I AM THE WALRUS)
-so list will combine elements as lists
-cons will flatten the second arg
-cons is like conj for lists in Clojure
-append flattens all
-append takes a list and what you are adding to it
-cons adds first arg to front of list (which is second arg)
-(assoc 'Colin '((Rod Argent) (Chris White)
-		  (Colin Blunstone) (Hugh Grundy) (Paul Atkinson)))
-returned '(Colin Blunstone)
-So assoc takes a key and a key/value list, and returns the element with 
-the key and the value, else returns #f
-Totally different than Clojure's assoc.
-
-
-Concepts introduced in this chapter:
-selectors and constructors
-list, cons, append
-car and cdr
-list?, equal?, member?, list-ref, length, assoc
-functions taking varying numbers of args
-apply function: "It takes two arguments, a procedure and a list"
-"Recursion on Arbitrary Structured Lists"
-Searching for an element in a multi-level list
-Using higher-order functions:
-(define (deep-appearances wd structure)
-  (if (word? structure)
-      (if (equal? structure wd) 
-          1 
-          0)
-      (reduce +
-	      (map (lambda (sublist) (deep-appearances wd sublist))
-		   structure))))
-Using standard recursion (three base cases and two recursive calls)
-(define (deep-appearances wd structure)
-  (cond ((equal? wd structure) 1)              ; base case: desired word
-        ((word? structure) 0)                  ; base case: other word
-        ((null? structure) 0)                  ; base case: empty list
-        (else (+ (deep-appearances wd (car structure))
-                 (deep-appearances wd (cdr structure))))))
-I don't think you can do tail-recursion for this stuff.
-|#
-
+(define (keep-ch19-work the-pred sent)
+  (cond [(empty? sent) '()]
+        [(the-pred (first sent)) (se (first sent) 
+                                     (keep-ch19-work the-pred 
+                                                     (bf sent)))]
+        [else (keep-ch19-work the-pred 
+                              (bf sent))]))
 
 (module+ test
   (require rackunit)
@@ -140,6 +104,8 @@ I don't think you can do tail-recursion for this stuff.
                              (reduce * '(1 2 3 4 5))
                              120)
 
+  (check-equal? 'ei (keep-ch19 vowel? 'qerti))
+  (check-equal? '(e u) (keep-ch19 vowel? '(q w e r t u)))
 
 ) ;; end module+ test 
   ; (printf ": ~a \n"  )
