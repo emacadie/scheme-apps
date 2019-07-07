@@ -81,6 +81,143 @@
         [else (keep-ch19-work the-pred 
                               (bf sent))]))
 
+;; 19.3  Write the three-argument version of accumulate that we described.
+;;> (three-arg-accumulate + 0 '(4 5 6))
+;;15
+;;> (three-arg-accumulate + 0 '())
+;;0
+;;> (three-arg-accumulate cons '() '(a b c d e))
+;;(A B C D E)
+;; my-reduce works for the first two. Try the accumulate from chapter 14
+
+;; I have non-tail recursive solutions
+(define (three-arg-accumulate func start sent)
+  (if (empty? sent)
+      start
+      (func (first sent) (three-arg-accumulate func start (bf sent)))))
+
+;; need to flatten the result for the last one
+(define (three-arg-accumulate-r func start sent)
+  (cond [(empty? sent) start]
+        [else (three-arg-accumulate-r func
+                         (func start (first sent))
+                         (bf sent) )]))
+
+; 19.4  Our accumulate combines elements from right to left. That is,
+; (accumulate - '(2 3 4 5))
+; computes 2−(3−(4−5)). 
+; Write left-accumulate, which will compute ((2−3)−4)−5 instead. 
+; (The result will be the same for an operation such as +, 
+; for which grouping order doesn't matter, but will be different for -.) 
+
+(define (left-accumulate func sent)
+  (cond [(= (count sent) 1) (first sent)]
+        [else (func (left-accumulate func (butlast sent)) (last sent))]))
+
+;; If I do (left-accumulate - '(2 3 4 5)) I get -14
+;; If I do (- (- (- 2 3) 4) 5) I get -10
+;; Should 0 be the base case?
+;; Let's see other solutions
+;; try with last instead of first, based on buntine
+;; I still get -14
+;; from https://github.com/hosoe-masaki/SimplyScheme/blob/master/ch19/19-4.md
+;; don't make empty your base case, make it count = 1 and send the first
+#|
+Here is what almost worked 
+(define (left-accumulate func sent)
+  (printf "calling left-accumulate with sent: ~a \n" sent)
+  (cond [(empty? sent) 0] 
+        [else (func (left-accumulate func (bf sent)) (first sent))]))
+I suppose you could make a helper func that calls a three-arg with (first sent) as the starting value and (bf sent) as the sentence
+|#
+
+;; 19.5  Rewrite the true-for-all? procedure from Exercise 8.10. 
+;; Do not use every, keep, or accumulate. 
+;; I assume they do not want to use map, filter or reduce
+;; Recursion? 
+(define (true-for-all-19? pred the-sent)
+  (printf "calling true-for-all-19? with the-sent: ~a \n" the-sent)
+  (cond [(empty? the-sent) #t]
+        [(pred (car the-sent)) (true-for-all-19? pred (cdr the-sent))]
+        [else #f]))
+;; this works, but what was the point? To replace HOF? I thought the point of this chapter was to use HOF
+;; Or make an HOF?
+;; What did others do?
+;; ** pause while I check other answers **
+;; buntine re-implemented keep, others did recursion
+
+;; 19.6  Write a procedure true-for-any-pair? 
+;; that takes a predicate and a sentence as arguments. 
+;; The predicate must accept two words as its arguments. 
+;; Your procedure should return #t if the argument predicate 
+;; will return true for any two adjacent words in the sentence:
+;> (true-for-any-pair? equal? '(a b c b a))
+;#F
+;> (true-for-any-pair? equal? '(a b c c d))
+;#T
+;> (true-for-any-pair? < '(20 16 5 8 6))      
+;; 5 is less than 8
+;#T
+;; https://github.com/pongsh/simply-scheme-exercises/blob/master/19-implementing-higher-order-functions/19.6.scm 
+;; is a lot shorter. I thought about this, but there are no higher-order functions.
+;; https://github.com/buntine/Simply-Scheme-Exercises/blob/master/19-implementing-higher-order-functions/19-6.scm also shorter, but again no HOF
+;; I re-did keep/filter since I have to send two args each time, not just one
+;; and I made a function to turn the list into a list of pairs
+(define (create-pairs-from-list the-list)
+  (create-pairs (first the-list) (butfirst the-list) '()))
+
+(define (create-pairs the-first the-rest outp)
+  (cond [(empty? the-rest) (reverse outp)]
+        [else (create-pairs (first the-rest) 
+                            (butfirst the-rest) 
+                            (cons (list the-first (first the-rest)) outp))]))
+
+(define (use-pred pred pair-of-items)
+  (pred (first pair-of-items) (last pair-of-items)))
+
+(define (keep-with-pairs predicate sent outp)
+  (cond [(empty? sent) outp] 
+        [(and (use-pred predicate (first sent)) (empty? outp)) (keep-with-pairs predicate 
+                                                                                (butfirst sent)
+                                                                                (list (first sent)))]
+	    [(use-pred predicate (first sent)) (keep-with-pairs predicate 
+                                                            (cdr sent) 
+                                                            (append outp 
+                                                                            (car sent)))]
+	    [else (keep-with-pairs predicate 
+                               (butfirst sent) 
+                               outp)]))
+
+(define (true-for-any-pair? pred the-list) 
+  (cond [(equal? 0 
+                 (count (keep-with-pairs pred 
+                                         (create-pairs-from-list the-list) 
+                                         '()))) 
+         #f]
+        [else #t]))
+
+;; 19.7  Write a procedure true-for-all-pairs? 
+;; that takes a predicate and a sentence as arguments. 
+;; The predicate must accept two words as its arguments. 
+;; Your procedure should return #t if the argument predicate 
+;; will return true for every two adjacent words in the sentence:
+(define (true-for-all-pairs? pred the-list)
+  (cond [(equal? (count (create-pairs-from-list the-list))
+                 (count (keep-with-pairs pred 
+                                         (create-pairs-from-list the-list) 
+                                         '()))) 
+         #t]
+        [else #f]))
+; > (true-for-all-pairs? equal? '(a b c c d))
+; #F
+; > (true-for-all-pairs? equal? '(a a a a a))
+; #T
+; > (true-for-all-pairs? < '(20 16 5 8 6))
+; #F
+; > (true-for-all-pairs? < '(3 7 19 22 43))
+; #T
+
+
 (module+ test
   (require rackunit)
   (check-true #t)
@@ -107,7 +244,26 @@
   (check-equal? 'ei (keep-ch19 vowel? 'qerti))
   (check-equal? '(e u) (keep-ch19 vowel? '(q w e r t u)))
 
+  ; 19.3
+  (check-equal? (three-arg-accumulate + 0 '(4 5 6))          15)
+  (check-equal? (three-arg-accumulate + 0 '())               0)
+  (check-equal? (three-arg-accumulate cons '() '(a b c d e)) '(a b c d e))
+
+  ; 19.4
+  (check-equal? (left-accumulate - '(2 3 4 5)) -10)
+
+  ; 19.6
+  (check-equal? (true-for-any-pair? equal? '(a b c b a)) #f)
+  (check-equal? (true-for-any-pair? equal? '(a b c c d)) #t)
+  (check-equal? (true-for-any-pair? < '(20 16 5 8 6))    #t)
+
+  ; 19.7
+  (check-equal? (true-for-all-pairs? equal? '(a b c c d)) #f)
+  (check-equal? (true-for-all-pairs? equal? '(a a a a a)) #t)
+  (check-equal? (true-for-all-pairs? < '(20 16 5 8 6)) #f)
+  (check-equal? (true-for-all-pairs? < '(3 7 19 22 43)) #t)
+
+
 ) ;; end module+ test 
   ; (printf ": ~a \n"  )
   ; (check-equal?  "Error for: ")
-
