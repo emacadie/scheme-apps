@@ -5,7 +5,6 @@
 (require "more-simply.rkt")
 (require (prefix-in ch17: "chapter17.rkt"))
 
-
 (butfirst '(This is chapter 19 Higher Order Functions))
 
 ;; Chapter 19 Higher Order Functions
@@ -33,7 +32,7 @@
                                (cdr sent) 
                                (list (func (car sent))))]
         [else (begin
-                (printf "in else, with car sent: ~a \n" (car sent))
+                ; (printf "in else, with car sent: ~a \n" (car sent))
                 (every2 func 
                         (cdr sent) 
                         (ch17:my-append outp 
@@ -235,6 +234,9 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 ;; The predicate must accept two words as its arguments. 
 ;; Your procedure should return #t if the argument predicate 
 ;; will return true for every two adjacent words in the sentence:
+
+;; This is a lot of work, but I figured we are supposed to use/make HOF, 
+;; So I made some HOF
 (define (true-for-all-pairs? pred the-list)
   (cond [(sentence-contains? #f
                              (keep-with-pairs-b pred 
@@ -251,6 +253,66 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 ; > (true-for-all-pairs? < '(3 7 19 22 43))
 ; #T
 
+;; 19.8  Rewrite true-for-all-pairs? (Exercise 19.7) using true-for-any-pair? (Exercise 19.6) as a helper procedure. 
+;; Don't use recursion in solving this problem (except for the recursion you've already used to write true-for-any-pair?). 
+;; Hint: You'll find the not procedure helpful.
+
+;; The only way I can think of to do this is to just add a condition to the cond.
+;; Is this an easy one? Or am I misunderstanding things?
+(define (true-for-all-pairs-19-8? pred the-list)
+  (cond [(not (true-for-any-pair? pred the-list)) #f] 
+        [(sentence-contains? #f
+                             (keep-with-pairs-b pred 
+                                                (create-pairs-from-list the-list) 
+                                                '())) 
+         #f]
+        [else #t]))
+
+; 19.11  Write repeated. (This is a hard exercise!) 
+;; from chapter 8
+;> ((repeated bf 3) '(she came in through the bathroom window))
+; (THROUGH THE BATHROOM WINDOW)
+;> ((repeated plural 4) 'computer)
+;COMPUTERSSSS
+; > ((repeated square 2) 3)
+; 81
+;; works, but does not return a function
+;; It's not THAT big of a deal to write the function name
+;; a few times, is it?
+;; (In the book, they use repeated to define a function at the place it is used)
+;; and it's still an HOF
+;; I will study some of the other people's answers, and punt on this one
+(define (my-repeated func num input)
+  (cond [(equal? num 0) input]
+        [else (my-repeated func (- num 1) (func input))]))
+
+#|
+(define (my-repeated-again func num . func-list)
+  (cond [(equal? num 0) func-list]
+        [else (my-repeated func (- num 1) (func e))]))
+|#
+(define (bf3 input)
+  (butfirst (butfirst (butfirst input)))
+)
+#|
+(define (inner-lambda func)
+  (lambda (x) (func x))
+)
+|#
+
+; 19.12  Write tree-reduce. 
+;; You may assume that the combiner argument can be invoked with no arguments. 
+#|
+> (tree-reduce
+   +
+   (make-node 3 (list (make-node 4 '())
+		      (make-node 7 '())
+		      (make-node 2 (list (make-node 3 '())
+					 (make-node 8 '()))))))
+27
+|#
+(define (tree-reduce func the-tree)
+  (reduce func (ch17:flatten2 the-tree)))
 
 (module+ test
   (require rackunit)
@@ -297,6 +359,17 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-equal? (true-for-all-pairs? < '(20 16 5 8 6)) #f)
   (check-equal? (true-for-all-pairs? < '(3 7 19 22 43)) #t)
 
+  ; 19.12
+  (check-equal? (tree-reduce +
+                             (make-node 3 (list (make-node 4 '())
+                                                (make-node 7 '())
+                                                (make-node 2 (list (make-node 3 '())
+                                                                   (make-node 8 '()))))))
+                27)
+#|
+> 
+27
+|#
 
 ) ;; end module+ test 
   ; (printf ": ~a \n"  )

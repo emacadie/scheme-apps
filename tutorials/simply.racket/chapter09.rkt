@@ -162,48 +162,73 @@
   (define (ends-vowel? wd) (vowel? (last wd)))
   (printf "(who '(sells out)): ~a \n" (who '(sells out)))
   (check-equal? (who '(sells out)) '(pete sells out roger sells out john sells out keith sells out) "Error for (who '(sells out))")
+
+  ; 9.05
   (printf "(prepend-every 's '(he aid he aid)): ~a \n" (prepend-every 's '(he aid he aid)))
   (check-equal? (prepend-every 's '(he aid he aid)) '(she said she said) "Error for (prepend-every 's '(he aid he aid))")
   (printf "(prepend-every 'anti '(dote pasto gone body)) ~a \n" (prepend-every 'anti '(dote pasto gone body)))
   (check-equal? (prepend-every 'anti '(dote pasto gone body)) '(antidote antipasto antigone antibody) "Error for (prepend-every 'anti '(dote pasto gone body))")
+
+  ; 9.06
   (printf "((sentence-version first) '(if i fell)): ~a \n" ((sentence-version first) '(if i fell)))
   (check-equal? ((sentence-version first) '(if i fell)) '(i i f) "Error for ((sentence-version first) '(if i fell))")
   (printf "((sentence-version square) '(8 2 4 6)): ~a \n" ((sentence-version square) '(8 2 4 6)))
   (check-equal? ((sentence-version square) '(8 2 4 6)) '(64 4 16 36) "Error for ((sentence-version square) '(8 2 4 6))")
+
+  ; 9.07
   (printf "(letterwords 'o '(got to get you into my life)): ~a \n" (letterwords 'o '(got to get you into my life)))
   (check-equal? (letterwords 'o '(got to get you into my life)) '(got to you into) "Error for (letterwords 'o '(got to get you into my life))")
+
+  ;; 9.08
   (printf "(hang 'potsticker 'etaoi): ~a \n" (hang 'potsticker 'etaoi))
   (check-equal? (hang 'potsticker 'etaoi) '(_ o t _ t i _ _ e _) "Error for (hang 'potsticker 'etaoi)")
+
+  ; 9.09
   (printf "(common-words '(this is good thing) '(what good can this little thing do )): ~a \n" (common-words '(this is good thing) '(what good can this little thing do )))
   (check-equal? (common-words '(this is good thing) '(what good can this little thing do )) '(this good thing) "Error for (common-words '(this is good thing) '(what good can this little thing do ))")
+
+  ; 9.10
   (printf "(my-appearances 'e 'feelings): ~a \n" (my-appearances 'e 'feelings))
   (check-equal? (my-appearances 'e 'feelings) 2 "Error for (my-appearances 'e 'feelings)")
   (printf "(my-appearances 'hello '(hello goodbye hello again goodbye again nothing again)): ~a \n" (my-appearances 'hello '(hello goodbye hello again goodbye again nothing again)))
   (check-equal? (my-appearances 'hello '(hello goodbye hello again goodbye again nothing again)) 2 "Error for (my-appearances 'hello '(hello goodbye hello again goodbye again nothing again))")
+
+  ; 9.11
   (printf "(unabbrev '(john 1 wayne fred 4) '(bill hank kermit joey)): ~a \n" (unabbrev '(john 1 wayne fred 4) '(bill hank kermit joey)))
   (check-equal? (unabbrev '(john 1 wayne fred 4) '(bill hank kermit joey)) '(john bill wayne fred joey) "Error for (unabbrev '(john 1 wayne fred 4) '(bill hank kermit joey))")
   (printf "(unabbrev '(i 3 4 tell 2) '(do you want to know a secret?)): ~a \n" (unabbrev '(i 3 4 tell 2) '(do you want to know a secret?)))
   (check-equal? (unabbrev '(i 3 4 tell 2) '(do you want to know a secret?)) '(i want to tell you) "Error for (unabbrev '(i 3 4 tell 2) '(do you want to know a secret?))")
+
+  ; 9.12
   (printf "(first-last '(california ohio nebraska alabama alaska massachusetts)): ~a \n" (first-last '(california ohio nebraska alabama alaska massachusetts)))
   (check-equal? (first-last '(california ohio nebraska alabama alaska massachusetts)) '(ohio alabama alaska) "Error for (first-last '(california ohio nebraska alabama alaska massachusetts))")
+
+  ; 9.13
   (printf "compose: ((compose sqrt abs) -25): ~a \n" ((compose sqrt abs) -25))
   (check-equal? ((compose sqrt abs) -25) 5 "Error for ((compose sqrt abs) -25)")
   (define secondf (compose first bf))
   (printf "compose: (secondf '(higher order function)): ~a \n" (secondf '(higher order function)))
   (check-equal? (secondf '(higher order function)) 'order "Error for (secondf '(higher order function))")
+
+  ; 9.14
   (printf "(substitute 'maybe 'yeah '(she loves you yeah yeah yeah)): ~a \n" (substitute 'maybe 'yeah '(she loves you yeah yeah yeah)))
   (check-equal? (substitute 'maybe 'yeah '(she loves you yeah yeah yeah)) '(she loves you maybe maybe maybe) "Error for (substitute 'maybe 'yeah '(she loves you yeah yeah yeah))")
+  
+  ; 9.15
   (define safe-sqrt (type-check sqrt number?))
   (printf "type-check: (safe-sqrt 16): ~a \n" (safe-sqrt 16))
   (check-equal? (safe-sqrt 16) 4 "Error for (safe-sqrt 16)")
   (printf "type-check: (safe-sqrt 'sarsaparilla): ~a \n" (safe-sqrt 'sarsaparilla))
   (check-equal? (safe-sqrt 'sarsaparilla) #f "Error for (safe-sqrt 'sarsaparilla)")
 
+  ; 9.16
   (define apl-sqrt (aplize sqrt))
   (printf "aplize: (apl-sqrt 36): ~a \n" (apl-sqrt 36))
   (check-equal? (apl-sqrt 36) 6 "Error for (apl-sqrt 36)")
   (printf "aplize: (apl-sqrt '(1 100 25 16)): ~a \n" (apl-sqrt '(1 100 25 16)))
   (check-equal? (apl-sqrt '(1 100 25 16)) '(1 10 5 4) "Error for (apl-sqrt '(1 100 25 16))")
+
+  ; 9.17
   (printf "(my-keep even? '(1 2 3 4 5 6 7)): ~a \n" (my-keep even? '(1 2 3 4 5 6 7)))
   (check-equal? (my-keep even? '(1 2 3 4 5 6 7)) '(2 4 6) "Error for (my-keep even? '(1 2 3 4 5 6 7))") 
 
