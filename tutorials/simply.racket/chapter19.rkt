@@ -56,6 +56,7 @@
 
 ; from chapter 14, tail-recursive
 (define (my-reduce func start sent)
+  ; (printf "calling my-reduce with start: ~a and send: ~a \n" start sent)
   (cond [(empty? sent) start]
         [else (my-reduce func
                          (func start (car sent))
@@ -89,7 +90,7 @@
 ;;(A B C D E)
 ;; my-reduce works for the first two. Try the accumulate from chapter 14
 
-;; I have non-tail recursive solutions
+;; I hate non-tail recursive solutions
 (define (three-arg-accumulate func start sent)
   (if (empty? sent)
       start
@@ -176,9 +177,10 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 
 (define (keep-with-pairs predicate sent outp)
   (cond [(empty? sent) outp] 
-        [(and (use-pred predicate (first sent)) (empty? outp)) (keep-with-pairs predicate 
-                                                                                (butfirst sent)
-                                                                                (list (first sent)))]
+        [(and (use-pred predicate (first sent)) 
+              (empty? outp)) (keep-with-pairs predicate 
+                                              (butfirst sent)
+                                              (list (first sent)))]
 	    [(use-pred predicate (first sent)) (keep-with-pairs predicate 
                                                             (cdr sent) 
                                                             (append outp (car sent)))]
@@ -190,12 +192,12 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 (define (keep-with-pairs-b predicate sent outp)
   ; (printf "keep-with-pairs-b with sent: ~a and outp: ~a \n" sent outp)
   (cond [(empty? sent) outp] 
-        [(empty? outp)(and ) (keep-with-pairs-b predicate 
-                                                                                (butfirst sent)
-                                                                                (list (use-pred predicate (first sent))))]
+        [(empty? outp) (keep-with-pairs-b predicate 
+                                          (butfirst sent)
+                                          (list (use-pred predicate (first sent))))]
 	    [(use-pred predicate (first sent)) (keep-with-pairs-b predicate 
-                                                            (cdr sent) 
-                                                            (ch17:my-append outp #t))]
+                                                              (cdr sent) 
+                                                              (ch17:my-append outp #t))]
 	    [else (begin
                 ; (printf "In the else\n")
                 (keep-with-pairs-b predicate 
@@ -311,8 +313,35 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 					 (make-node 8 '()))))))
 27
 |#
+; from chapter 1
+;; Here is the world program
+(define (leaf datum)
+  (make-node datum '()))
+
+(define (cities name-list)
+  (map leaf name-list))
+(define tiny-world-tree
+  (make-node
+   'world
+   (list (make-node 'zimbabwe (cities '(harare hwange)))
+         (make-node
+          'australia
+          (list
+           (make-node 'victoria (cities '(melbourne)))
+           (make-node '(new south wales) (cities '(sydney)))
+           (make-node 'queensland
+                      (cities '(cairns (port douglas)))))))))
+
 (define (tree-reduce func the-tree)
   (reduce func (ch17:flatten2 the-tree)))
+
+(define (add-two a b)
+  (printf "adding two nums ~a and ~a to get ~a \n" a b (+ a b) )
+  (+ a b)
+)
+(define (append-first-to-list the-list the-word)
+  (ch17:my-append the-list (first the-word))
+)
 
 (module+ test
   (require rackunit)
