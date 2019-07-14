@@ -9,6 +9,20 @@
 
 ;; Chapter 19 Higher Order Functions
 
+#|
+from chapter 17:
+" We'll use the name structured list for a list that includes sublists."
+(Isn't that also how they defined trees?)
+Anyway, they mention you can call higher-order functions on structured lists:
+(define (deep-map f structure)
+  (cond ((word? structure) (f structure))
+        ((null? structure) '())
+        (else (cons (deep-map f (car structure))
+                    (deep-map f (cdr structure))))))
+Map on the car and map on the cdr, just like trees.
+Not tail-recursive.
+|#
+
 ;; from chapter 14, tail-recursive
 ;; (every-something-r (lambda (x) (* 2 x)) '(1 2 3) '())
 (define (my-map func sent)
@@ -100,8 +114,8 @@
 (define (three-arg-accumulate-r func start sent)
   (cond [(empty? sent) start]
         [else (three-arg-accumulate-r func
-                         (func start (first sent))
-                         (bf sent) )]))
+                                      (func start (first sent))
+                                      (bf sent) )]))
 
 ; 19.4  Our accumulate combines elements from right to left. That is,
 ; (accumulate - '(2 3 4 5))
@@ -202,8 +216,7 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
                 ; (printf "In the else\n")
                 (keep-with-pairs-b predicate 
                                (butfirst sent) 
-                               (ch17:my-append outp #f))
-               )]))
+                               (ch17:my-append outp #f)))]))
 
 #|
 (define (true-for-any-pair? pred the-list) 
@@ -219,9 +232,7 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   ; (printf "sentence-contains? with thing: ~a the-sent: ~a \n" thing the-sent)
   (cond [(empty? the-sent) #f]
         [(equal? thing (first the-sent)) #t]
-        [else (sentence-contains? thing (butfirst the-sent))]
-)
-)
+        [else (sentence-contains? thing (butfirst the-sent))]))
 
 (define (true-for-any-pair? pred the-list) 
   (cond [(sentence-contains? #t 
@@ -281,7 +292,7 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 ;; works, but does not return a function
 ;; It's not THAT big of a deal to write the function name
 ;; a few times, is it?
-;; (In the book, they use repeated to define a function at the place it is used)
+;; (In the book, they mostly use repeated to define a function at the place it is used)
 ;; and it's still an HOF
 ;; I will study some of the other people's answers, and punt on this one
 (define (my-repeated func num input)
@@ -313,35 +324,58 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 					 (make-node 8 '()))))))
 27
 |#
-; from chapter 1
+; from chapter 18
 ;; Here is the world program
-(define (leaf datum)
-  (make-node datum '()))
 
-(define (cities name-list)
-  (map leaf name-list))
-(define tiny-world-tree
-  (make-node
-   'world
-   (list (make-node 'zimbabwe (cities '(harare hwange)))
-         (make-node
-          'australia
-          (list
-           (make-node 'victoria (cities '(melbourne)))
-           (make-node '(new south wales) (cities '(sydney)))
-           (make-node 'queensland
-                      (cities '(cairns (port douglas)))))))))
 
 (define (tree-reduce func the-tree)
   (reduce func (ch17:flatten2 the-tree)))
 
+;; make sure reduce works the way I think
+;; IE: first arg is the total
 (define (add-two a b)
   (printf "adding two nums ~a and ~a to get ~a \n" a b (+ a b) )
-  (+ a b)
-)
+  (+ a b))
+; I will use this in my tests for tree-reduce
 (define (append-first-to-list the-list the-word)
-  (ch17:my-append the-list (first the-word))
+  (ch17:my-append the-list (first the-word)))
+
+(define (word-from-first word-a word-b)
+  (printf "calling word-from-first with word-a: ~a and word-b: ~a \n" word-a word-b)
+  (cond [(null? word-a) (first word-b)]
+        [(null? word-b) word-a]
+        [else (word word-a " " (first word-b))]
 )
+)
+
+;; look at a few other answers for tree-reduce. 
+;; It looks like other answers are pretty long. Am I wrong?
+;; https://github.com/buntine/Simply-Scheme-Exercises/blob/master/19-implementing-higher-order-functions/19-12.scm
+(define (tree-reduce-buntine func tree)
+  (if (null? tree)
+    #f
+    (func (datum tree) (tree-reduce-in-forest func (children tree)))))
+
+(define (tree-reduce-in-forest func tree)
+  (if (null? tree)
+    (func)
+    (func (tree-reduce-buntine func (car tree))
+          (tree-reduce-in-forest func (cdr tree)))))
+
+;; https://github.com/mengsince1986/Simply-Scheme-exercises/blob/master/SS%20Exercises/Exercises%2019.2-19.13.scm
+(define (leaf? node)
+  (null? (children node)))
+
+(define (tree-reduce-meng combiner tree)
+  (if (leaf? tree)
+      (datum tree)
+      (combiner (datum tree) (forest-reduce combiner (children tree)))))
+
+(define (forest-reduce combiner forest)
+  (if (null? (cdr forest))
+      (tree-reduce combiner (car forest))
+      (combiner (tree-reduce-meng combiner (car forest))
+                (forest-reduce combiner (cdr forest)))))
 
 (module+ test
   (require rackunit)
@@ -389,12 +423,45 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-equal? (true-for-all-pairs? < '(3 7 19 22 43)) #t)
 
   ; 19.12
-  (check-equal? (tree-reduce +
-                             (make-node 3 (list (make-node 4 '())
-                                                (make-node 7 '())
-                                                (make-node 2 (list (make-node 3 '())
-                                                                   (make-node 8 '()))))))
-                27)
+  (define (leaf datum)
+    (make-node datum '()))
+
+  (define (cities name-list)
+    (map leaf name-list))
+  (define tiny-world-tree
+    (make-node
+     'world
+     (list (make-node 'zimbabwe (cities '(harare hwange)))
+           (make-node
+            'australia
+            (list
+             (make-node 'victoria (cities '(melbourne)))
+             (make-node '(new south wales) (cities '(sydney)))
+             (make-node 'queensland
+                        (cities '(cairns (port douglas)))))))))
+
+  (define num-tree (make-node 3 (list (make-node 4 '())
+                                      (make-node 7 '())
+                                      (make-node 2 (list (make-node 3 '())
+                                                         (make-node 8 '()))))))
+  (check-equal? (tree-reduce         + num-tree) 27)
+  (check-equal? (tree-reduce-buntine + num-tree) 27)
+  (check-equal? (tree-reduce-meng    + num-tree) 27)
+  (check-equal? (tree-reduce-meng append-first-to-list tiny-world-tree) 
+                '(world zimbabwe))
+  (check-equal? (tree-reduce append-first-to-list  tiny-world-tree) 
+                '(world zimbabwe))
+  (check-equal? (reduce append-first-to-list  (ch17:flatten2 tiny-world-tree)) 
+                '(world zimbabwe))
+  (check-equal? (my-reduce append-first-to-list '() (ch17:flatten2 tiny-world-tree))
+                '(w z h h a v m n s w s q c p d))
+
+#|
+  (check-equal?  )
+chapter19.rkt/test> 
+
+
+|#
 #|
 > 
 27
