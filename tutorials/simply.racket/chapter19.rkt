@@ -338,7 +338,28 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (+ a b))
 ; I will use this in my tests for tree-reduce
 (define (append-first-to-list the-list the-word)
-  (ch17:my-append the-list (first the-word)))
+  (cond [(null? the-list) (list (first the-word))]
+        [else (ch17:my-append the-list (first the-word))]))
+
+; this is when reduce goes in reverse order of how I think it should
+; from end of list to beginning
+(define (word-from-first-r word-b word-a)
+  (printf "calling word-from-first with word-b: ~a and word-a: ~a \n" word-b word-a)
+  (cond [(null? word-a) (first word-b)]
+        [(null? word-b) word-a]
+        [(not (member? " "  word-a)) 
+         (begin
+           (printf "(count word-a): ~a and (count word-b): ~a \n"
+                   (count word-a) (count word-b)
+                   )
+           (word (first word-a) " " (first word-b))
+           )]
+        [else (begin
+                (printf "In the else\n")
+                (word (first word-b) " " word-a)
+                ) ]
+)
+)
 
 (define (word-from-first word-a word-b)
   (printf "calling word-from-first with word-a: ~a and word-b: ~a \n" word-a word-b)
