@@ -351,9 +351,7 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
   (printf "Calling parse-scheme with ~a \n" expr)
   (if (leaf? expr)
       (make-node (car expr) (parse-scheme (cdr expr)))
-      expr
-)
-)
+      expr))
 
 ; (define (parse-scheme-tree expr)
 #|

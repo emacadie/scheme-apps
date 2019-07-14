@@ -381,6 +381,7 @@ I don't think you can do tail-recursion for this stuff.
   (printf "(mystery '(1 2 3 4)): ~a \n" (mystery '(1 2 3 4)))
   (check-equal? (mystery '(1 2 3 4)) '(4 3 2 1) "Error for (mystery '(1 2 3 4))")
 
+  ;; 17.06
   (check-three-things-equal? '(get back the word)      (append '(get back) '(the word))      (my-append '(get back) '(the word)))
   (check-three-things-equal? '(i am the walrus)        (append '(i am) '(the walrus))        (my-append '(i am) '(the walrus)))
   (check-three-things-equal? '(Rod Argent Chris White) (append '(Rod Argent) '(Chris White)) (my-append '(Rod Argent) '(Chris White)))
@@ -394,11 +395,12 @@ I don't think you can do tail-recursion for this stuff.
   (check-three-things-equal? '(1 2 3 4 5 '(10 11 12))  (append '(1 2 3) '(4 5 '(10 11 12)))  (my-append '(1 2 3) '(4 5 '(10 11 12))) )
 
   (check-three-things-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
-  (check-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) )
+  (check-equal?              '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) )
   (check-three-things-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
   ; (check-three-things-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) 4 5 6 '(7 8 9)) (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
-  (check-equal? '(1 2 3 4 5 6 7 8 9)  (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
+  (check-equal?              '(1 2 3 4 5 6 7 8 9)  (append-multi-lists '(1 2 3) 4 5 6 '(7 8 9)))
 
+  ;; 17.07
   (check-equal? (sentence 'hello 'world)                    (sentence-via-append 'hello 'world))
   (check-equal? (sentence 'hello '(this is a ren))          (sentence-via-append 'hello '(this is a ren)))
   (check-equal? (sentence '(what is this) '(this is a ren)) (sentence-via-append '(what is this) '(this is a ren)))
@@ -418,9 +420,12 @@ I don't think you can do tail-recursion for this stuff.
   (check-three-things-equal? '(hello there bug guy) (multi-sentence-append '(hello there) 'bug 'guy) (multi-sentence-reduce '(hello there) 'bug 'guy) )
   ;; multi-sentence-reduce goes a bit beyond sentence, ignoring deep lists
   ;; Winnin' with the 'duce!
-  (check-equal? '(hello world this is a list okay) (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list)) )
-  (check-equal? '(hello world this is a list okay this is fine) (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list) '(this is fine)))
+  (check-equal? '(hello world this is a list okay)           
+                (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list)) )
+  (check-equal? '(hello world this is a list okay this is fine) 
+                (multi-sentence-reduce 'hello 'world '(this is a list) 'okay '(this is a '(deep) list) '(this is fine)))
   
+  ;; 17.08
   ; new-member, simply-member
   (check-three-things-equal? '(d e f g) (member 'd '(a b c d e f g))  (new-member 'd '(a b c d e f g)))
   (check-three-things-equal? '(e f g)   (member 'e '(a b c d e f g))  (simply-member 'e '(a b c d e f g)))
@@ -429,16 +434,23 @@ I don't think you can do tail-recursion for this stuff.
   ;; from Husk docs
   (check-three-things-equal? '((a) c)   (member (list 'a) '(b (a) c)) (new-member (list 'a) '(b (a) c)))
   (check-three-things-equal? '((a) c)   (member (list 'a) '(b (a) c)) (simply-member (list 'a) '(b (a) c)))
+
+  ;; 17.09
   (check-three-things-equal? 'best (list-ref '(Lisp is the best language) 3) (my-list-ref '(Lisp is the best language) 3))
-  (check-three-things-equal? 'c    (list-ref '(a b c d) 2)                   (my-list-ref '(a b c d) 2) ) 
-  (check-three-things-equal? 3 (length '(a b c)) (my-length '(a b c)))
-  (check-three-things-equal? 3 (length '(a (b) (c d e)))  (my-length '(a (b) (c d e))) )
-  (check-three-things-equal? 3 (length '(a (b) (c d '(f g h) e)))  (my-length '(a (b) (c d '(f g h) e))) )
-  (check-three-things-equal? 0 (length '())  (my-length '()) )
+  (check-three-things-equal? 'c    (list-ref '(a b c d) 2)                   (my-list-ref '(a b c d) 2) )
+
+  ;; 17.10
+  (check-three-things-equal? 3 (length '(a b c))                  (my-length '(a b c)))
+  (check-three-things-equal? 3 (length '(a (b) (c d e)))          (my-length '(a (b) (c d e))) )
+  (check-three-things-equal? 3 (length '(a (b) (c d '(f g h) e))) (my-length '(a (b) (c d '(f g h) e))) )
+  (check-three-things-equal? 0 (length '())                       (my-length '()) )
+
+  ;; 17.11
   (check-equal? #t (before-in-list? '(back in the ussr) 'in 'ussr))
   (check-equal? #f (before-in-list? '(back in the ussr) 'the 'back))
   (check-equal? #f (before-in-list? '(back in the ussr) 'in 'usa))
 
+  ;; 17.12
   (check-three-things-equal? '(a b c d e f g h i j k) 
                              (flatten2 '(((a b) c (d e)) (f g) ((((h))) (i j) k))) 
                              (flatten-reduce '(((a b) c (d e)) (f g) ((((h))) (i j) k))) )
@@ -449,11 +461,13 @@ I don't think you can do tail-recursion for this stuff.
                              (flatten2 '(the man (in ((the) moon)) ate (the) potstickers)) 
                              (flatten-reduce '(the man (in ((the) moon)) ate (the) potstickers)))
 
+  ;; 17.14
   (check-equal? '(e f) (branch '(3) '((a b) (c d) (e f) (g h))) )
   (check-equal? 'f (branch '(3 2) '((a b) (c d) (e f) (g h))))
   (check-equal? 'h (branch '(2 3 1 2) '((a b) ((c d) (e f) ((g h) (i j)) k) (l m))))
   (check-equal? 'h (branch '(2 3 1 2) '((a b) ((c d) (e f) ((g h z) (i j)) k) (l m))))
   
+  ;; 17.16
   (check-equal? (valid-infix-easy? '(4 + 3 * (5 - 2))) #t)
   (check-equal? (valid-infix-easy? '(4 + 3 * (5 2))) #f)
   (check-equal? (valid-infix? '(4 + 3 * (5 - 2))) #t)

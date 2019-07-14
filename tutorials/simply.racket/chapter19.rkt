@@ -324,9 +324,6 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 					 (make-node 8 '()))))))
 27
 |#
-; from chapter 18
-;; Here is the world program
-
 
 (define (tree-reduce func the-tree)
   (reduce func (ch17:flatten2 the-tree)))
@@ -344,30 +341,24 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 ; this is when reduce goes in reverse order of how I think it should
 ; from end of list to beginning
 (define (word-from-first-r word-b word-a)
-  (printf "calling word-from-first with word-b: ~a and word-a: ~a \n" word-b word-a)
+  ; (printf "calling word-from-first-r w/word-b: ~a & word-a: ~a\n" word-b word-a)
   (cond [(null? word-a) (first word-b)]
         [(null? word-b) word-a]
         [(not (member? " "  word-a)) 
          (begin
-           (printf "(count word-a): ~a and (count word-b): ~a \n"
-                   (count word-a) (count word-b)
-                   )
+           ; (printf "word-a does not have a space \n" )
            (word (first word-a) " " (first word-b))
            )]
         [else (begin
-                (printf "In the else\n")
+                ; (printf "In the else\n")
                 (word (first word-b) " " word-a)
-                ) ]
-)
-)
+                ) ]))
 
 (define (word-from-first word-a word-b)
-  (printf "calling word-from-first with word-a: ~a and word-b: ~a \n" word-a word-b)
+  ; (printf "calling word-from-first w/word-a: ~a & word-b: ~a \n" word-a word-b)
   (cond [(null? word-a) (first word-b)]
         [(null? word-b) word-a]
-        [else (word word-a " " (first word-b))]
-)
-)
+        [else (word word-a " " (first word-b))]))
 
 ;; look at a few other answers for tree-reduce. 
 ;; It looks like other answers are pretty long. Am I wrong?
@@ -376,10 +367,10 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (if (null? tree)
     #f
     (func (datum tree) (tree-reduce-in-forest func (children tree)))))
-
+;; I think the no-arg call to func is causing issues
 (define (tree-reduce-in-forest func tree)
   (if (null? tree)
-    (func)
+    (func) 
     (func (tree-reduce-buntine func (car tree))
           (tree-reduce-in-forest func (cdr tree)))))
 
@@ -433,15 +424,15 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-equal? (left-accumulate - '(2 3 4 5)) -10)
 
   ; 19.6
-  (check-equal? (true-for-any-pair? equal? '(a b c b a)) #f)
-  (check-equal? (true-for-any-pair? equal? '(a b c c d)) #t)
-  (check-equal? (true-for-any-pair? < '(20 16 5 8 6))    #t)
+  (check-equal? (true-for-any-pair? equal? '(a b c b a))   #f)
+  (check-equal? (true-for-any-pair? equal? '(a b c c d))   #t)
+  (check-equal? (true-for-any-pair? <      '(20 16 5 8 6)) #t)
 
   ; 19.7
-  (check-equal? (true-for-all-pairs? equal? '(a b c c d)) #f)
-  (check-equal? (true-for-all-pairs? equal? '(a a a a a)) #t)
-  (check-equal? (true-for-all-pairs? < '(20 16 5 8 6)) #f)
-  (check-equal? (true-for-all-pairs? < '(3 7 19 22 43)) #t)
+  (check-equal? (true-for-all-pairs? equal? '(a b c c d))   #f)
+  (check-equal? (true-for-all-pairs? equal? '(a a a a a))   #t)
+  (check-equal? (true-for-all-pairs? <      '(20 16 5 8 6)) #f)
+  (check-equal? (true-for-all-pairs? <      '(3 7 19 22 43)) #t)
 
   ; 19.12
   (define (leaf datum)
@@ -470,22 +461,25 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-equal? (tree-reduce-meng    + num-tree) 27)
   (check-equal? (tree-reduce-meng append-first-to-list tiny-world-tree) 
                 '(world zimbabwe))
-  (check-equal? (tree-reduce append-first-to-list  tiny-world-tree) 
+  (check-equal? (tree-reduce append-first-to-list tiny-world-tree) 
                 '(world zimbabwe))
   (check-equal? (reduce append-first-to-list  (ch17:flatten2 tiny-world-tree)) 
                 '(world zimbabwe))
   (check-equal? (my-reduce append-first-to-list '() (ch17:flatten2 tiny-world-tree))
                 '(w z h h a v m n s w s q c p d))
+  (check-equal? (tree-reduce word-from-first-r tiny-world-tree)
+                "w z h h a v m n s w s q c d p")
+  ; It looks like meng skips the cities in Zimbabwe for some reason.
+  ; If I was using DrRacket, I would insert the emoji for smugness.
+  (check-equal? (tree-reduce-meng word-from-first-r tiny-world-tree)
+                "w z a v m n s w s q c d p")
+  (check-equal? (my-reduce word-from-first "" (ch17:flatten2 tiny-world-tree)) 
+                " w z h h a v m n s w s q c p d")
+
 
 #|
   (check-equal?  )
-chapter19.rkt/test> 
 
-
-|#
-#|
-> 
-27
 |#
 
 ) ;; end module+ test 
