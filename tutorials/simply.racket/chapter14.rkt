@@ -355,9 +355,6 @@
   (check-equal? (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '()) 
                 '(3 4 6 7 9 12 18 24 36 40 50 99) 
                 "Error for: (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '())")
-  ; (printf ": ~a \n"  )
-  ; (check-equal?  "Error for: ")
-
 ) ;; end module+ test 
 
 

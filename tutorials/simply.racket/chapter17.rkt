@@ -122,10 +122,16 @@ I don't think you can do tail-recursion for this stuff.
 ;; So I can win with the 'duce!!
 ;; Intended to take two items
 (define (my-append listA listB)
+  ; (printf "Calling my-append with listA: ~a and listB: ~a\n" listA listB)
   (cond [(null-or-empty? listB) listA]
         [(null-or-empty? listA) listB]
         ;; added 2019-07-01
-        [(and (not-list-or-pair listA) (not-list-or-pair listB)) (list listA listB)]
+        [(and (not-list-or-pair listA) 
+              (not-list-or-pair listB)) 
+         (list listA listB)]
+        [(and (not-list-or-pair listA)
+              (list? listB))
+         (my-append (list listA) listB)]
         [(not-list-or-pair listB) (reverse (cons listB (reverse listA)))]
         [else (my-append (reverse (cons (car listB) (reverse listA))) (cdr listB))])) ; line 129
 

@@ -174,7 +174,8 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 ;#T
 ;; https://github.com/pongsh/simply-scheme-exercises/blob/master/19-implementing-higher-order-functions/19.6.scm 
 ;; is a lot shorter. I thought about this, but there are no higher-order functions.
-;; https://github.com/buntine/Simply-Scheme-Exercises/blob/master/19-implementing-higher-order-functions/19-6.scm also shorter, but again no HOF
+;; https://github.com/buntine/Simply-Scheme-Exercises/blob/master/19-implementing-higher-order-functions/19-6.scm 
+;; also shorter, but again no HOF
 ;; I re-did keep/filter since I have to send two args each time, not just one
 ;; and I made a function to turn the list into a list of pairs
 (define (create-pairs-from-list the-list)
@@ -215,8 +216,8 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 	    [else (begin
                 ; (printf "In the else\n")
                 (keep-with-pairs-b predicate 
-                               (butfirst sent) 
-                               (ch17:my-append outp #f)))]))
+                                   (butfirst sent) 
+                                   (ch17:my-append outp #f)))]))
 
 #|
 (define (true-for-any-pair? pred the-list) 
@@ -280,6 +281,67 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
                                                 '())) 
          #f]
         [else #t]))
+
+;; 19.9  Rewrite either of the sort procedures from Chapter 15 to take two arguments, a list and a predicate. 
+;; It should sort the elements of that list according to the given predicate:
+; > (sort '(4 23 7 5 16 3) <)
+; (3 4 5 7 16 23)
+; > (sort '(4 23 7 5 16 3) >)
+; (23 16 7 5 4 3)
+; > (sort '(john paul george ringo) before?)
+; (GEORGE JOHN PAUL RINGO)
+;; before? is a Simply Scheme function
+(define (remove-once-sent wd the-sent)
+  (cond [(empty? the-sent) '()]
+        [(equal? wd (first the-sent)) (bf the-sent)]
+        [else (se (first the-sent) (remove-once-sent wd (bf the-sent)))]))
+
+;; this is from the comments
+(define (earliest-word-sent the-sent pred)
+  (accumulate (lambda (wd1 wd2) (if (pred wd1 wd2) wd1 wd2))
+	      the-sent))
+
+(define (sort-19-sent the-sent pred)
+  (cond [(empty? the-sent) '()]
+        [else (se (earliest-word-sent the-sent pred)
+                  (sort-19-sent (remove-once-sent (earliest-word-sent the-sent pred) 
+                                                  the-sent) 
+                                pred))]))
+;; now let's try with lists and reduce
+(define (remove-once-list wd the-list)
+  ; (printf "Calling remove-once-list with wd ~a and list ~a\n" wd the-list)
+  (cond [(empty? the-list) '()]
+        [(equal? wd (car the-list)) (cdr the-list)]
+        [else (ch17:flatten2 (list (car the-list) 
+                                   (remove-once-list wd (cdr the-list))))]))
+
+;; tail-recursion is better; come back to this
+(define (remove-once-list-r wd the-list outp)
+  (printf "Calling remove-once-list with wd ~a and list ~a and output ~a\n" 
+          wd the-list outp)
+  (cond [(empty? the-list) '()]
+        [(equal? wd (car the-list)) (cdr the-list)]
+        [else (list (car the-list) (remove-once-list wd (cdr the-list)))
+              ; (remove-once-list-r wd)
+]))
+
+;; this is from the comments
+(define (earliest-word-list the-list pred)
+  ; (printf "calling earliest-word-list with list ~a \n" the-list)
+  (reduce (lambda (wd1 wd2) (if (pred wd1 wd2) wd1 wd2))
+	      the-list))
+
+(define (sort-19-list the-list pred)
+  ; (printf "Calling sort-19-list with list ~a \n" the-list)
+  (cond [(empty? the-list) '()]
+        [else
+         (ch17:my-append (earliest-word-list the-list pred)
+                         (sort-19-list (remove-once-list (earliest-word-list the-list 
+                                                                             pred) 
+                                                         the-list) 
+                                       pred))]))
+
+
 
 ; 19.11  Write repeated. (This is a hard exercise!) 
 ;; from chapter 8
@@ -437,6 +499,27 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-equal? (true-for-all-pairs? <      '(20 16 5 8 6))  #f)
   (check-equal? (true-for-all-pairs? <      '(3 7 19 22 43)) #t)
 
+  ;; 19.09
+; > (sort '(4 23 7 5 16 3) <)
+; (3 4 5 7 16 23)
+; > (sort '(4 23 7 5 16 3) >)
+; (23 16 7 5 4 3)
+; > (sort '(john paul george ringo) before?)
+; (GEORGE JOHN PAUL RINGO)
+  (check-equal? (sort-19-sent '(4 23 7 5 16 3) <)
+                '(3 4 5 7 16 23))
+  (check-equal? (sort-19-sent '(4 23 7 5 16 3) >)
+                '(23 16 7 5 4 3))
+  (check-equal? (sort-19-sent '(john paul george ringo) before?) 
+                '(george john paul ringo))
+  (check-equal? (sort-19-list '(4 23 7 5 16 3) <)
+                '(3 4 5 7 16 23))
+  (check-equal? (sort-19-list '(4 23 7 5 16 3) >)
+                '(23 16 7 5 4 3))
+  (check-equal? (sort-19-list '(john paul george ringo) before?) 
+                '(george john paul ringo))
+
+;; (check-equal? )
   ;; 19.11
   ;; using examples from chapter 8
   (check-three-things-equal? '(through the bathroom window)
@@ -504,5 +587,4 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 |#
 
 ) ;; end module+ test 
-  ; (printf ": ~a \n"  )
-  ; (check-equal?  "Error for: ")
+  
