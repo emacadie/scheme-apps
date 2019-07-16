@@ -342,6 +342,61 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
                                        pred))]))
 
 
+;; 19.10  Write tree-map, analogous to our deep-map, 
+; but for trees, using the datum and children selectors. 
+(define (deep-map f structure)
+  ; (printf "Calling deep-map with structure ~a\n" structure)
+  (cond [(word? structure) (f structure)]
+        [(null? structure) '()]
+        [else (cons (deep-map f (car structure))
+                    (deep-map f (cdr structure)))]))
+
+;; I admit, I tried to get it to work with one function,
+;; and I peeked at the other solutions, and I had forgotten
+;; the cardinal rule of trees:
+;; a function for trees, and one for the forest
+;; this is some progress
+(define (tree-map f structure)
+  ; (printf "Calling tree-map with structure: ~a\n" structure)
+  (cond [(leaf? structure) 
+         (begin
+           ; (printf "~a is a leaf\n" structure)
+           (make-node (f (datum structure)) '())
+           )]
+        [(null? structure) '()]
+        [else (make-node (f (datum structure))
+                    (forest-map f (children structure)))]))
+
+(define (forest-map f structure)
+  ; (printf "calling forest-map with structure: ~a\n" structure)
+  (cond [(null? structure) null]
+        [else (make-node (tree-map f (datum structure))
+                         (forest-map f (children structure)))]))
+
+(define (count-leaves tree)
+  (if (leaf? tree)
+      1
+      (count-leaves-in-forest (children tree))))
+
+(define (count-leaves-in-forest forest)
+  (if (null? forest)
+      0
+      (+ (count-leaves (car forest))
+         (count-leaves-in-forest (cdr forest)))))
+
+(define (leaf datum)
+  (make-node datum '()))
+(define (tree-map-meng fn tree)
+  (if (leaf? tree)
+      (leaf (fn (datum tree)))
+      (cons (fn (datum tree))
+            (forest-map-meng fn (children tree)))))
+
+(define (forest-map-meng fn forest)
+  (if (null? forest)
+      '()
+      (cons (tree-map-meng fn (car forest))
+            (forest-map-meng fn (cdr forest)))))
 
 ; 19.11  Write repeated. (This is a hard exercise!) 
 ;; from chapter 8
@@ -386,7 +441,7 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 					 (make-node 8 '()))))))
 27
 |#
-
+; this seems to work
 (define (tree-reduce func the-tree)
   (reduce func (ch17:flatten2 the-tree)))
 
@@ -443,13 +498,18 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 (define (tree-reduce-meng combiner tree)
   (if (leaf? tree)
       (datum tree)
-      (combiner (datum tree) (forest-reduce combiner (children tree)))))
+      (combiner (datum tree) (forest-reduce-meng combiner (children tree)))))
 
-(define (forest-reduce combiner forest)
+(define (forest-reduce-meng combiner forest)
   (if (null? (cdr forest))
-      (tree-reduce combiner (car forest))
+      (tree-reduce-meng combiner (car forest))
       (combiner (tree-reduce-meng combiner (car forest))
-                (forest-reduce combiner (cdr forest)))))
+                (forest-reduce-meng combiner (cdr forest)))))
+
+;; 19.13  Write deep-reduce, similar to tree-reduce, but for structured lists: 
+;; I think this can be done like tree-reduce
+(define (deep-reduce func deep-list)
+  (reduce func (ch17:flatten2 deep-list)))
 
 (module+ test
   (require rackunit)
@@ -458,6 +518,28 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (unless (and (check-equal? result their-append-rsl)
                (check-equal? result my-append-rsl))
     (fail-check)))
+
+  (define (leaf datum)
+    (make-node datum '()))
+
+  (define (cities name-list)
+    (map leaf name-list))
+  (define tiny-world-tree
+    (make-node
+     'world
+     (list (make-node 'zimbabwe (cities '(harare hwange)))
+           (make-node
+            'australia
+            (list
+             (make-node 'victoria (cities '(melbourne)))
+             (make-node '(new south wales) (cities '(sydney)))
+             (make-node 'queensland
+                        (cities '(cairns (port douglas)))))))))
+
+  (define num-tree (make-node 3 (list (make-node 4 '())
+                                      (make-node 7 '())
+                                      (make-node 2 (list (make-node 3 '())
+                                                         (make-node 8 '()))))))
 
   ;; Just testing my-map
   (check-three-things-equal? (my-map (lambda (x) (* 2 x)) '(1 2 3) ) 
@@ -500,12 +582,12 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-equal? (true-for-all-pairs? <      '(3 7 19 22 43)) #t)
 
   ;; 19.09
-; > (sort '(4 23 7 5 16 3) <)
-; (3 4 5 7 16 23)
-; > (sort '(4 23 7 5 16 3) >)
-; (23 16 7 5 4 3)
-; > (sort '(john paul george ringo) before?)
-; (GEORGE JOHN PAUL RINGO)
+  ; > (sort '(4 23 7 5 16 3) <)
+  ; (3 4 5 7 16 23)
+  ; > (sort '(4 23 7 5 16 3) >)
+  ; (23 16 7 5 4 3)
+  ; > (sort '(john paul george ringo) before?)
+  ; (GEORGE JOHN PAUL RINGO)
   (check-equal? (sort-19-sent '(4 23 7 5 16 3) <)
                 '(3 4 5 7 16 23))
   (check-equal? (sort-19-sent '(4 23 7 5 16 3) >)
@@ -519,7 +601,25 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-equal? (sort-19-list '(john paul george ringo) before?) 
                 '(george john paul ringo))
 
-;; (check-equal? )
+  ;; 19.10
+  ;; Mine works about as well as buntine's and mengsince's
+  ;; I noticed that structured lists behave like trees (usually)
+  ;; but there are many different kind of trees
+  (check-equal? (deep-map (lambda (x) (first x)) tiny-world-tree)
+                '(w (z (h) (h)) (a (v (m)) ((n s w) (s)) (q (c) ((p d))))))
+  (check-equal? (tree-map (lambda (x) (first x)) tiny-world-tree)
+                '(w (z (h) (h)) (a (v (m)) (new (s)) (q (c) (port)))))
+  (check-equal? (tree-map (lambda (x) (+ 1 x)) num-tree)
+                '(4 (5) (8) (3 (4) (9))))
+  (check-equal? (deep-map (lambda (x) (+ 1 x)) num-tree)
+                '(4 (5) (8) (3 (4) (9))))
+  (check-three-things-equal? (tree-map (lambda (x) (+ 1 x)) num-tree)
+                             (deep-map (lambda (x) (+ 1 x)) num-tree)
+                             '(4 (5) (8) (3 (4) (9))))
+  ; neither I nor meng-since can handle this with tree-map
+  (check-equal? (deep-map first '(((the man) in ((the) moon)) ate (the) potstickers))
+                '(((t m) i ((t) m)) a (t) p))
+  ;; (check-equal? )
   ;; 19.11
   ;; using examples from chapter 8
   (check-three-things-equal? '(through the bathroom window)
@@ -536,30 +636,9 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-three-things-equal? '(banana banana banana banana banana banana banana banana)
                              ((repeated double-sentence 3) '(banana))
                              (my-repeated double-sentence 3 '(banana)))
-;; (check-three-things-equal? )
+  ;; (check-three-things-equal? )
 
   ; 19.12
-  (define (leaf datum)
-    (make-node datum '()))
-
-  (define (cities name-list)
-    (map leaf name-list))
-  (define tiny-world-tree
-    (make-node
-     'world
-     (list (make-node 'zimbabwe (cities '(harare hwange)))
-           (make-node
-            'australia
-            (list
-             (make-node 'victoria (cities '(melbourne)))
-             (make-node '(new south wales) (cities '(sydney)))
-             (make-node 'queensland
-                        (cities '(cairns (port douglas)))))))))
-
-  (define num-tree (make-node 3 (list (make-node 4 '())
-                                      (make-node 7 '())
-                                      (make-node 2 (list (make-node 3 '())
-                                                         (make-node 8 '()))))))
   (check-equal? (tree-reduce         + num-tree) 27)
   (check-equal? (tree-reduce-buntine + num-tree) 27)
   (check-equal? (tree-reduce-meng    + num-tree) 27)
@@ -575,12 +654,22 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
                 "w z h h a v m n s w s q c d p")
   ; It looks like meng skips the cities in Zimbabwe for some reason.
   ; If I was using DrRacket, I would insert the emoji for smugness.
+  ; They got repeated, but I think I got tree-reduce
+  ; That is assuming you flatten properly
   (check-equal? (tree-reduce-meng word-from-first-r tiny-world-tree)
-                "w z a v m n s w s q c d p")
+                ; "w z a v m n s w s q c d p"
+                "w z a m s q port c")
   (check-equal? (my-reduce word-from-first "" (ch17:flatten2 tiny-world-tree)) 
                 " w z h h a v m n s w s q c p d")
 
-
+  ;; 19.13
+  (check-equal? (deep-reduce word '(r ((a (m b) (l)) (e (r)))))
+                'rambler)
+  (check-equal? (deep-reduce word-from-first-r '(((the man) in ((the) moon)) ate (the) potstickers))
+                "t m i t m a p t")
+  (check-equal? (deep-reduce + num-tree) 27)
+  (check-equal? (deep-reduce word-from-first-r tiny-world-tree)
+                "w z h h a v m n s w s q c d p")
 #|
   (check-equal?  )
 

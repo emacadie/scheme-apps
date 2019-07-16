@@ -196,9 +196,11 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
   (reduce max (ch17:flatten2 (count-depth-work tree 0 '()))))
 
 (define (count-depth-work tree num num-list)
+  (printf "calling count-depth-work with tree ~a num ~a and num-list ~a\n"
+          tree num num-list)
   (if (leaf? tree)
        (append num-list (+ 1 num))
-      (count-depth-in-forest (children tree) num num-list)))
+       (count-depth-in-forest (children tree) num num-list)))
 
 (define (count-depth-in-forest forest num num-list)
   (if (null? forest)
