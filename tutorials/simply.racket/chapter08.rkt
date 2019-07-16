@@ -25,8 +25,6 @@
 
 ;; Write a procedure words that takes a word as its argument and returns a sentence of the names of the letters in the word:
 
-
-
 ;; (You may make up your own names for the letters or look up the standard ones if you want.)
 
 ;; Hint: Start by writing a helper procedure that figures out the name for a single letter.
@@ -76,7 +74,6 @@
 ;; and another helper procedure grade-modifier that returns −.33, 0, or .33, depending on whether the grade has a minus, a plus, or neither.
 ;; base-grade and modify-grade in more-simply
 
-
 (define (convert-grade-to-num grade)
   (+ (base-grade grade) (modify-grade grade)))
 
@@ -108,41 +105,61 @@
 (module+ test
   (require rackunit)
   (check-true #t)
+
+  ;; 8.04
   (define (ends-vowel? wd) (vowel? (last wd)))
   (printf "(choose-beatles ends-vowel?): ~a \n" (choose-beatles ends-vowel?))
   (check-equal? (choose-beatles ends-vowel?) '(george ringo) "Error for (choose-beatles ends-vowel?)")
   (define (even-count? wd) (even? (count wd)))
   (printf "(choose-beatles even-count?): ~a \n" (choose-beatles even-count?))
   (check-equal? (choose-beatles even-count?) '(john paul george) "Error for (choose-beatles even-count?)")
+
+  ;; 8.05
   (define (amazify name)
     (word 'the-amazing- name))
   (printf "(transform-beatles amazify): ~a \n" (transform-beatles amazify))
   (check-equal? (transform-beatles amazify) '(the-amazing-john the-amazing-paul the-amazing-george the-amazing-ringo) "Error on (transform-beatles amazify)")
   (printf "(transform-beatles butfirst) ~a \n" (transform-beatles butfirst))
   (check-equal? (transform-beatles butfirst) '(ohn aul eorge ingo) "Error on (transform-beatles butfirst)")
+
+  ;; 8.06
   (printf "(words 'cab): ~a \n" (words 'cab))
   (check-equal? (words 'cab) '(charlie alpha bravo) "Error for (words 'cab)")
+
+  ;; 8.07
   (printf "(letter-count '(fixing a hole)): ~a \n" (letter-count '(fixing a hole)))
   (check-equal? (letter-count '(fixing a hole)) 11 "Error for (letter-count '(fixing a hole))")
+
+  ;; 8.08
   (printf "(exaggerate '(i ate 3 potstickers)): ~a \n" (exaggerate '(i ate 3 potstickers)))
   (check-equal? (exaggerate '(i ate 3 potstickers)) '(i ate 6 potstickers) "Error for (exaggerate '(i ate 3 potstickers))")
   (printf "(exaggerate '(the chow fun is good here)): ~a \n" (exaggerate '(the chow fun is good here)))
   (check-equal? (exaggerate '(the chow fun is good here)) '(the chow fun is great here) "Error for (exaggerate '(the chow fun is good here))")
   (printf "(exaggerate '(but the egg drop soup is bad)): ~a \n" (exaggerate '(but the egg drop soup is bad)))
   (check-equal? (exaggerate '(but the egg drop soup is bad)) '(but the egg drop soup is terrible) "Error for (exaggerate '(but the egg drop soup is bad))")
+
+  ;; 8.10
   (printf "(true-for-all? even? '(2 4 6 8)): ~a \n" (true-for-all? even? '(2 4 6 8)))
   (check-equal? (true-for-all? even? '(2 4 6 8)) #t "Error for (true-for-all? even? '(2 4 6 8))")
   (printf "(true-for-all? even? '(2 6 3 4)): ~a \n" (true-for-all? even? '(2 6 3 4)))
   (check-equal? (true-for-all? even? '(2 6 3 4)) #f "Error for (true-for-all? even? '(2 6 3 4))")
+
+  ;; 8.11
   (printf "(gpa '(A A+ B+ B)): ~a \n" (gpa '(A A+ B+ B)))
   (check-equal? (gpa '(A A+ B+ B)) 3.665 "Error for (gpa '(A A+ B+ B))")
+
+  ;; 8.12
   (printf "(count-ums '(today um we are going to um talk about functional um programming)): ~a \n" 
           (count-ums '(today um we are going to um talk about functional um programming)))
   (check-equal? (count-ums '(today um we are going to um talk about functional um programming))
                 3 
                 "Error for (count-ums '(today um we are going to um talk about functional um programming))")
+
+  ;; 8.13
   (printf "(phone-unspell 'popcorn): ~a \n" (phone-unspell 'popcorn))
   (check-equal? (phone-unspell 'popcorn) '(7 6 7 2 6 7 6) "Error for (phone-unspell 'popcorn)")
+
+  ;; 8.14
   (printf "(subword 'polythene 5 8): ~a \n" (subword 'polythene 5 8))
   (check-equal? (subword 'polythene 5 8) 'then "Error for (subword 'polythene 5 8)")
 )

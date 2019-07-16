@@ -12,7 +12,9 @@
 (define (remove-once-r bad-word sent outp)
   (cond [(empty? sent) outp]
         [(equal? bad-word (first sent)) (sentence outp (butfirst sent))]
-        [else (remove-once-r bad-word (butfirst sent) (sentence outp (first sent)))]))
+        [else (remove-once-r bad-word 
+                             (butfirst sent) 
+                             (sentence outp (first sent)))]))
 
 ;;  14.2  
 (define (up-r the-word outp)
@@ -32,8 +34,10 @@
 ;; This is like "keep".
 (define (remove-dup-r sent outp)
   (cond [(empty? sent) outp]
-        [(> (appearances (last sent) sent) 1) (remove-dup-r (butlast sent) outp)]        
-        [else (remove-dup-r (butlast sent) (sentence (last sent) outp))]))
+        [(> (appearances (last sent) sent) 1) (remove-dup-r (butlast sent) 
+                                                            outp)]        
+        [else (remove-dup-r (butlast sent) 
+                            (sentence (last sent) outp))]))
 
 ;;  14.4  
 ;; This is like "keep" again
@@ -43,8 +47,12 @@
 
 (define (odds-r sent outp counter)
   (cond [(empty? sent) outp]
-        [(odd? counter) (odds-r (butfirst sent) (sentence outp (first sent)) (- counter 1))]
-        [else (odds-r (butfirst sent) outp (- counter 1))]))
+        [(odd? counter) (odds-r (butfirst sent) 
+                                (sentence outp (first sent)) 
+                                (- counter 1))]
+        [else (odds-r (butfirst sent) 
+                      outp 
+                      (- counter 1))]))
 
 ;;  14.5  [8.7] Write a procedure letter-count that takes a sentence as its argument and returns the total number of letters in the sentence:
 ;; This one is accumulate.
@@ -72,7 +80,10 @@
 ;; Sort of like every
 (define (differences-r the-nums outp)
   (cond [(equal? (count the-nums) 1) outp]
-        [else (differences-r (butfirst the-nums) (sentence outp (- (simply-second the-nums) (first the-nums))))]))
+        [else (differences-r (butfirst the-nums) 
+                             (sentence outp 
+                                       (- (simply-second the-nums) 
+                                          (first the-nums))))]))
 
 ;; 14.8  Write expand, which takes a sentence as its argument. 
 ;; It returns a sentence similar to the argument, 
@@ -99,7 +110,8 @@
 ;; It should return a number indicating where in the sentence that word can be found. 
 ;; If the word isn't in the sentence, return #f. 
 ;; If the word appears more than once, return the location of the first appearance.
-;; Shouldn't it return 0 if the word is not found? I don't like the idea that it returns a number OR a boolean.
+;; Shouldn't it return 0 if the word is not found? 
+;; I don't like the idea that it returns a number OR a boolean.
 ;; That kind of goes against his advice in chapter 12.
 ;; Sort of like accumulate, but like member? you do not have to go all the way through.
 (define (location the-word sent)
@@ -108,7 +120,10 @@
 (define (location-r the-word sent outp counter)
   (cond [(equal? (count sent) 0) outp]
         [(equal? the-word (first sent)) (location-r the-word '() counter counter)]
-        [else (location-r the-word (butfirst sent) outp (+ counter 1))]
+        [else (location-r the-word 
+                          (butfirst sent) 
+                          outp 
+                          (+ counter 1))]
 ))
 
 ;; 14.10  Write the procedure count-adjacent-duplicates that takes a sentence as an argument 
@@ -128,8 +143,11 @@
 (define (remove-adj-dups-r the-sent outp)
   (cond [(equal? (count the-sent) 0) outp]
         [(and (equal? (count the-sent) 1) (equal? (first the-sent) (last outp))) outp]
-        [(equal? (first the-sent) (simply-second the-sent)) (remove-adj-dups-r (butfirst (butfirst the-sent)) (sentence outp (first the-sent)))]
-        [else (remove-adj-dups-r (butfirst the-sent) (sentence outp (first the-sent)))]
+        [(equal? (first the-sent) (simply-second the-sent)) 
+         (remove-adj-dups-r (butfirst (butfirst the-sent)) 
+                            (sentence outp (first the-sent)))]
+        [else (remove-adj-dups-r (butfirst the-sent) 
+                                 (sentence outp (first the-sent)))]
 ))
 
 ;; 14.12  Write a procedure progressive-squares? that takes a sentence of numbers as its argument. 
@@ -177,7 +195,9 @@
   ; (display-all "calling same-shape? with first-sent: " first-sent ", second-sent: " second-sent ", outp: " outp)
   (cond [(not (equal? (count first-sent) (count second-sent))) #f]
         [(and (empty? first-sent) (empty? second-sent)) outp]
-        [(equal? (count (first first-sent)) (count (first second-sent))) (same-shape? (butfirst first-sent) (butfirst second-sent) #t)]
+        [(equal? (count (first first-sent)) 
+                 (count (first second-sent))) 
+         (same-shape? (butfirst first-sent) (butfirst second-sent) #t)]
         [else #f]))
 ;; This is accumulate
 
@@ -196,8 +216,12 @@
   (cond [(and (empty? nums-a) (empty? nums-b)) outp]
         [(empty? nums-a) (sentence outp nums-b)]
         [(empty? nums-b) (sentence outp nums-a)]
-        [(< (first nums-a) (first nums-b)) (merge-r (butfirst nums-a) nums-b (sentence outp (first nums-a)))]
-        [(< (first nums-b) (first nums-a)) (merge-r nums-a (butfirst nums-b) (sentence outp (first nums-b)))]
+        [(< (first nums-a) (first nums-b)) (merge-r (butfirst nums-a) 
+                                                    nums-b 
+                                                    (sentence outp (first nums-a)))]
+        [(< (first nums-b) (first nums-a)) (merge-r nums-a 
+                                                    (butfirst nums-b) 
+                                                    (sentence outp (first nums-b)))]
         [else outp]))
 
 ;; 14.16  Write a procedure syllables that takes a word as its argument and returns the number of syllables in the word, 
@@ -224,33 +248,50 @@
 (define (syllables-r the-word outp)
   ; (display-all "calling syllables-r with the-word: " the-word ", outp: " outp)
   (cond [(or (empty? the-word) (equal? (count the-word) 1)) outp]
-        [(and (vowel? (first the-word)) (not (vowel? (first (butfirst the-word))))) (syllables-r (butfirst the-word) (+ 1 outp))]
-        ((and (not (vowel? (first the-word))) (vowel? (first (butfirst the-word)))) (syllables-r (butfirst the-word) (+ 1 outp)))
+        [(and (vowel? (first the-word)) 
+              (not (vowel? (first (butfirst the-word))))) 
+         (syllables-r (butfirst the-word) (+ 1 outp))]
+        [(and (not (vowel? (first the-word))) 
+              (vowel? (first (butfirst the-word))))
+         (syllables-r (butfirst the-word) (+ 1 outp))]
         [else (syllables-r (butfirst the-word) outp)]))
 
 (module+ test
   (require rackunit)
   (check-true #t)
-  ; (printf "(who '(sells out)): ~a \n" (who '(sells out)))
-  ; (check-equal? (who '(sells out)) '(pete sells out roger sells out john sells out keith sells out) "Error for (who '(sells out))")
+  
+  ;; 14.01
   (printf "(remove-once-r 'morning '(good morning good morning) '()): ~a \n" (remove-once-r 'morning '(good morning good morning) '()))
   (check-equal? (remove-once-r 'morning '(good morning good morning) '()) '(good good morning) "Error for: (remove-once-r 'morning '(good morning good morning) '())")
+
+  ;; 14.02
   (printf "(up-r 'town '()): ~a \n" (up-r 'town '()))
   (check-equal? (up-r 'town '()) '(t to tow town) "Error for: (up-r 'town '())")
+
+  ;; 14.03
   (printf "(remove-dup-r '(ob la di ob la da) '()): ~a \n" (remove-dup-r '(ob la di ob la da) '()))
   (check-equal? (remove-dup-r '(ob la di ob la da) '()) '(ob la di da) "Error for: (remove-dup-r '(ob la di ob la da) '())")
+
+  ;; 14.04
   (printf "(odds '(i lost my little girl)): ~a \n"  (odds '(i lost my little girl)))
   (check-equal? (odds '(i lost my little girl)) '(i my girl)  "Error for: (odds '(i lost my little girl))")
+
+  ;; 14.05
   (printf "(letter-count-r '(fixing a hole) 0): ~a \n" (letter-count-r '(fixing a hole) 0))
   (check-equal? (letter-count-r '(fixing a hole) 0) 11 "Error for: (letter-count-r '(fixing a hole) '())")
+
+  ;; 14.06
   (printf "(member-r? 'what '(ask not what your country can do for you)): ~a \n" (member-r? 'what '(ask not what your country can do for you)))
   (check-equal? (member-r? 'what '(ask not what your country can do for you)) #t  "Error for: (member-r? 'what '(ask not what your country can do for you))")
   (printf "(member-r? 'when '(ask not what your country can do for you)): ~a \n" (member-r? 'when '(ask not what your country can do for you)))
   (check-equal? (member-r? 'when '(ask not what your country can do for you)) #f "Error for: (member-r? 'when '(ask not what your country can do for you))")
 ;; > 
-;; 
+
+  ;; 14.07 
   (printf "(differences-r '(4 23 9 87 6 12) '()): ~a \n" (differences-r '(4 23 9 87 6 12) '()))
   (check-equal? (differences-r '(4 23 9 87 6 12) '()) '(19 -14 78 -81 6) "Error for: (differences-r '(4 23 9 87 6 12) '())")
+
+  ;; 14.08
   (printf "(expand-r '(4 calling birds 3 french hens) '()) '(): ~a \n" (expand-r '(4 calling birds 3 french hens) '()) )
   (check-equal? (expand-r '(4 calling birds 3 french hens) '()) 
                 '(calling calling calling calling birds french french french hens)  
@@ -259,11 +300,14 @@
   (check-equal? (expand-r '(the 7 samurai) '()) 
                 '(the samurai samurai samurai samurai samurai samurai samurai) 
                 "Error for: (expand-r '(the 7 samurai) '())")
+
+  ;; 14.09
   (printf "(location 'me '(you never give me your money)): ~a \n" (location 'me '(you never give me your money)))
   (check-equal? (location 'me '(you never give me your money)) 
                 4  
                 "Error for: (location 'me '(you never give me your money))")
 
+  ;; 14.10
   (printf "(count-adjacent-dups-r '(y a b b a d a b b a d o o) 0): ~a \n" (count-adjacent-dups-r '(y a b b a d a b b a d o o) 0) )
   (check-equal? (count-adjacent-dups-r '(y a b b a d a b b a d o o) 0) 
                 3  
@@ -272,6 +316,8 @@
   (check-equal? (count-adjacent-dups-r '(yeah yeah yeah) 0) 
                 2  
                 "Error for: (count-adjacent-dups-r '(yeah yeah yeah) 0)")
+
+  ;; 14.11
   (printf "(remove-adj-dups-r '(y a b b a d a b b a d o o) '()): ~a \n" (remove-adj-dups-r '(y a b b a d a b b a d o o) '()))
   (check-equal? (remove-adj-dups-r '(y a b b a d a b b a d o o) '()) 
                 '(y a b a d a b a d o) 
@@ -281,15 +327,19 @@
                 '(yeah) 
                 "Error for: (remove-adj-dups-r '(yeah yeah yeah) '())")
 
+  ;; 14.12
   (printf "(progressive-squares? '(3 9 81 6561)): ~a \n"(progressive-squares? '(3 9 81 6561)) )
   (check-equal? (progressive-squares? '(3 9 81 6561)) #t "Error for: (progressive-squares? '(3 9 81 6561))")
   (printf "(progressive-squares? '(25 36 49 64)): ~a \n" (progressive-squares? '(25 36 49 64)))
   (check-equal? (progressive-squares? '(25 36 49 64)) #f "Error for: (progressive-squares? '(25 36 49 64))")
 
+  ;; 14.13
   (printf "(pigl 'frzzmlpt): ~a \n" (pigl 'frzzmlpt))
   (check-equal? (pigl 'frzzmlpt) 'frzzmlptay "Error for: (pigl 'frzzmlpt)")
   (printf "(pigl 'proper): ~a \n" (pigl 'proper))
   (check-equal? (pigl 'proper) 'operpray "Error for: (pigl 'proper)")
+
+  ;; 14.14
   (printf "(same-shape? '(the fool on the hill) '(you like me too much) #f): ~a \n"
           (same-shape? '(the fool on the hill) '(you like me too much) #f))
   (check-equal? (same-shape? '(the fool on the hill) '(you like me too much) #f) 
@@ -300,6 +350,7 @@
                 #f 
                 "Error for: (same-shape? '(the fool on the hill) '(and your bird can sing) #f)  ")
 
+  ;; 14.15
   (printf "(merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '()): ~a \n" (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '()))
   (check-equal? (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '()) 
                 '(3 4 6 7 9 12 18 24 36 40 50 99) 
@@ -308,7 +359,6 @@
   ; (check-equal?  "Error for: ")
 
 ) ;; end module+ test 
-  ; (printf ": ~a \n"  )
-  ; (check-equal?  "Error for: ")
+
 
 

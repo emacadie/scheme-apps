@@ -396,6 +396,8 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (unless (and (check-equal? result their-append-rsl)
                (check-equal? result my-append-rsl))
     (fail-check)))
+
+  ;; Just testing my-map
   (check-three-things-equal? (my-map (lambda (x) (* 2 x)) '(1 2 3) ) 
                              (map (lambda (x) (* 2 x)) '(1 2 3) ) 
                              '(2 4 6))
@@ -412,23 +414,24 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
                              (reduce * '(1 2 3 4 5))
                              120)
 
+  ;; 19.02
   (check-equal? 'ei (keep-ch19 vowel? 'qerti))
   (check-equal? '(e u) (keep-ch19 vowel? '(q w e r t u)))
 
-  ; 19.3
+  ; 19.03
   (check-equal? (three-arg-accumulate + 0 '(4 5 6))          15)
   (check-equal? (three-arg-accumulate + 0 '())               0)
   (check-equal? (three-arg-accumulate cons '() '(a b c d e)) '(a b c d e))
 
-  ; 19.4
+  ; 19.04
   (check-equal? (left-accumulate - '(2 3 4 5)) -10)
 
-  ; 19.6
+  ; 19.06
   (check-equal? (true-for-any-pair? equal? '(a b c b a))   #f)
   (check-equal? (true-for-any-pair? equal? '(a b c c d))   #t)
   (check-equal? (true-for-any-pair? <      '(20 16 5 8 6)) #t)
 
-  ; 19.7
+  ; 19.07
   (check-equal? (true-for-all-pairs? equal? '(a b c c d))    #f)
   (check-equal? (true-for-all-pairs? equal? '(a a a a a))    #t)
   (check-equal? (true-for-all-pairs? <      '(20 16 5 8 6))  #f)
