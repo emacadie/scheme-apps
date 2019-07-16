@@ -429,10 +429,28 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-equal? (true-for-any-pair? <      '(20 16 5 8 6)) #t)
 
   ; 19.7
-  (check-equal? (true-for-all-pairs? equal? '(a b c c d))   #f)
-  (check-equal? (true-for-all-pairs? equal? '(a a a a a))   #t)
-  (check-equal? (true-for-all-pairs? <      '(20 16 5 8 6)) #f)
+  (check-equal? (true-for-all-pairs? equal? '(a b c c d))    #f)
+  (check-equal? (true-for-all-pairs? equal? '(a a a a a))    #t)
+  (check-equal? (true-for-all-pairs? <      '(20 16 5 8 6))  #f)
   (check-equal? (true-for-all-pairs? <      '(3 7 19 22 43)) #t)
+
+  ;; 19.11
+  ;; using examples from chapter 8
+  (check-three-things-equal? '(through the bathroom window)
+                             ((repeated bf 3) '(she came in through the bathroom window))
+                             (my-repeated bf 3 '(she came in through the bathroom window)))
+  (check-three-things-equal? 'computerssss
+                             ((repeated plural 4) 'computer)
+                             (my-repeated plural 4 'computer))
+  (check-three-things-equal? 81
+                             ((repeated square 2) 3)
+                             (my-repeated square 2 3))
+  (define (double-sentence sent)
+    (se sent sent))
+  (check-three-things-equal? '(banana banana banana banana banana banana banana banana)
+                             ((repeated double-sentence 3) '(banana))
+                             (my-repeated double-sentence 3 '(banana)))
+;; (check-three-things-equal? )
 
   ; 19.12
   (define (leaf datum)
