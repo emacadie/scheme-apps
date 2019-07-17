@@ -179,55 +179,32 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 ;; I re-did keep/filter since I have to send two args each time, not just one
 ;; and I made a function to turn the list into a list of pairs
 (define (create-pairs-from-list the-list)
-  (create-pairs (first the-list) (butfirst the-list) '()))
+  (create-pairs (car the-list) (cdr the-list) '()))
 
 (define (create-pairs the-first the-rest outp)
   (cond [(empty? the-rest) (reverse outp)]
-        [else (create-pairs (first the-rest) 
-                            (butfirst the-rest) 
-                            (cons (list the-first (first the-rest)) outp))]))
-
+        [else (create-pairs (car the-rest) 
+                            (cdr the-rest) 
+                            (cons (list the-first (car the-rest)) outp))]))
+; "car" = "first", "cdr = "butfirst", but what is "last"?
 (define (use-pred pred pair-of-items)
   (pred (first pair-of-items) (last pair-of-items)))
 
 (define (keep-with-pairs predicate sent outp)
-  (cond [(empty? sent) outp] 
-        [(and (use-pred predicate (first sent)) 
-              (empty? outp)) (keep-with-pairs predicate 
-                                              (butfirst sent)
-                                              (list (first sent)))]
-	    [(use-pred predicate (first sent)) (keep-with-pairs predicate 
-                                                            (cdr sent) 
-                                                            (append outp (car sent)))]
-	    [else (keep-with-pairs predicate 
-                               (butfirst sent) 
-                               outp)]))
-
-;; b for boolean
-(define (keep-with-pairs-b predicate sent outp)
   ; (printf "keep-with-pairs-b with sent: ~a and outp: ~a \n" sent outp)
   (cond [(empty? sent) outp] 
-        [(empty? outp) (keep-with-pairs-b predicate 
-                                          (butfirst sent)
-                                          (list (use-pred predicate (first sent))))]
-	    [(use-pred predicate (first sent)) (keep-with-pairs-b predicate 
-                                                              (cdr sent) 
-                                                              (ch17:my-append outp #t))]
+        [(empty? outp) (keep-with-pairs predicate 
+                                        (cdr sent)
+                                        (list (use-pred predicate (car sent))))]
+	    [(use-pred predicate (car sent)) (keep-with-pairs predicate 
+                                                          (cdr sent) 
+                                                          (ch17:my-append outp #t))]
 	    [else (begin
                 ; (printf "In the else\n")
-                (keep-with-pairs-b predicate 
-                                   (butfirst sent) 
-                                   (ch17:my-append outp #f)))]))
+                (keep-with-pairs predicate 
+                                 (cdr sent) 
+                                 (ch17:my-append outp #f)))]))
 
-#|
-(define (true-for-any-pair? pred the-list) 
-  (cond [(equal? 0 
-                 (count (keep-with-pairs pred 
-                                         (create-pairs-from-list the-list) 
-                                         '()))) 
-         #f]
-        [else #t]))
-|#
 ; member? won't work with a boolean
 (define (sentence-contains? thing the-sent)
   ; (printf "sentence-contains? with thing: ~a the-sent: ~a \n" thing the-sent)
@@ -237,9 +214,9 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 
 (define (true-for-any-pair? pred the-list) 
   (cond [(sentence-contains? #t 
-                             (keep-with-pairs-b pred 
-                                                (create-pairs-from-list the-list) 
-                                                '())) 
+                             (keep-with-pairs pred 
+                                              (create-pairs-from-list the-list) 
+                                              '())) 
          #t]
         [else #f]))
 
@@ -253,9 +230,9 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 ;; So I made some HOF
 (define (true-for-all-pairs? pred the-list)
   (cond [(sentence-contains? #f
-                             (keep-with-pairs-b pred 
-                                                (create-pairs-from-list the-list) 
-                                                '())) 
+                             (keep-with-pairs pred 
+                                              (create-pairs-from-list the-list) 
+                                              '())) 
          #f]
         [else #t]))
 ; > (true-for-all-pairs? equal? '(a b c c d))
@@ -276,9 +253,9 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 (define (true-for-all-pairs-19-8? pred the-list)
   (cond [(not (true-for-any-pair? pred the-list)) #f] 
         [(sentence-contains? #f
-                             (keep-with-pairs-b pred 
-                                                (create-pairs-from-list the-list) 
-                                                '())) 
+                             (keep-with-pairs pred 
+                                              (create-pairs-from-list the-list) 
+                                              '())) 
          #f]
         [else #t]))
 
