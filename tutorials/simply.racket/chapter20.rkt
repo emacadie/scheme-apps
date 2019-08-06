@@ -3,7 +3,6 @@
 ; Chapter 20 Input and Output
 
 (require "more-simply.rkt")
-(require (prefix-in ch17: "chapter17.rkt"))
 (require (prefix-in ttt: "ttt.rkt"))
 
 (butfirst '(This is Chapter 20 Input and Output))
