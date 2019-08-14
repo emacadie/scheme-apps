@@ -7,6 +7,8 @@ I can run tests in Clojure, but Scheme is not as good in this area.
 
 ttt.rkt from https://people.eecs.berkeley.edu/~bh/downloads/simply/ I could not find links to them on the "Simply Scheme" site. I found them through a Google search.
 
+"dddbmt", "grades", and "r5rs" from Chapter 22 of the text.   
+
 https://github.com/greghendershott/racket-mode  
 https://melpa.org/#/racket-mode  
 
