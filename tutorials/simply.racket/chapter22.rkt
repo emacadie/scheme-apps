@@ -116,8 +116,43 @@
 	(begin (show stuff)
 	       (print-file-helper port)))))
 
-
+;; The previous section: They just treated each line as a string
+;; and processed the string. That could have been in an earlier chapter.
 ;; up to Merging Two Files
+
+(define (filemerge file1 file2 outfile)
+  (let ([p1 (open-input-file file1)]
+	    [p2 (open-input-file file2)]
+	    [outp (open-output-file outfile)])
+    (filemerge-helper p1 p2 outp (read-string p1) (read-string p2))
+    (close-output-port outp)
+    (close-input-port p1)
+    (close-input-port p2)
+    'done))
+
+(define (filemerge-helper p1 p2 outp line1 line2)
+  (cond [(eof-object? line1) (merge-copy line2 p2 outp)]
+	    [(eof-object? line2) (merge-copy line1 p1 outp)]
+	    [(before? line1 line2)
+	     (show line1 outp)
+	     (filemerge-helper p1 p2 outp (read-string p1) line2)]
+	    [else (show line2 outp)
+	          (filemerge-helper p1 p2 outp line1 (read-string p2))]))
+
+(define (merge-copy line inp outp)
+  (if (eof-object? line)
+      #f
+      (begin (show line outp)
+	     (merge-copy (read-string inp) inp outp))))
+
+#|
+From the text about the input functions:
+read ignores case and forces you to have parentheses in your file
+read-line fixes those problems, but it loses spacing information 
+read-string can read anything and always gets it right
+But you can't do "first", "butfirst", etc with read-string: use read-line
+If your file has scheme lists in it, use read
+|#
 
 ;; delete the files we created
 #|
