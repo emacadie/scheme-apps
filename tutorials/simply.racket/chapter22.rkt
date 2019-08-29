@@ -12,16 +12,16 @@
 ;; show-line is like show but removes parens
 ;; Why does everyone hate the parens?
 ;; use ports with file
- (let ((port (open-output-file "songs2")))
+ (let ([port (open-output-file "songs2")])
     (show-line '(all my loving) port)
     (show-line '(ticket to ride) port)
     (show-line '(martha my dear) port)
     (close-output-port port))
 
 (define (get-song n)
-  (let ((port (open-input-file "songs2")))
+  (let ([port (open-input-file "songs2")])
     (skip-songs (- n 1) port)
-    (let ((answer (read-line port)))
+    (let ([answer (read-line port)])
       (close-input-port port)
       answer)))
 
@@ -32,7 +32,7 @@
 	     (skip-songs (- n 1) port))))
 
 (define (print-file name)
-  (let ((port (open-input-file name)))
+  (let ([port (open-input-file name)])
     (print-file-helper port)
     (close-input-port port)
     'done))
@@ -121,8 +121,8 @@
 ;; up to Merging Two Files
 
 (define (filemerge file1 file2 outfile)
-  (let ([p1 (open-input-file file1)]
-	    [p2 (open-input-file file2)]
+  (let ([p1   (open-input-file file1)]
+	    [p2   (open-input-file file2)]
 	    [outp (open-output-file outfile)])
     (filemerge-helper p1 p2 outp (read-string p1) (read-string p2))
     (close-output-port outp)
@@ -155,14 +155,82 @@ If your file has scheme lists in it, use read
 |#
 
 ;; delete the files we created
+
 #|
-(define (delete-our-files)
-  (delete-file "songs2")
-  (delete-file "dddbmt-reversed")
-  (delete-file "results")
-  (delete-file "r5rs-just")
-)
+(delete-our-files '("songs2" "dddbmt-reversed" "results" "r5rs-just"
+                    "all-states-we-have"))
 |#
+(define (delete-if-exists file-name)
+  (when (file-exists? file-name)
+    (delete-file file-name)))
+
+(define (delete-our-files list-of-files)
+  (for-each delete-if-exists list-of-files))
+
+
+; 22.1  Write a concatenate procedure that takes two arguments: 
+; a list of names of input files, and one name for an output file. 
+; The procedure should copy all of the input files, in order, into the output file. 
+ #|
+
+It writes this to file:
+(Alabama)
+(Alaska)
+(Arizona)
+(Arkansas)
+(Idaho)
+(Illinois)
+etc
+I'll take it.
+
+(concat-files
+'("a-states" "i-states" "n-states")
+"all-states-we-have")
+|#
+
+(define (concat-map fn inname outport)
+  (let ([inport (open-input-file inname)])
+    (concat-map-helper fn inport outport)
+    (close-input-port inport)
+    'done))
+
+(define (concat-map-helper fn inport outport)
+  (let ([line (read-line inport)])
+    (if (eof-object? line)
+	'done
+	(begin (show (fn line) outport)
+	       (concat-map-helper fn inport outport)))))
+
+(define (concat-files input-files output-file)
+  (let ([outport (open-output-file output-file)])
+    (for-each (lambda (next-in)
+             (concat-map sentence next-in outport))
+           input-files)
+    (close-output-port outport)))
+
+;; 22.2  Write a procedure to count the number of lines in a file. 
+;; It should take the filename as argument and return the number.
+
+(define (file-count-helper inport count)
+  (let ([line (read-line inport)])
+    (if (eof-object? line)
+        count
+        (file-count-helper inport (+ count 1)))))
+
+;; frankly, I think I like how Clojure has "let"
+;; work like "let" and "let*" in Scheme/Racket
+(define (count-file-lines file-name)
+  (let* ([inport (open-input-file file-name)]
+         [counter (file-count-helper inport 0)])
+    (close-input-port inport)
+    counter))
+
+
+
+;; delete files we may have created
+(delete-our-files '("songs2" "dddbmt-reversed" "results" "r5rs-just"
+                    "all-states-we-have"))
+
 (module+ test
   (require rackunit)
   (check-true #t)
@@ -175,6 +243,11 @@ If your file has scheme lists in it, use read
 #|
   (check-equal?  )
 |#
-
+  ;; 22.2
+  (check-equal? (count-file-lines "a-states") 4)
+  (check-equal? (count-file-lines "i-states") 4)
+  (check-equal? (count-file-lines "n-states") 8)
+  (check-equal? (count-file-lines "r5rs") 10)
+  
 ) ;; end module+ test 
 
