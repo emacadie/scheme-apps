@@ -220,12 +220,67 @@ I'll take it.
 ;; frankly, I think I like how Clojure has "let"
 ;; work like "let" and "let*" in Scheme/Racket
 (define (count-file-lines file-name)
-  (let* ([inport (open-input-file file-name)]
+  (let* ([inport  (open-input-file file-name)]
          [counter (file-count-helper inport 0)])
     (close-input-port inport)
     counter))
 
+;; 22.3  Write a procedure to count the number of words in a file. 
+;; It should take the filename as argument and return the number. 
+(define (file-count-word-helper inport count)
+  (let ([line (read-line inport)])
+    (if (eof-object? line) 
+        count
+        (file-count-word-helper inport 
+                                (+ count 
+                                   (length line))))))
 
+(define (count-file-words file-name)
+    (let* ([inport  (open-input-file file-name)]
+           [counter (file-count-word-helper inport 0)])
+    (close-input-port inport)
+    counter))
+
+;; 22.4  Write a procedure to count the number of characters in a file, including space characters. 
+;; It should take the filename as argument and return the number. 
+(define (file-count-chars-helper inport count)
+  (let ([line (read-string inport)])
+    (if (eof-object? line) 
+        count
+        (file-count-chars-helper inport 
+                                 (+ count 
+                                    1 ;; must add 1 for newline 
+                                    (string-length line))))))
+
+(define (count-file-chars file-name)
+    (let* ([inport  (open-input-file file-name)]
+           [counter (file-count-chars-helper inport 0)])
+    (close-input-port inport)
+    counter))
+
+;; 22.5  Write a procedure that copies an input file to an output file 
+;; but eliminates multiple consecutive copies of the same line. 
+#|
+That is, if the input file contains the lines
+
+John Lennon
+Paul McCartney
+Paul McCartney
+George Harrison
+
+
+Paul McCartney
+Ringo Starr
+
+then the output file should contain
+
+John Lennon
+Paul McCartney
+George Harrison
+
+Paul McCartney
+Ringo Starr
+|#
 
 ;; delete files we may have created
 (delete-our-files '("songs2" "dddbmt-reversed" "results" "r5rs-just"
@@ -247,7 +302,16 @@ I'll take it.
   (check-equal? (count-file-lines "a-states") 4)
   (check-equal? (count-file-lines "i-states") 4)
   (check-equal? (count-file-lines "n-states") 8)
-  (check-equal? (count-file-lines "r5rs") 10)
+  (check-equal? (count-file-lines "r5rs")    10)
   
+  ;; 22.3
+  (check-equal? (count-file-words "r5rs")   70)
+  (check-equal? (count-file-words "grades") 24)
+
+  ;; 22.4
+  (check-equal? (count-file-chars "r5rs")   456)
+  (check-equal? (count-file-chars "grades") 84)
+  
+
 ) ;; end module+ test 
 
