@@ -24,6 +24,10 @@ https://docs.racket-lang.org/racket-cheat/index.html
 Racket Unit Testing:  
 https://docs.racket-lang.org/rackunit/index.html  
 
+Racket SRFIs:   
+https://docs.racket-lang.org/srfi/   
+
+
 raco pkg install drracket  
 ericm@latitude:~/Downloads$ raco pkg show  
 Installation-wide:  

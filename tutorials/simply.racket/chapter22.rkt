@@ -5,7 +5,7 @@
 (require "more-simply.rkt")
 (require (prefix-in ch17: "chapter17.rkt"))
 (require (prefix-in ttt: "ttt.rkt"))
-
+(require (prefix-in srfi-13: srfi/13))
 
 ;; Chapter 22 Files Input and Output
 
@@ -122,7 +122,7 @@
 
 (define (filemerge file1 file2 outfile)
   (let ([p1   (open-input-file file1)]
-	    [p2   (open-input-file file2)]
+        [p2   (open-input-file file2)]
 	    [outp (open-output-file outfile)])
     (filemerge-helper p1 p2 outp (read-string p1) (read-string p2))
     (close-output-port outp)
@@ -281,10 +281,72 @@ George Harrison
 Paul McCartney
 Ringo Starr
 |#
+; (remove-repeated-lines "beatles-input" "beatles-output")
+; I could add a parameter for when the file is read for first time
+(define (remove-repeated-lines-helper inport outport prev-line)
+  (let ([line (read-string inport)])
+    ; (display-all "in helper with prev-line: " prev-line " and line: " line)
+      (cond [(eof-object? line) 'done]
+            [(null? prev-line) (begin
+                                 (show line outport)
+                                 (remove-repeated-lines-helper inport 
+                                                               outport 
+                                                               line))]
+            [(equal? prev-line line) (remove-repeated-lines-helper inport 
+                                                                   outport 
+                                                                   line)]
+            [else (begin
+                    (show line outport)
+                    (remove-repeated-lines-helper inport 
+                                                  outport 
+                                                  line))])))
+
+(define (remove-repeated-lines input-file output-file)
+  (let ([inport (open-input-file input-file)]
+        [outport (open-output-file output-file)])
+    (remove-repeated-lines-helper inport 
+                                  outport 
+                                  null)
+    (close-input-port inport)
+    (close-output-port outport)))
+
+;; 22.6  Write a lookup procedure that takes as arguments a filename and a word.
+;; The procedure should print (on the screen, not into another file) 
+;; only those lines from the input file that include the chosen word. 
+; (lookup "r5rs" "to")
+(define (lookup-helper inport the-word)
+  (let ([line (read-string inport)])
+    (display-all "here is line: " line)
+    (cond [(eof-object? line) 'done]
+          [(number? (srfi-13:string-contains line the-word)) 
+           (begin
+             (display-all line)
+             (lookup-helper inport the-word))]
+          [else (lookup-helper inport the-word)])))
+  
+(define (lookup input-file the-word)
+  (let ([inport (open-input-file input-file)])
+    (lookup-helper inport the-word)
+    (close-input-port inport)))
+
+;; 22.7  Write a page procedure that takes a filename as argument and prints the file a screenful at a time. 
+;; Assume that a screen can fit 24 lines; 
+;; your procedure should print 23 lines of the file and then a prompt message, 
+;; and then wait for the user to enter a (probably empty) line. 
+;; It should then print the most recent line from the file again (so that the user will see some overlap between screenfuls) 
+;; and 22 more lines, and so on until the file ends. 
+(define (page-helper inport prev-line the-num))
+
+(define (page file-name)
+  (let ([inport (open-input-file file-name)])
+    (page-helper inport null 0)
+    (close-input-port file-name)
+)  
+)
 
 ;; delete files we may have created
 (delete-our-files '("songs2" "dddbmt-reversed" "results" "r5rs-just"
-                    "all-states-we-have"))
+                    "all-states-we-have" "beatles-output"))
 
 (module+ test
   (require rackunit)
