@@ -86,4 +86,9 @@ PATH=%RACKET_HOME%;%PATH%
 To put multiple expressions in a conditional/if branch: Use begin, not do   
 https://stackoverflow.com/questions/11263359/is-there-a-possibility-of-multiple-statements-inside-a-conditional-statements-b
 
-
+Format later:
+application: not a procedure;                                                                                                                                        
+expected a procedure that can be applied to arguments                                                                                                               
+given: 1                                                                                                                                                           
+arguments...: [none] 
+I used (screen-num), which is a symbol, not a procedure

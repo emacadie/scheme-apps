@@ -313,6 +313,7 @@ Ringo Starr
 ;; 22.6  Write a lookup procedure that takes as arguments a filename and a word.
 ;; The procedure should print (on the screen, not into another file) 
 ;; only those lines from the input file that include the chosen word. 
+;; Maybe using an SRFI is cheating, but I can live with myself.
 ; (lookup "r5rs" "to")
 (define (lookup-helper inport the-word)
   (let ([line (read-string inport)])
@@ -335,18 +336,42 @@ Ringo Starr
 ;; and then wait for the user to enter a (probably empty) line. 
 ;; It should then print the most recent line from the file again (so that the user will see some overlap between screenfuls) 
 ;; and 22 more lines, and so on until the file ends. 
-(define (page-helper inport prev-line the-num))
+; (page "/home/ericm/Downloads/Sexp.txt")
+;; buntine and mengsince decremented, which eliminates a cond clause
+(define (page-helper inport prev-line line-count screen-count)
+  ; (display-all "in page-helper, with prev-line: " prev-line ", line-count: " line-count ", screen-count: " screen-count)
+  (let ([line (read-string inport)])
+    ; (display-all "Here is line: " line)
+    (cond [(eof-object? line) 'done]
+          [(and (equal? line-count 1) (> screen-count 1))
+           (begin
+             (display-all prev-line)
+             (display-all line)
+             (page-helper inport line (+ 1 line-count) screen-count))]
+          [(or (and (equal? 1 screen-count) (< line-count 23))
+               (and (> screen-count 1)      (< line-count 22)))
+           (begin
+             (display-all line)
+             (page-helper inport line (+ 1 line-count) screen-count))]
+          [(or (and (equal? 1 screen-count) (equal? 23 line-count))
+               (and (> screen-count 1)      (equal? 22 line-count)))
+           (begin
+             (display-all line)
+             (display-all "hit <Enter> to proceed")
+             (read-line)
+             (page-helper inport line 1 (+ 1 screen-count)))]
+          [else (display-all "In the else")])))
 
 (define (page file-name)
   (let ([inport (open-input-file file-name)])
-    (page-helper inport null 0)
-    (close-input-port file-name)
-)  
-)
+    (page-helper inport null 1 1)
+    (close-input-port inport)))
+
+;; 
 
 ;; delete files we may have created
 (delete-our-files '("songs2" "dddbmt-reversed" "results" "r5rs-just"
-                    "all-states-we-have" "beatles-output"))
+                    "all-states-we-have" "beatles-output" "Sexp.txt"))
 
 (module+ test
   (require rackunit)
