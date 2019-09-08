@@ -8,7 +8,7 @@
 (require (prefix-in srfi-13: srfi/13))
 
 ;; Chapter 22 Files Input and Output
-
+(butfirst '(this is chapter 22: i/o))
 ;; show-line is like show but removes parens
 ;; Why does everyone hate the parens?
 ;; use ports with file
@@ -338,6 +338,7 @@ Ringo Starr
 ;; and 22 more lines, and so on until the file ends. 
 ; (page "/home/ericm/Downloads/Sexp.txt")
 ;; buntine and mengsince decremented, which eliminates a cond clause
+;; I should have seen that: That fixes the issue of checking for 22 AND 23
 (define (page-helper inport prev-line line-count screen-count)
   ; (display-all "in page-helper, with prev-line: " prev-line ", line-count: " line-count ", screen-count: " screen-count)
   (let ([line (read-string inport)])
@@ -367,11 +368,103 @@ Ringo Starr
     (page-helper inport null 1 1)
     (close-input-port inport)))
 
-;; 
+#|
+ 22.8  A common operation in a database program is to join two databases, that is, to create a new database combining the information from the two given ones. There has to be some piece of information in common between the two databases. For example, suppose we have a class roster database in which each record includes a student's name, student ID number, and computer account name, like this:
+
+((john alec entwistle) 04397 john)
+((keith moon) 09382 kmoon)
+((peter townshend) 10428 pete)
+((roger daltrey) 01025 roger)
+
+We also have a grade database in which each student's grades are stored according to computer account name:
+
+(john 87 90 76 68 95)
+(kmoon 80 88 95 77 89)
+(pete 100 92 80 65 72)
+(roger 85 96 83 62 74)
+
+We want to create a combined database like this:
+
+((john alec entwistle) 04397 john 87 90 76 68 95)
+((keith moon) 09382 kmoon 80 88 95 77 89)
+((peter townshend) 10428 pete 100 92 80 65 72)
+((roger daltrey) 01025 roger 85 96 83 62 74)
+
+in which the information from the roster and grade databases has been combined for each account name.
+
+Write a program join that takes five arguments: 
+two input filenames, two numbers indicating the position of the item within each record that should overlap between the files, and an output filename. For our example, we'd say
+
+> (join "class-roster" "grades" 3 1 "combined-file")
+
+In our example, both files are in alphabetical order of computer account name, 
+the account name is a word, 
+and the same account name never appears more than once in each file. 
+In general, you may assume that these conditions hold for the item that the two files have in common. 
+Your program should not assume that every item in one file also appears in the other. 
+A line should be written in the output file only for the items that do appear in both files. 
+|# 
+;; (join-files "who.names" "who.grades" 3 1 "who.output")
+;; I think this is better:
+;; (join-files "who.names" 3 "who.grades" 1 "who.output")
+;; read works for names
+
+(define (after a b)
+  (and (not (before? a b))
+       (equal? a b)))
+
+(define (join-files-helper inport-a num-a line-a inport-b num-b line-b outport)
+  (cond [])
+)
+
+(define (join-files first-file first-num scnd-file scnd-num outfile)
+  (let ([inport-a (open-input-file first-file)]
+        [inport-b (open-input-file scnd-file)]
+        [outport (open-output-file outfile)])
+    
+    (close-input-port inport-a)
+    (close-input-port inport-b)
+    (close-output-port outport)))
+
+(define (who-names-lines inport)
+  (display-all "---------------------------------")
+  (let ([line (read inport)])
+    (cond [(eof-object? line) 'done]
+          [else (begin
+                  (display-all "here is line: " line)
+                  (display-all "here is (first line): " (first line))
+                  (display-all "Is it a sentence? " (sentence? line))
+                  ; (display-all "Car of the line: " (car line))
+                  (who-names-lines inport))])))
+
+(define (look-at-who-names)
+  (let ([inport (open-input-file "who.grades")])
+    (who-names-lines inport)
+    (close-input-port inport)))
+
+(define (all-se-but-num-helper num the-sent count outp)
+  (cond [(empty? the-sent) outp]
+        [(equal? num count) (all-se-but-num-helper num 
+                                                   (butfirst the-sent) 
+                                                   (+ 1 count) 
+                                                   outp)]
+        [else (all-se-but-num-helper num 
+                                     (butfirst the-sent) 
+                                     (+ 1 count) 
+                                     (se outp (first the-sent)))]))
+
+(define (all-se-item-but-num num the-sent)
+  (cond [(> num (count the-sent)) the-sent]
+        [(< num 1) the-sent]
+        [(equal? num 1) (butfirst the-sent)]
+        [(equal? num (count the-sent)) (butlast the-sent)]
+        [else (all-se-but-num-helper num the-sent 1 '())]))
 
 ;; delete files we may have created
 (delete-our-files '("songs2" "dddbmt-reversed" "results" "r5rs-just"
-                    "all-states-we-have" "beatles-output" "Sexp.txt"))
+                    "all-states-we-have" "beatles-output" "Sexp.txt"
+                    "who.output"))
+
 
 (module+ test
   (require rackunit)
@@ -399,6 +492,23 @@ Ringo Starr
   (check-equal? (count-file-chars "r5rs")   456)
   (check-equal? (count-file-chars "grades") 84)
   
+  ;; 22.8
+  (define test-sent '(one two three four five))
+  (check-equal? (all-se-item-but-num 1 test-sent)
+                '(two three four five))
+  (check-equal? (all-se-item-but-num 5 test-sent)
+                '(one two three four))
+  (check-equal? (all-se-item-but-num 6 test-sent)
+                test-sent)
+  (check-equal? (all-se-item-but-num 0 test-sent)
+                test-sent)
+  (check-equal? (all-se-item-but-num 2 test-sent)
+                '(one three four five))
+  (check-equal? (all-se-item-but-num 3 test-sent)
+                '(one two four five))
+
+  
+
 
 ) ;; end module+ test 
 
