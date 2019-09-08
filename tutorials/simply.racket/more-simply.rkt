@@ -70,6 +70,17 @@
          [(or (equal? arg "A") (equal? arg "E") (equal? arg "I") (equal? arg "O") (equal? arg "U")) #t]
        [else #f]))
 
-
+(module+ test
+  (require rackunit)
+  (check-true #t)
+    (printf "(plural 'truck): ~a \n" (plural 'truck))
+    (check-equal? (plural 'truck) 'trucks "Error for (plural 'truck)")
+    (printf "(plural 'box): ~a \n" (plural 'box))
+    (check-equal? (plural 'box) 'boxes "Error for (plural 'box)")
+    (printf "(plural 'toy): ~a \n" (plural 'toy))
+    (check-equal? (plural 'toy) 'toys "Error for (plural 'toy)")
+    (printf "(plural 'majority): ~a \n" (plural 'majority))
+    (check-equal? (plural 'majority) 'majorities "Error for (plural 'majority)")
+)
 
 

@@ -2,8 +2,6 @@
 
 ; Chapter 17: Lists
 
-(require "more-simply.rkt")
-
 (butfirst '(This is chapter 17 lists))
 
 ;; Chapter 17 Lists

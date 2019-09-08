@@ -1,8 +1,7 @@
 #lang simply-scheme
 
 ; Chapter 05: Words and Sentences
-(require "more-simply.rkt")
-
+(require (prefix-in more: "more-simply.rkt"))
 
 (butfirst '(this is chapter 5))
 ;; 5.2 For each of the following examples, write a procedure of two arguments that, when applied to the sample arguments, 
@@ -26,7 +25,7 @@
 
 ;; Scheme already has a "second" procedure
 (define (f4 first-arg second-arg)
-  (word (simply-second first-arg) (simply-second second-arg)))
+  (word (more:simply-second first-arg) (more:simply-second second-arg)))
 ;; > (f4 '(a b c) '(d e f))
 ;; BE
 
@@ -70,7 +69,7 @@
 
 ;; 5.21  Write a procedure query that turns a statement into a question by swapping the first two words and adding a question mark to the last word:
 (define (simply-query arg)
-  (sentence (simply-second arg) (first arg) (butfirst (butfirst (butlast arg))) (word (last arg) '? )))
+  (sentence (more:simply-second arg) (first arg) (butfirst (butfirst (butlast arg))) (word (last arg) '? )))
 ;; I can't do it without a space in between last word and question mark
 
 (module+ test
@@ -84,24 +83,38 @@
   (check-equal? (f3 '(a b c) '(d e f)) '(a b c a b c) "Error for (f3 '(a b c) '(d e f))" )
   (printf "(f4 '(a b c) '(d e f)): ~a \n" (f4 '(a b c) '(d e f)))
   (check-equal? (f4 '(a b c) '(d e f)) 'be "Error for (f4 '(a b c) '(d e f))")
+
+  ;; 5.14 
   (printf "(simply-third 'racket): ~a \n" (simply-third 'racket))
   (check-equal? (simply-third 'racket) 'c "Error for (simply-third 'racket)")
   (printf "(simply-third '(We love all kinds of Lisp)): ~a \n" (simply-third '(We love all kinds of Lisp)))
   (check-equal? (simply-third '(We love all kinds of Lisp)) 'all "Error for (simply-third '(We love all kinds of Lisp))")
+
+  ;; 5.15
   (printf "(first-two 'ambulatory): ~a \n" (first-two 'ambulatory))
   (check-equal? (first-two 'ambulatory) 'am "Error for (first-two 'ambulatory)")
+
+  ;; 5.16
   (printf "(two-first 'hello 'there): ~a \n" (two-first 'hello 'there))
   (check-equal? (two-first 'hello 'there) 'ht "Error for (two-first 'hello 'there)")
   (printf "(two-first-sent '(hello there)): ~a \n" (two-first-sent '(hello there)))
   (check-equal? (two-first-sent '(hello there)) 'ht "Error for (two-first-sent '(hello there))")
+
+  ;; 5.17
   (printf "(knight '(david wessel)): ~a \n" (knight '(david wessel)))
   (check-equal? (knight '(david wessel)) '(Sir david wessel) "Error for (knight '(david wessel))")
+
+  ;; 5.19
   (printf "(insert-and '(john bill wayne fred joey)): ~a \n" (insert-and '(john bill wayne fred joey)))
-  (check-equal? (insert-and '(john bill wayne fred joey)) '(john bill wayne fred and joey) "Error for (insert-and '(john bill wayne fred joey))")
+  (check-equal? (insert-and '(john bill wayne fred joey)) 
+                '(john bill wayne fred and joey) 
+                "Error for (insert-and '(john bill wayne fred joey))")
   (printf "(insert-and '(kirk picard sisko janeway archer others)): ~a \n" (insert-and '(kirk picard sisko janeway archer others)))
-  (check-equal? (insert-and '(kirk picard sisko janeway archer others)) '(kirk picard sisko janeway archer and others) 
+  (check-equal? (insert-and '(kirk picard sisko janeway archer others)) 
+                '(kirk picard sisko janeway archer and others) 
                 "Error for (insert-and '(kirk picard sisko janeway archer others))")
 
+  ;; 5.20
   (printf "(middle-names '(james paul mccartney)): ~a \n" (middle-names '(james paul mccartney)))
   (check-equal? (middle-names '(james paul mccartney)) '(paul) "Error for (middle-names '(james paul mccartney))")
   (printf "(middle-names '(john ronald raoul tolkien)): ~a \n" (middle-names '(john ronald raoul tolkien)))
@@ -111,6 +124,7 @@
   (printf "(middle-names '(peter blair denis bernard noone)): ~a \n" (middle-names '(peter blair denis bernard noone)))
   (check-equal? (middle-names '(peter blair denis bernard noone)) '(blair denis bernard) "Error for (middle-names '(peter blair denis bernard noone))")
 
+  ;; 5.21
   (printf "(simply-query '(you are experienced)): ~a \n" (simply-query '(you are experienced)))
   (check-equal? (simply-query '(you are experienced)) '(are you experienced?) "Error for (simply-query '(you are experienced))")
   (printf "(simply-query '(i should have known better)): ~a \n" (simply-query '(i should have known better)))

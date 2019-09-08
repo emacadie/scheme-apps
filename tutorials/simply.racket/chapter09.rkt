@@ -2,8 +2,7 @@
 
 ; Chapter 09: Lambda
 
-(require "more-simply.rkt")
-; (require "simply-constants.rkt")
+(require (prefix-in more: "more-simply.rkt"))
 (butfirst '(This is chapter 9))
 
 ;; two functions that do the same thing
@@ -159,7 +158,7 @@
 (module+ test
   (require rackunit)
   (check-true #t)
-  (define (ends-vowel? wd) (vowel? (last wd)))
+  (define (ends-vowel? wd) (more:vowel? (last wd)))
   (printf "(who '(sells out)): ~a \n" (who '(sells out)))
   (check-equal? (who '(sells out)) '(pete sells out roger sells out john sells out keith sells out) "Error for (who '(sells out))")
 
@@ -172,8 +171,8 @@
   ; 9.06
   (printf "((sentence-version first) '(if i fell)): ~a \n" ((sentence-version first) '(if i fell)))
   (check-equal? ((sentence-version first) '(if i fell)) '(i i f) "Error for ((sentence-version first) '(if i fell))")
-  (printf "((sentence-version square) '(8 2 4 6)): ~a \n" ((sentence-version square) '(8 2 4 6)))
-  (check-equal? ((sentence-version square) '(8 2 4 6)) '(64 4 16 36) "Error for ((sentence-version square) '(8 2 4 6))")
+  (printf "((sentence-version more:square) '(8 2 4 6)): ~a \n" ((sentence-version more:square) '(8 2 4 6)))
+  (check-equal? ((sentence-version more:square) '(8 2 4 6)) '(64 4 16 36) "Error for ((sentence-version square) '(8 2 4 6))")
 
   ; 9.07
   (printf "(letterwords 'o '(got to get you into my life)): ~a \n" (letterwords 'o '(got to get you into my life)))

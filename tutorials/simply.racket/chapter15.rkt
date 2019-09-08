@@ -2,8 +2,6 @@
 
 ; Chapter 15: Advanced Recursion
 
-(require "more-simply.rkt")
-
 (butfirst '(This is chapter 15 advanced recursion))
 
 ;; Chapter 15 Advanced Recursion

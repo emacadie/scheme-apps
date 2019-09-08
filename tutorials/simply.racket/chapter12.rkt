@@ -2,7 +2,7 @@
 
 ; Chapter 12: Recursion again: The leap of faith
 
-(require "more-simply.rkt")
+(require (prefix-in more: "more-simply.rkt"))
 (require "simply-constants.rkt")
 (butfirst '(This is chapter 12 recursion))
 
@@ -42,8 +42,9 @@
 ;; do-great-stuff in more-simply
 (define (exaggerate12 the-sent)
   (if (= (count the-sent) 1)
-      (do-great-stuff (first the-sent))
-      (sentence (do-great-stuff (first the-sent)) (exaggerate12 (butfirst the-sent)))))
+      (more:do-great-stuff (first the-sent))
+      (sentence (more:do-great-stuff (first the-sent)) 
+                (exaggerate12 (butfirst the-sent)))))
 
 ;; 12.6  [8.11] Write a GPA procedure. It should take a sentence of grades as its argument and return the corresponding grade point average:
 ;; > (gpa '(A A+ B+ B))
@@ -56,8 +57,8 @@
 
 (define (get-grade-total grades) 
   (if (= (count grades) 1)
-      (+ (base-grade (first grades)) (modify-grade (first grades)))
-      (+ (base-grade (first grades)) (modify-grade (first grades)) (get-grade-total (butfirst grades)))))
+      (+ (more:base-grade (first grades)) (more:modify-grade (first grades)))
+      (+ (more:base-grade (first grades)) (more:modify-grade (first grades)) (get-grade-total (butfirst grades)))))
 
 (define (gpa12 grades)
   (/ (get-grade-total grades) (count grades)))
@@ -71,22 +72,17 @@
 	'(zero one two three four five six seven eight nine)))
 
 (define (spell-number nums)
-  (cond ((empty? nums) '())
-        ((= (count nums) 1) (spell-digit nums))
-        (else (sentence (spell-digit (first nums)) (spell-number (butfirst nums))))))
+  (cond [(empty? nums) '()]
+        [(= (count nums) 1) (spell-digit nums)]
+        [else (sentence (spell-digit (first nums)) (spell-number (butfirst nums)))]))
 
 ;; 12.8  Write a procedure numbers that takes a sentence as its argument and returns another sentence containing only the numbers in the argument:
 ;; this is filter/keep
 (define (numbers the-sent)
-  (cond ((empty? the-sent) '())
-        ; ((and (equal? (count the-sent) 1) (number? (first the-sent))) (first the-sent))
-        ; ((and (equal? (count the-sent) 1) (not (number? (first the-sent)))) '())
-        ; ((and (> (count the-sent) 1) (number? (first the-sent))) (sentence (first the-sent) (numbers (butfirst the-sent))))
-        ; ((and (> (count the-sent) 1) (not (number? (first the-sent)))) (numbers (butfirst the-sent)))
-        ;; added better conditions below
-        ((number? (first the-sent)) (sentence (first the-sent) (numbers (butfirst the-sent))))
-        ((not (number? (first the-sent))) (sentence (numbers (butfirst the-sent))))
-        (else '())))
+  (cond [(empty? the-sent) '()]
+        [(number? (first the-sent)) (sentence (first the-sent) (numbers (butfirst the-sent)))]
+        [(not (number? (first the-sent))) (sentence (numbers (butfirst the-sent)))]
+        [else '()]))
 
 ;; I will include an answer from https://github.com/pongsh/simply-scheme-exercises/blob/master/12-the-leap-of-faith/12.8.scm
 (define (numbers2 sent)
@@ -98,9 +94,9 @@
 
 ;; Simpler than mine, but I think it could be better. Replace compound "if" with "cond"
 (define (numbers3 sent)
-  (cond ((empty? sent) '())
-        ((number? (first sent)) (se (first sent) (numbers3 (bf sent))))
-        (else (se (numbers3 (bf sent))))))
+  (cond [(empty? sent) '()]
+        [(number? (first sent)) (se (first sent) (numbers3 (bf sent)))]
+        [else (se (numbers3 (bf sent)))]))
 
 ;; 12.9  Write a procedure real-words that takes a sentence as argument and returns all the "real" words of the sentence, 
 ;; using the same rule as the real-word? procedure from Chapter 1
@@ -119,7 +115,9 @@
 (define (remove-word the-word the-sent)
   (cond [(empty? the-sent) '()]
         [(equal? the-word (first the-sent)) (sentence (remove-word the-word (butfirst the-sent)))]
-        [(not (equal? the-word (first the-sent))) (sentence (first the-sent) (remove-word the-word (butfirst the-sent)))]
+        [(not (equal? the-word (first the-sent))) (sentence (first the-sent) 
+                                                            (remove-word the-word 
+                                                                         (butfirst the-sent)))]
         [else '()]))
 
 ;; 12.12  Write a procedure arabic which converts Roman numerals into Arabic numerals:
@@ -139,18 +137,19 @@
 (define (first-less-than-second the-nums)
   (cond [(equal? (count the-nums) 1) #f]
         [(< (roman-value (first the-nums)) (roman-value (first (butfirst the-nums)))) #t]
-        [else #f]
-))
+        [else #f]))
 
 (define (subtract-first-from-second the-nums)
-  (- (roman-value (first (butfirst the-nums))) (roman-value (first the-nums))))
+  (- (roman-value (first (butfirst the-nums))) 
+     (roman-value (first the-nums))))
 
 (define (arabic the-nums)
   (cond [(empty? the-nums) '()]
         [(equal? (count the-nums) 1) (roman-value the-nums)]
-        [(first-less-than-second the-nums) (+ (subtract-first-from-second the-nums) (arabic (butfirst (butfirst the-nums))))]
-        [(not (first-less-than-second the-nums)) (+ (roman-value (first the-nums)) (arabic (butfirst the-nums)))]
-))
+        [(first-less-than-second the-nums) (+ (subtract-first-from-second the-nums) 
+                                              (arabic (butfirst (butfirst the-nums))))]
+        [(not (first-less-than-second the-nums)) (+ (roman-value (first the-nums)) 
+                                                    (arabic (butfirst the-nums)))]))
 
 ;;  12.13  Write a new version of the describe-time procedure from Exercise . Instead of returning a decimal number, it should behave like this:
 ; > (describe-time 22222)
@@ -161,30 +160,30 @@
 
 (define (get-time-measure time)
   (cond [(>= time CENTURY-SEC) 'CENTURIES]
-        [(>= time YEAR-SEC) 'YEARS]
-        [(>= time WEEK-SEC) 'WEEKS]
-        [(>= time DAY-SEC) 'DAYS]
-        [(>= time HOUR-SEC) 'HOURS]
-        [(>= time MINUTE-SEC) 'MINUTES]
+        [(>= time YEAR-SEC)    'YEARS]
+        [(>= time WEEK-SEC)    'WEEKS]
+        [(>= time DAY-SEC)     'DAYS]
+        [(>= time HOUR-SEC)    'HOURS]
+        [(>= time MINUTE-SEC)  'MINUTES]
         [else 'SECONDS]))
 
 ; quotient is like floor
 (define (get-time-floor time)
   (cond [(>= time CENTURY-SEC) (quotient time CENTURY-SEC)]
-        [(>= time YEAR-SEC) (quotient time YEAR-SEC)] 
-        [(>= time WEEK-SEC) (quotient time WEEK-SEC)]
-        [(>= time DAY-SEC) (quotient time DAY-SEC)]
-        [(>= time HOUR-SEC) (quotient time HOUR-SEC)]
-        [(>= time MINUTE-SEC) (quotient time MINUTE-SEC)]
+        [(>= time YEAR-SEC)    (quotient time YEAR-SEC)] 
+        [(>= time WEEK-SEC)    (quotient time WEEK-SEC)]
+        [(>= time DAY-SEC)     (quotient time DAY-SEC)]
+        [(>= time HOUR-SEC)    (quotient time HOUR-SEC)]
+        [(>= time MINUTE-SEC)  (quotient time MINUTE-SEC)]
         [else 'SECONDS]))
 
 (define (get-time-multiplier time)
   (cond [(>= time CENTURY-SEC) CENTURY-SEC] 
-        [(>= time YEAR-SEC) YEAR-SEC] 
-        [(>= time WEEK-SEC) WEEK-SEC] 
-        [(>= time DAY-SEC) DAY-SEC]
-        [(>= time HOUR-SEC) HOUR-SEC]
-        [(>= time MINUTE-SEC) MINUTE-SEC]
+        [(>= time YEAR-SEC)    YEAR-SEC] 
+        [(>= time WEEK-SEC)    WEEK-SEC] 
+        [(>= time DAY-SEC)     DAY-SEC]
+        [(>= time HOUR-SEC)    HOUR-SEC]
+        [(>= time MINUTE-SEC)  MINUTE-SEC]
         [else 'SECONDS]))
 
 (define (describe-time12 time)
@@ -193,7 +192,11 @@
         [(= time 1) (sentence time 'SECOND)]
         [(< time 60)  (sentence time 'SECONDS)]
         ; ((>= time 60) )
-        [else (sentence (get-time-floor time) (get-time-measure time) (describe-time12 (- time (* (get-time-floor time) (get-time-multiplier time)))))]))
+        [else (sentence (get-time-floor time) 
+                        (get-time-measure time) 
+                        (describe-time12 (- time 
+                                            (* (get-time-floor time) 
+                                               (get-time-multiplier time)))))]))
 ;; I did not do tail recursion. But then again, the authors did not mention tail-recursion.
 ;; I don't think I got it when I did the other Scheme tutorials.
 ;; But I was able to use loop-recur in Clojure, and I think that is similar to tail-recursion:
@@ -238,32 +241,50 @@ but because its result is not fed into another function.
   (require rackunit)
   (check-true #t)
 
+  ;; 12.02
   (printf "(my-acronym '(hello this is my sentence)): ~a \n" (my-acronym '(hello this is my sentence)))
   (check-equal? (my-acronym '(hello this is my sentence)) 'htims "Error for: (my-acronym '(hello this is my sentence)")
   (printf "(fintwelve '(this is a sentence)): ~a \n" (fintwelve '(this is a sentence)))
+
+  ;; 12.04
   (check-equal? (fintwelve '(this is a sentence)) '(sentence a is this) "Error for: (fintwelve '(this is a sentence))")
+
+  ;; 12.05
   (printf "(exaggerate12 '(i ate 3 potstickers)): ~a \n" (exaggerate12 '(i ate 3 potstickers)))
   (check-equal? (exaggerate12 '(i ate 3 potstickers)) '(i ate 6 potstickers) "Error for (exaggerate12 '(i ate 3 potstickers))")
   (printf "(exaggerate12 '(the chow fun is good here)): ~a \n" (exaggerate12 '(the chow fun is good here)))
   (check-equal? (exaggerate12 '(the chow fun is good here)) '(the chow fun is great here) "Error for (exaggerate12 '(the chow fun is good here))")
   (printf "(exaggerate12 '(but the egg drop soup is bad)): ~a \n" (exaggerate12 '(but the egg drop soup is bad)))
   (check-equal? (exaggerate12 '(but the egg drop soup is bad)) '(but the egg drop soup is terrible) "Error for (exaggerate12 '(but the egg drop soup is bad))")  
+  ;; 12.06
   (printf "(gpa12 '(A A+ B+ B)): ~a \n" (gpa12 '(A A+ B+ B)))
   (check-equal? (gpa12 '(A A+ B+ B)) 3.665 "Error for (gpa12 '(A A+ B+ B))")
+
+  ;; 12.07
   (printf "(spell-number 1971): ~a \n" (spell-number 1971))
   (check-equal? (spell-number 1971) '(one nine seven one) "Error for: (spell-number 1971)")
+
+  ;; 12.08
   (printf "(numbers '(76 trombones and 110 cornets)): ~a \n" (numbers '(76 trombones and 110 cornets)))
   (check-equal? (numbers '(76 trombones and 110 cornets)) '(76 110) "Error for: (numbers '(76 trombones and 110 cornets))")
   (printf "(numbers3 '(76 trombones and 110 cornets)): ~a \n" (numbers3 '(76 trombones and 110 cornets)))
   (check-equal? (numbers3 '(76 trombones and 110 cornets)) '(76 110) "Error for: (numbers3 '(76 trombones and 110 cornets))")
+
+  ;; 12.09
   (printf "(real-words '(the end of the world in a day and a half)): ~a \n"  (real-words '(the end of the world in a day and a half)))
   (check-equal? (real-words '(the end of the world in a day and a half)) '(end world day half) "Error for: (real-words '(the end of the world in a day and a half))")
-  (printf "(remove 'the '(the song love of the loved by the beatles)): ~a \n" (remove 'the '(the song love of the loved by the beatles)))
-  (check-equal? (remove 'the '(the song love of the loved by the beatles)) '(song love of the loved by the beatles) "Error for: (remove 'the '(the song love of the loved by the beatles))")
+
+  ;; 12.10 
+  (printf "(remove-word 'the '(the song love of the loved by the beatles)): ~a \n" (remove-word 'the '(the song love of the loved by the beatles)))
+  (check-equal? (remove-word 'the '(the song love of the loved by the beatles)) '(song love of loved by beatles) "Error for: (remove-word 'the '(the song love of the loved by the beatles))")
+
+  ;; 12.12
   (printf "(arabic 'MCMLXXI): ~a \n" (arabic 'MCMLXXI))
   (check-equal? (arabic 'MCMLXXI) 1971  "Error for: (arabic 'MCMLXXI)")
   (printf "(arabic 'MLXVI): ~a \n" (arabic 'MLXVI))
   (check-equal? (arabic 'MLXVI) 1066  "Error for: (arabic 'MLXVI)")
+
+  ;; 12.13
   (printf "(describe-time12 22222): ~a \n" (describe-time12 22222))
   (check-equal? (describe-time12 22222) '(6 HOURS 10 MINUTES 22 SECONDS) "Error for: (describe-time12 22222)")
   (printf "(describe-time12 4967189641): ~a \n" (describe-time12 4967189641))

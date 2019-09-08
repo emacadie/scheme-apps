@@ -2,11 +2,8 @@
 
 ; Chapter 17: Lists
 
-(require "more-simply.rkt")
-
 (provide flatten2
-         my-append
-)
+         my-append)
 
 (butfirst '(This is chapter 17 lists))
 
@@ -59,11 +56,11 @@ Using higher-order functions:
 		   structure))))
 Using standard recursion (three base cases and two recursive calls)
 (define (deep-appearances wd structure)
-  (cond ((equal? wd structure) 1)              ; base case: desired word
-        ((word? structure) 0)                  ; base case: other word
-        ((null? structure) 0)                  ; base case: empty list
-        (else (+ (deep-appearances wd (car structure))
-                 (deep-appearances wd (cdr structure))))))
+  (cond [(equal? wd structure) 1]              ; base case: desired word
+        [(word? structure) 0]                  ; base case: other word
+        [(null? structure) 0]                  ; base case: empty list
+        [else (+ (deep-appearances wd (car structure))
+                 (deep-appearances wd (cdr structure)))]))
 I don't think you can do tail-recursion for this stuff.
 |#
 

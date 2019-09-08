@@ -2,7 +2,7 @@
 
 ; Chapter 15: Advanced Recursion, Phone problem
 
-(require "more-simply.rkt")
+(require (prefix-in more: "more-simply.rkt"))
 
 (butfirst '(This is chapter 15 advanced recursion phone problem))
 
@@ -84,7 +84,7 @@
   (cond [(empty? lttr-list) outp]
         [(empty? outp) (try-phone-with-higher (butfirst (butfirst lttr-list)) 
                                               (higher-combine (first lttr-list) 
-                                                              (simply-second lttr-list)))]
+                                                              (more:simply-second lttr-list)))]
         [else (try-phone-with-higher (butfirst lttr-list) 
                                      (higher-combine outp 
                                                      (first lttr-list)))]))
@@ -95,7 +95,7 @@
   (cond [(empty? lttr-list) outp]
         [(empty? outp) (try-phone-with-recursion (butfirst (butfirst lttr-list)) 
                                                  (recurs-combine (first lttr-list) 
-                                                                 (simply-second lttr-list)
+                                                                 (more:simply-second lttr-list)
                                                                  '()))]
         [else (try-phone-with-recursion (butfirst lttr-list) 
                                         (recurs-combine outp 
@@ -113,15 +113,15 @@
 ;; their solution
 ;; from https://github.com/buntine/Simply-Scheme-Exercises/blob/master/15-advanced-recursion/15-5.scm
 (define (letters-o n)
-  (cond ((= n 2) (se 'a 'b 'c))
-        ((= n 3) (se 'd 'e 'f))
-        ((= n 4) (se 'g 'h 'i))
-        ((= n 5) (se 'j 'k 'l))
-        ((= n 6) (se 'm 'n 'o))
-        ((= n 7) (se 'p 'q 'r 's))
-        ((= n 8) (se 't 'u 'v))
-        ((= n 9) (se 'w 'x 'y 'z))
-        (else n)))
+  (cond [(= n 2) (se 'a 'b 'c)]
+        [(= n 3) (se 'd 'e 'f)]
+        [(= n 4) (se 'g 'h 'i)]
+        [(= n 5) (se 'j 'k 'l)]
+        [(= n 6) (se 'm 'n 'o)]
+        [(= n 7) (se 'p 'q 'r 's)]
+        [(= n 8) (se 't 'u 'v)]
+        [(= n 9) (se 'w 'x 'y 'z)]
+        [else n]))
 
 ; (prepend-every-o 'q '(well how are you))
 ; gives: '(qwell qhow qare qyou)

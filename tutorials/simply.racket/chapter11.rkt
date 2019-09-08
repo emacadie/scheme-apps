@@ -2,8 +2,7 @@
 
 ; Chapter 11: Recursion
 
-(require "more-simply.rkt")
-; (require "simply-constants.rkt")
+(require (prefix-in more: "more-simply.rkt"))
 (butfirst '(This is chapter 11 recursion))
 
 ;; Recursion
@@ -38,8 +37,8 @@
 ;; phone-letter from more-simply
 ;; Write phone-unspell recursively.
 (define (my-phone-unspell wd)
-  (cond [(equal? 1 (count wd) ) (phone-letter wd)]
-        [else (word (phone-letter (first wd)) (my-phone-unspell (bf wd)))]))
+  (cond [(equal? 1 (count wd) ) (more:phone-letter wd)]
+        [else (word (more:phone-letter (first wd)) (my-phone-unspell (bf wd)))]))
 
 ;; 11.4  Who first said "use what you have to get what you need"? 
 ;; Sussman and Abelson
@@ -69,22 +68,28 @@
 (module+ test
   (require rackunit)
   (check-true #t)
-  ; (define (ends-vowel? wd) (vowel? (last wd)))
-  ; (printf "(who '(sells out)): ~a \n" (who '(sells out)))
-  ; (check-equal? (who '(sells out)) '(pete sells out roger sells out john sells out keith sells out) "Error for (who '(sells out))")
+
+  ;; 11.02
   (printf "(my-count-ums '(today um we are going to um talk about the combining um method)) : ~a \n" (my-count-ums '(today um we are going to um talk about the combining um method)))
   (check-equal? (my-count-ums '(today um we are going to um talk about the combining um method)) 3 "Error for: (my-count-ums '(today um we are going to um talk about the combining um method))")
+
+  ;; 11.03 
   (printf "(my-phone-unspell 'popcorn): ~a \n" (my-phone-unspell 'popcorn))
   (check-equal? (my-phone-unspell 'popcorn) 7672676 "Error for (my-phone-unspell 'popcorn)")
+
+  ;; 11.05 
   (printf "(initials-r '(if i needed someone)) : ~a \n" (initials-r '(if i needed someone)))
   (check-equal? (initials-r '(if i needed someone)) '(i i n s)  "Error for: (initials-r '(if i needed someone))")
+
+  ;; 11.06
   (printf "(countdown 10) : ~a \n" (countdown 10))
   (check-equal? (countdown 10) '(10 9 8 7 6 5 4 3 2 1 BLASTOFF!) "Error for: (countdown 10)")
   (printf "(countdown 3): ~a \n" (countdown 3))
   (check-equal? (countdown 3) '(3 2 1 BLASTOFF!) "Error for: (countdown 3)")
+
+  ;; 11.07
   (printf "(copies 8 'spam): ~a \n" (copies 8 'spam))
   (check-equal? (copies 8 'spam) '(spam spam spam spam spam spam spam spam) "Error for: (copies 8 'spam)")
 
 )
-  ; (printf " : ~a \n"  )
-  ; (check-equal?  "Error for: ")
+

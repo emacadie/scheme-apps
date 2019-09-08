@@ -1,8 +1,7 @@
 #lang simply-scheme
 
 ; Chapter 08: Higher-Order Functions
-
-(require "more-simply.rkt")
+(require (prefix-in more: "more-simply.rkt"))
 (require "simply-constants.rkt")
 (butfirst '(This is chapter 8))
 
@@ -55,7 +54,7 @@
 ;; only works with lower-case
 ;; do-great-stuff in more-simply
 (define (exaggerate sntnc)
-  (every do-great-stuff sntnc))
+  (every more:do-great-stuff sntnc))
 
 ;; 8.9  What procedure can you use as the first argument to every so that for any sentence used as the second argument, every returns that sentence?
 ;; I tried "word" and it worked
@@ -75,7 +74,7 @@
 ;; base-grade and modify-grade in more-simply
 
 (define (convert-grade-to-num grade)
-  (+ (base-grade grade) (modify-grade grade)))
+  (+ (more:base-grade grade) (more:modify-grade grade)))
 
 (define (gpa grades)
   (/ (accumulate + (every convert-grade-to-num grades)) (count grades)))
@@ -94,7 +93,7 @@
 
 ; phone-letter in more-simply, also used in chapter 11
 (define (phone-unspell wd)
-  (every phone-letter wd))
+  (every more:phone-letter wd))
 
 ;; 8.14  Write the procedure subword that takes three arguments: a word, a starting position number, and an ending position number. 
 ;; It should return the subword containing only the letters between the specified positions:
@@ -107,7 +106,7 @@
   (check-true #t)
 
   ;; 8.04
-  (define (ends-vowel? wd) (vowel? (last wd)))
+  (define (ends-vowel? wd) (more:vowel? (last wd)))
   (printf "(choose-beatles ends-vowel?): ~a \n" (choose-beatles ends-vowel?))
   (check-equal? (choose-beatles ends-vowel?) '(george ringo) "Error for (choose-beatles ends-vowel?)")
   (define (even-count? wd) (even? (count wd)))

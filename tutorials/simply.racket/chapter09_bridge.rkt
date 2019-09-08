@@ -2,8 +2,6 @@
 
 ; Chapter 09: Bridge
 
-(require "more-simply.rkt")
-; (require "simply-constants.rkt")
 (butfirst '(This is chapter 9 bridge))
 
 ;; Write a procedure card-val that takes a single card as its argument and returns the value of that card.

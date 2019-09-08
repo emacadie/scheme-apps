@@ -2,8 +2,7 @@
 
 ; Chapter 14: Common Patterns in Recursion
 
-(require "more-simply.rkt")
-
+(require (prefix-in more: "more-simply.rkt"))
 (butfirst '(This is chapter 14 recursion))
 
 ;; 14.1  
@@ -82,7 +81,7 @@
   (cond [(equal? (count the-nums) 1) outp]
         [else (differences-r (butfirst the-nums) 
                              (sentence outp 
-                                       (- (simply-second the-nums) 
+                                       (- (more:simply-second the-nums) 
                                           (first the-nums))))]))
 
 ;; 14.8  Write expand, which takes a sentence as its argument. 
@@ -100,7 +99,7 @@
         [(number? (first the-sent)) 
          (expand-r (butfirst (butfirst the-sent)) 
                    (sentence outp (print-n-times (first the-sent) 
-                                                 (simply-second the-sent) 
+                                                 (more:simply-second the-sent) 
                                                  '())))]
         [else (expand-r (butfirst the-sent) 
                         (sentence outp 
@@ -119,7 +118,10 @@
 
 (define (location-r the-word sent outp counter)
   (cond [(equal? (count sent) 0) outp]
-        [(equal? the-word (first sent)) (location-r the-word '() counter counter)]
+        [(equal? the-word (first sent)) (location-r the-word 
+                                                    '() 
+                                                    counter 
+                                                    counter)]
         [else (location-r the-word 
                           (butfirst sent) 
                           outp 
@@ -132,7 +134,7 @@
 ;; (count-adjacent-dups-r '(y a b b a d a b b a d o o) 0)
 (define (count-adjacent-dups-r the-sent outp)
   (cond [(equal? (count the-sent) 1) outp]
-        [(equal? (first the-sent) (simply-second the-sent)) (count-adjacent-dups-r (butfirst the-sent) (+ 1 outp))]
+        [(equal? (first the-sent) (more:simply-second the-sent)) (count-adjacent-dups-r (butfirst the-sent) (+ 1 outp))]
         [else (count-adjacent-dups-r (butfirst the-sent) outp)]))
 
 ;; 14.11  Write the procedure remove-adjacent-duplicates that takes a sentence as argument 
@@ -142,13 +144,13 @@
 ;; (remove-adj-dups-r '(yeah yeah yeah) '())
 (define (remove-adj-dups-r the-sent outp)
   (cond [(equal? (count the-sent) 0) outp]
-        [(and (equal? (count the-sent) 1) (equal? (first the-sent) (last outp))) outp]
-        [(equal? (first the-sent) (simply-second the-sent)) 
+        [(and (equal? (count the-sent) 1) 
+              (equal? (first the-sent) (last outp))) outp]
+        [(equal? (first the-sent) (more:simply-second the-sent)) 
          (remove-adj-dups-r (butfirst (butfirst the-sent)) 
                             (sentence outp (first the-sent)))]
         [else (remove-adj-dups-r (butfirst the-sent) 
-                                 (sentence outp (first the-sent)))]
-))
+                                 (sentence outp (first the-sent)))]))
 
 ;; 14.12  Write a procedure progressive-squares? that takes a sentence of numbers as its argument. 
 ;; It should return #t if each number (other than the first) is the square of the number before it:
@@ -158,7 +160,7 @@
 
 (define (prog-sqrs? the-sent outp)
   (cond [(or (equal? (count the-sent) 0) (equal? (count the-sent) 1)) outp]
-        [(equal? (square (first the-sent)) (simply-second the-sent)) (prog-sqrs? (butfirst the-sent) #t)]
+        [(equal? (more:square (first the-sent)) (more:simply-second the-sent)) (prog-sqrs? (butfirst the-sent) #t)]
         [else (prog-sqrs? '() #f)]))
 
 ;; 14.13  What does the pigl procedure from Chapter 11 do if you invoke it with a word like "frzzmlpt" that has no vowels? 
@@ -170,7 +172,7 @@
 ;      (pigl (word (bf wd) (first wd)))))
 
 (define (all-consonants? the-word)
-  (if (zero? (count (keep vowel? the-word)))
+  (if (zero? (count (keep more:vowel? the-word)))
       #t
       #f))
 
@@ -248,11 +250,11 @@
 (define (syllables-r the-word outp)
   ; (display-all "calling syllables-r with the-word: " the-word ", outp: " outp)
   (cond [(or (empty? the-word) (equal? (count the-word) 1)) outp]
-        [(and (vowel? (first the-word)) 
-              (not (vowel? (first (butfirst the-word))))) 
+        [(and (more:vowel? (first the-word)) 
+              (not (more:vowel? (first (butfirst the-word))))) 
          (syllables-r (butfirst the-word) (+ 1 outp))]
-        [(and (not (vowel? (first the-word))) 
-              (vowel? (first (butfirst the-word))))
+        [(and (not (more:vowel? (first the-word))) 
+              (more:vowel? (first (butfirst the-word))))
          (syllables-r (butfirst the-word) (+ 1 outp))]
         [else (syllables-r (butfirst the-word) outp)]))
 

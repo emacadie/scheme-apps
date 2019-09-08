@@ -1,5 +1,5 @@
 #lang simply-scheme
-(require "more-simply.rkt")
+
 (butfirst '(welcome to chapter 16))
 
 (define (match pattern sent)

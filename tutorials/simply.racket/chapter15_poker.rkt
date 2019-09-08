@@ -2,8 +2,8 @@
 
 ; Chapter 15 project: Poker
 
-(require "more-simply.rkt")
-; (require "simply-constants.rkt")
+(require (prefix-in more: "more-simply.rkt"))
+
 (butfirst '(This is chapter 15 poker))
 
 ;; from chapter 9 bridge:
@@ -20,7 +20,7 @@
   (first s-count))
 
 (define (num-diamonds s-count)
-  (simply-second s-count))
+  (more:simply-second s-count))
 
 (define (num-hearts s-count)
   (last (butlast s-count)))
@@ -38,11 +38,11 @@
   (check-flush-work (suit-counts card-list)))
 
 (define (check-flush-work list-suit-counts)
-  (cond [(equal? 0 (appearances 5 list-suit-counts))  'none]
-        [(equal? 5 (first list-suit-counts))          'clubs]
-        [(equal? 5 (simply-second list-suit-counts))  'diamonds]
-        [(equal? 5 (last (butlast list-suit-counts))) 'hearts]
-        [(equal? 5 (last list-suit-counts))           'spades]))
+  (cond [(equal? 0 (appearances 5 list-suit-counts))      'none]
+        [(equal? 5 (first list-suit-counts))              'clubs]
+        [(equal? 5 (more:simply-second list-suit-counts)) 'diamonds]
+        [(equal? 5 (last (butlast list-suit-counts)))     'hearts]
+        [(equal? 5 (last list-suit-counts))               'spades]))
 
 (module+ test
   (require rackunit)

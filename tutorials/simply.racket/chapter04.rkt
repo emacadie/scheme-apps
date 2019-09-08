@@ -22,14 +22,12 @@
 (define (fourth x)
     (* x (* x (* x x))))
 
-
-
 (define (fourth-with-square x)
-  (square (square x)))
+  (more:square (more:square x)))
 
 ;; 4.7: Write a procedure that computes the absolute value of its argument by finding the square root of the square of the argument.
 (define (simply-abs x)
-  (sqrt (square x)))
+  (sqrt (more:square x)))
 
 ;; 4.8  "Scientific notation" is a way to represent very small or very large numbers by combining a medium-sized number with a power of 10. 
 ;; For example, 5×107 represents the number 50000000, while 3.26×10-9 represents 0.00000000326 in scientific notation. 
@@ -71,23 +69,35 @@
   (check-true #t)
   (printf "(sphere-volume 10):  ~a \n" (sphere-volume 10)) 
   (check-equal? (sphere-volume 10) 4188.790205333334 "Error with: sphere-volume" ) 
+
+  ;; 4.05 
   (printf "(c-to-f 23): ~a \n" (c-to-f 23))
   (check-equal? (c-to-f 23) 73.4 "Error with: (c-to-f 23)")
   (printf "(f-to-c 55): ~a \n" (f-to-c 55))
   (check-equal? (f-to-c 55) 12.777777777777779 "Error with: (f-to-c 55)")
+
+  ;; 4.06
   (printf "(fourth-with-square 4): ~a \n" (fourth-with-square 4))
   (check-equal? (fourth-with-square 4) 256 "Error with: (fourth-with-square 4)")
+
+  ;; 4.07
   (printf "(simply-abs -4): ~a \n" (simply-abs -4))
   (check-equal? (simply-abs -4) 4 "Error with: (simply-abs -4)")
+
+  ;; 4.08
   (printf "(scientific 7 3): ~a \n" (scientific 7 3))
   (check-equal? (scientific 7 3) 7000.0 "Error with: (scientific 7 3)")
   (printf "(scientific 42 -5): ~a \n" (scientific 42 -5))
   (check-equal? (scientific 42 -5) 0.00042 "Error with: (scientific 42 -5)")
+
+  ;; 4.09
   (printf "(discount 10 5): ~a \n" (discount 10 5))
   (check-equal? (discount 10 5) 9.5 "Error with: (discount 10 5)")
   (printf "(discount 29.90 50): ~a \n" (discount 29.90 50))
   (check-equal? (discount 29.90 50) 14.95 "Error with: (discount 29.90 50)")
   (printf "(tip 29.23): ~a \n" (tip 29.23))
+
+  ;; 4.10
   (check-equal? (tip 29.23) 4.77 "Error with: (tip 29.23)")
   (printf "(tip 7.54): ~a \n" (tip 7.54))
   (check-equal? (tip 7.54) 1.46 "Error with: (tip 7.54)")

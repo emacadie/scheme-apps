@@ -2,8 +2,6 @@
 
 ; Chapter 14 Extra: Naming Numbers
 
-(require "more-simply.rkt")
-
 (butfirst '(This is chapter 14 naming numbers))
 
 ;; break a string into sets of 3
@@ -74,11 +72,11 @@
 
 (define (grand-num-name-worker the-num outp group)
   ; (printf "grand-num-name-worker, the-num: ~a, outp: ~a, group: ~a\n" the-num outp group)
-  (cond ((empty? the-num) outp)
-        (else (grand-num-name-worker (butlast the-num)
+  (cond [(empty? the-num) outp]
+        [else (grand-num-name-worker (butlast the-num)
                                      (sentence (exponent-helper (num-name2-work (last the-num) "" 1) 
                                                                 group) outp) 
-                                     (+ 1 group)))))
+                                     (+ 1 group))]))
 
 (define (grand-num-name-caller raw-num)
   (keep (lambda (x) (not (empty? x)))

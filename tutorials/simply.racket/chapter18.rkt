@@ -2,8 +2,6 @@
 
 ; Chapter 18: Lists
 
-(require "more-simply.rkt")
-; (require "chapter17.rkt"
 (require (prefix-in ch17: "chapter17.rkt"))
 ; (prefix-in tcp: racket/tcp)
 (butfirst '(This is chapter 18 trees))
@@ -320,13 +318,14 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
 ;; buntine says he used filter, and then tried this
 ; https://github.com/buntine/Simply-Scheme-Exercises/blob/master/18-trees/18-5.scm
 (define (prune-b tree)
-  (cond ((leaf? tree) #f)
-        (else (make-node (datum tree) (prune-forest-b (children tree))))))
+  (cond [(leaf? tree) #f]
+        [else (make-node (datum tree) (prune-forest-b (children tree)))]))
 
 (define (prune-forest-b forest)
-  (cond  ((null? forest) '())
-         ((leaf? (car forest)) (prune-forest-b (cdr forest)))
-         (else (make-node (prune-b (car forest)) (prune-forest-b (cdr forest))))))
+  (cond  [(null? forest) '()]
+         [(leaf? (car forest)) (prune-forest-b (cdr forest))]
+         [else (make-node (prune-b (car forest)) 
+                          (prune-forest-b (cdr forest)))]))
 
 ;; 18.6 Write a program parse-scheme that parses a Scheme arithmetic expression 
 ; into the same kind of tree that parse produces for infix expressions. 

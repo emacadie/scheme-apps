@@ -2,7 +2,7 @@
 
 ; Chapter 19 Higher Order Functions
 
-(require "more-simply.rkt")
+(require (prefix-in more: "more-simply.rkt"))
 (require (prefix-in ch17: "chapter17.rkt"))
 
 (butfirst '(This is chapter 19 Higher Order Functions))
@@ -15,10 +15,10 @@ from chapter 17:
 (Isn't that also how they defined trees?)
 Anyway, they mention you can call higher-order functions on structured lists:
 (define (deep-map f structure)
-  (cond ((word? structure) (f structure))
-        ((null? structure) '())
-        (else (cons (deep-map f (car structure))
-                    (deep-map f (cdr structure))))))
+  (cond [(word? structure) (f structure)]
+        [(null? structure) '()]
+        [else (cons (deep-map f (car structure))
+                    (deep-map f (cdr structure)))]))
 Map on the car and map on the cdr, just like trees.
 Not tail-recursive.
 |#
@@ -536,8 +536,8 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
                              120)
 
   ;; 19.02
-  (check-equal? 'ei (keep-ch19 vowel? 'qerti))
-  (check-equal? '(e u) (keep-ch19 vowel? '(q w e r t u)))
+  (check-equal? 'ei    (keep-ch19 more:vowel? 'qerti))
+  (check-equal? '(e u) (keep-ch19 more:vowel? '(q w e r t u)))
 
   ; 19.03
   (check-equal? (three-arg-accumulate + 0 '(4 5 6))          15)
@@ -603,11 +603,11 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
                              ((repeated bf 3) '(she came in through the bathroom window))
                              (my-repeated bf 3 '(she came in through the bathroom window)))
   (check-three-things-equal? 'computerssss
-                             ((repeated plural 4) 'computer)
-                             (my-repeated plural 4 'computer))
+                             ((repeated more:plural 4)  'computer)
+                             (my-repeated more:plural 4 'computer))
   (check-three-things-equal? 81
-                             ((repeated square 2) 3)
-                             (my-repeated square 2 3))
+                             ((repeated more:square 2) 3)
+                             (my-repeated more:square 2 3))
   (define (double-sentence sent)
     (se sent sent))
   (check-three-things-equal? '(banana banana banana banana banana banana banana banana)
