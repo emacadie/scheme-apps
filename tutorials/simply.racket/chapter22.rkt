@@ -154,20 +154,6 @@ But you can't do "first", "butfirst", etc with read-string: use read-line
 If your file has scheme lists in it, use read
 |#
 
-;; delete the files we created
-
-#|
-(delete-our-files '("songs2" "dddbmt-reversed" "results" "r5rs-just"
-                    "all-states-we-have"))
-|#
-(define (delete-if-exists file-name)
-  (when (file-exists? file-name)
-    (delete-file file-name)))
-
-(define (delete-our-files list-of-files)
-  (for-each delete-if-exists list-of-files))
-
-
 ; 22.1  Write a concatenate procedure that takes two arguments: 
 ; a list of names of input files, and one name for an output file. 
 ; The procedure should copy all of the input files, in order, into the output file. 
@@ -409,36 +395,39 @@ A line should be written in the output file only for the items that do appear in
 ;; (join-files "who.names" 3 "who.grades" 1 "who.output")
 ;; read works for names
 
-(define (after a b)
+;; should after go to more-simply?
+(define (after? a b)
   (and (not (before? a b))
-       (equal? a b)))
+       (not (equal? a b))))
 
 (define (join-files-helper inport-a num-a line-a inport-b num-b line-b outport)
-  (cond [])
-)
+  (cond [(or (eof-object? line-a) (eof-object? line-b)) 'done] 
+    [(after? (item num-a line-a)
+             (item num-b line-b))
+         (join-files-helper inport-a num-a line-a inport-b num-b (read inport-b) outport)]
+        [(before? (item num-a line-a)
+                  (item num-b line-b))
+         (join-files-helper inport-a num-a (read inport-a) inport-b num-b line-b outport)]
+        [else
+         (begin
+           (show (list (all-se-item-but-num num-a line-a)
+                       (item num-a line-a)
+                       (all-se-item-but-num num-b line-b)) outport)
+           (join-files-helper inport-a num-a (read inport-a) inport-b num-b (read inport-b) outport))]))
 
+;; This mostly works. There are too many parens, but at this point, I don't care.
+;; I just want this over with. I am tired of worrying about read, read-line, read-this, read-that, is it a sentence, is it a list.
 (define (join-files first-file first-num scnd-file scnd-num outfile)
   (let ([inport-a (open-input-file first-file)]
         [inport-b (open-input-file scnd-file)]
-        [outport (open-output-file outfile)])
-    
+        [outport  (open-output-file outfile)])
+    (join-files-helper inport-a first-num (read inport-a) inport-b scnd-num (read inport-b) outport)
     (close-input-port inport-a)
     (close-input-port inport-b)
     (close-output-port outport)))
 
-(define (who-names-lines inport)
-  (display-all "---------------------------------")
-  (let ([line (read inport)])
-    (cond [(eof-object? line) 'done]
-          [else (begin
-                  (display-all "here is line: " line)
-                  (display-all "here is (first line): " (first line))
-                  (display-all "Is it a sentence? " (sentence? line))
-                  ; (display-all "Car of the line: " (car line))
-                  (who-names-lines inport))])))
-
 (define (look-at-who-names)
-  (let ([inport (open-input-file "who.grades")])
+  (let ([inport (open-input-file "who.names")])
     (who-names-lines inport)
     (close-input-port inport)))
 
@@ -459,6 +448,34 @@ A line should be written in the output file only for the items that do appear in
         [(equal? num 1) (butfirst the-sent)]
         [(equal? num (count the-sent)) (butlast the-sent)]
         [else (all-se-but-num-helper num the-sent 1 '())]))
+
+;; read works for grades as sentences
+;; read-line no good
+(define (who-names-lines inport)
+  (display-all "---------------------------------")
+  (let ([line (read inport)])
+    (cond [(eof-object? line) 'done]
+          [else (begin
+                  (display-all "here is line: " line
+                  ", here is (first line): " (first line))
+                  (display-all "sentence of first: " (se (first line)))
+                  (display-all "Is it a sentence? " (sentence? line) ", is it a list: " (list? line))
+                  (display-all "here is it as a sentence: " 
+                               (se (first line) ; (list-ref line 0)
+                                   (list-ref line 1)
+                                   (list-ref line 2)) 
+                               ", here is bl line: " (bl line))
+                  (display-all "here is the trick: bl then last: " 
+                               (se (bl line)))
+                  ; (display-all "Car of the line: " (car line))
+                  (who-names-lines inport))])))
+
+(define (delete-if-exists file-name)
+  (when (file-exists? file-name)
+    (delete-file file-name)))
+
+(define (delete-our-files list-of-files)
+  (for-each delete-if-exists list-of-files))
 
 ;; delete files we may have created
 (delete-our-files '("songs2" "dddbmt-reversed" "results" "r5rs-just"
@@ -506,7 +523,12 @@ A line should be written in the output file only for the items that do appear in
                 '(one three four five))
   (check-equal? (all-se-item-but-num 3 test-sent)
                 '(one two four five))
-
+  (check-equal? (after? 'joe 'jod)   #t)
+  (check-equal? (after? "joe" "jod") #t)
+  (check-equal? (after? 'jod 'joe)   #f)
+  (check-equal? (after? "jod" "joe") #f)
+  (check-equal? (after? 'joe 'joe)   #f)
+  (check-equal? (after? "joe" "joe") #f)
   
 
 
