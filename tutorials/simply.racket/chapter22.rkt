@@ -2,9 +2,7 @@
 
 ; Chapter 22 Files
 
-(require "more-simply.rkt")
-(require (prefix-in ch17: "chapter17.rkt"))
-(require (prefix-in ttt: "ttt.rkt"))
+(require (prefix-in more: "more-simply.rkt"))
 (require (prefix-in srfi-13: srfi/13))
 
 ;; Chapter 22 Files Input and Output
@@ -123,7 +121,7 @@
 (define (filemerge file1 file2 outfile)
   (let ([p1   (open-input-file file1)]
         [p2   (open-input-file file2)]
-	    [outp (open-output-file outfile)])
+        [outp (open-output-file outfile)])
     (filemerge-helper p1 p2 outp (read-string p1) (read-string p2))
     (close-output-port outp)
     (close-input-port p1)
@@ -303,11 +301,11 @@ Ringo Starr
 ; (lookup "r5rs" "to")
 (define (lookup-helper inport the-word)
   (let ([line (read-string inport)])
-    (display-all "here is line: " line)
+    (more:display-all "here is line: " line)
     (cond [(eof-object? line) 'done]
           [(number? (srfi-13:string-contains line the-word)) 
            (begin
-             (display-all line)
+             (more:display-all line)
              (lookup-helper inport the-word))]
           [else (lookup-helper inport the-word)])))
   
@@ -332,22 +330,22 @@ Ringo Starr
     (cond [(eof-object? line) 'done]
           [(and (equal? line-count 1) (> screen-count 1))
            (begin
-             (display-all prev-line)
-             (display-all line)
+             (more:display-all prev-line)
+             (more:display-all line)
              (page-helper inport line (+ 1 line-count) screen-count))]
           [(or (and (equal? 1 screen-count) (< line-count 23))
                (and (> screen-count 1)      (< line-count 22)))
            (begin
-             (display-all line)
+             (more:display-all line)
              (page-helper inport line (+ 1 line-count) screen-count))]
           [(or (and (equal? 1 screen-count) (equal? 23 line-count))
                (and (> screen-count 1)      (equal? 22 line-count)))
            (begin
-             (display-all line)
-             (display-all "hit <Enter> to proceed")
+             (more:display-all line)
+             (more:display-all "hit <Enter> to proceed")
              (read-line)
              (page-helper inport line 1 (+ 1 screen-count)))]
-          [else (display-all "In the else")])))
+          [else (more:display-all "In the else")])))
 
 (define (page file-name)
   (let ([inport (open-input-file file-name)])
@@ -410,13 +408,21 @@ A line should be written in the output file only for the items that do appear in
          (join-files-helper inport-a num-a (read inport-a) inport-b num-b line-b outport)]
         [else
          (begin
-           (show (list (all-se-item-but-num num-a line-a)
-                       (item num-a line-a)
-                       (all-se-item-but-num num-b line-b)) outport)
+           (show (append (all-se-item-but-num num-a line-a)
+                         (list (item num-a line-a))
+                         (all-se-item-but-num num-b line-b)) outport)
            (join-files-helper inport-a num-a (read inport-a) inport-b num-b (read inport-b) outport))]))
 
 ;; This mostly works. There are too many parens, but at this point, I don't care.
 ;; I just want this over with. I am tired of worrying about read, read-line, read-this, read-that, is it a sentence, is it a list.
+;; Maybe I will look at buntine's or mengsince1986's solutions later.
+;; But yes, I am punting, and I am okay with that.
+;; 2019-09-13: I did look at mengsince's, and it inspired me to try again
+;; meng calls another function to finalize the list
+;; now I am getting one fewer parens
+;; The leading 0's on student ids are getting removed
+;; but that also happened with meng's and buntine's
+;; buntine wrote lines without outermost parens
 (define (join-files first-file first-num scnd-file scnd-num outfile)
   (let ([inport-a (open-input-file first-file)]
         [inport-b (open-input-file scnd-file)]
@@ -452,21 +458,21 @@ A line should be written in the output file only for the items that do appear in
 ;; read works for grades as sentences
 ;; read-line no good
 (define (who-names-lines inport)
-  (display-all "---------------------------------")
+  (more:display-all "---------------------------------")
   (let ([line (read inport)])
     (cond [(eof-object? line) 'done]
           [else (begin
-                  (display-all "here is line: " line
-                  ", here is (first line): " (first line))
-                  (display-all "sentence of first: " (se (first line)))
-                  (display-all "Is it a sentence? " (sentence? line) ", is it a list: " (list? line))
-                  (display-all "here is it as a sentence: " 
-                               (se (first line) ; (list-ref line 0)
-                                   (list-ref line 1)
-                                   (list-ref line 2)) 
-                               ", here is bl line: " (bl line))
-                  (display-all "here is the trick: bl then last: " 
-                               (se (bl line)))
+                  (more:display-all "here is line: " line
+                                    ", here is (first line): " (first line))
+                  (more:display-all "sentence of first: " (se (first line)))
+                  (more:display-all "Is it a sentence? " (sentence? line) ", is it a list: " (list? line))
+                  (more:display-all "here is it as a sentence: " 
+                                    (se (first line) ; (list-ref line 0)
+                                        (list-ref line 1)
+                                        (list-ref line 2)) 
+                                    ", here is bl line: " (bl line))
+                  (more:display-all "here is the trick: bl then last: " 
+                                    (se (bl line)))
                   ; (display-all "Car of the line: " (car line))
                   (who-names-lines inport))])))
 
