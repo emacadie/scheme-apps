@@ -64,6 +64,13 @@ Using standard recursion (three base cases and two recursive calls)
 I don't think you can do tail-recursion for this stuff.
 |#
 
+#|
+From text, why "map" function is called "map":
+The word "map" may seem strange for this function, but it comes from the mathematical study of functions, in which they talk about a mapping of the domain into the range. 
+In this terminology, one talks about "mapping a function over a set" (a set of argument values, that is), and Lispians have taken over the same vocabulary, except that we talk about mapping over lists instead of mapping over sets. 
+In any case, map is a genuine Scheme primitive, so it's the official grownup way to talk about an every-like higher-order function, and you'd better learn to like it. 
+|#
+
 ;; 17.2  For each of the following examples, write a procedure of two arguments that, 
 ;; when applied to the sample arguments, returns the sample result. 
 ;; Your procedures may not include any quoted data.
