@@ -23,6 +23,11 @@ Map on the car and map on the cdr, just like trees.
 Not tail-recursive.
 |#
 
+;; code for map, reduce and filter at
+;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/higher-order-fu_themes-map-filter-section.html
+;; and
+;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/higher-order-fu_themes-reduction-zip-section.html
+;; but not tail-recursive (at least their map is not)
 ;; from chapter 14, tail-recursive
 ;; (every-something-r (lambda (x) (* 2 x)) '(1 2 3) '())
 (define (my-map func sent)

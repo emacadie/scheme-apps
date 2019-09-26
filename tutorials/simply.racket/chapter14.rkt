@@ -125,8 +125,7 @@
         [else (location-r the-word 
                           (butfirst sent) 
                           outp 
-                          (+ counter 1))]
-))
+                          (+ counter 1))]))
 
 ;; 14.10  Write the procedure count-adjacent-duplicates that takes a sentence as an argument 
 ;; and returns the number of words in the sentence that are immediately followed by the same word:
