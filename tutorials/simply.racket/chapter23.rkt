@@ -159,6 +159,100 @@ I might go back and change things
 ;; and modifies the argument vector by replacing each element with the result of applying the function to that element. 
 ;; Your procedure should return the same vector. 
 
+(define (m-v-m-helper! the-func the-vec counter)
+  (cond [(equal? counter (vector-length the-vec)) the-vec]
+        [else
+          (begin
+            (let [(temp-data (the-func (vector-ref the-vec counter)))]
+              (vector-set! the-vec counter temp-data)
+              (m-v-m-helper! the-func the-vec (+ 1 counter))))]))
+
+(define (my-vector-map! the-func the-vec)
+  (m-v-m-helper! the-func the-vec 0))
+
+#|
+23.7  Could you write vector-filter? How about vector-filter!? 
+Explain the issues involved. 
+You would have to run through the vector twice for vector-filter: 
+once to filter, and iterate through the first result to get rid of empties
+or maybe three times depending on how/when you want to count empties
+vector-filter! would be bad, because then you have some values that are changed
+and some that are not in the original vector
+|#
+
+;; 23.8  Modify the lap procedure to print "Car 34 wins!"
+;; when car 34 completes its 200th lap. 
+;; (A harder but more correct modification is to print the message 
+;; only if no other car has completed 200 laps.) 
+(define (my-lap-23-8 car-number)
+  (vector-set! *lap-vector*
+	       car-number
+	       (+ (vector-ref *lap-vector* car-number) 1))
+  (when (and (equal? 34 car-number)
+             (equal? 200 (vector-ref *lap-vector* car-number)))
+    (more:display-all "Car 34 wins!"))
+  (vector-ref *lap-vector* car-number))
+
+;; make a more manageable lap vector
+(define *my-lap-v* (make-vector 10 0))
+(define (my-lap car-number the-vec)
+  (vector-set! the-vec
+	       car-number
+	       (+ (vector-ref the-vec car-number) 1))
+  (vector-ref the-vec car-number))
+
+(define (my-leader the-vec)
+  (my-leader-helper 0 1 the-vec))
+
+(define (my-leader-helper leader index the-vec)
+  (more:display-all "in my-leader helper with leader " leader
+                    ", index: " index ", vector: " the-vec)
+  (cond [(= index (vector-length the-vec)) leader]
+        [(> (my-lap index the-vec) (my-lap leader the-vec))
+         (my-leader-helper index (+ index 1) the-vec)]
+        [else (my-leader-helper leader (+ index 1) the-vec)]))
+
+(define lap-a (list->vector '(4 5 6 3 1 2 2 7 1 6)))
+
+; 23.10
+; their version does not work because the "lap" function changes the vector
+; I should have seen that
+; I guess I would have if I went in order
+; And "leader" will return the index, not the value
+
+;; 23.9 Write a procedure leader that says which car is in the lead right now. 
+(define (my-leader-2 the-vec)
+  (my-leader-helper-2 0 1 the-vec))
+
+(define (my-leader-helper-2 leader index the-vec)
+  #| (more:display-all "in my-leader-helper-2 with leader " leader ", index: " index ", vector: " the-vec) |#
+
+  (cond [(= index (vector-length the-vec)) (vector-ref the-vec leader)]
+        [(> (vector-ref the-vec index) (vector-ref the-vec leader))
+         (my-leader-helper-2 index (+ index 1) the-vec)]
+        [else (my-leader-helper-2 leader (+ index 1) the-vec)]))
+
+;;  23.11  In some restaurants, the servers use computer terminals to keep track of what each table has ordered. 
+; Every time you order more food, the server enters your order into the computer. 
+; When you're ready for the check, the computer prints your bill.
+
+; You're going to write two procedures, order and bill. 
+; Order takes a table number and an item as arguments and adds the cost of that item to that table's bill. 
+; Bill takes a table number as its argument, 
+; returns the amount owed by that table, 
+; and resets the table for the next customers. 
+; (Your order procedure can examine a global variable *menu* to find the price of each item.)
+
+;> (order 3 'potstickers)
+;> (order 3 'wor-won-ton)
+;> (order 5 'egg-rolls)
+;> (order 3 'shin-shin-special-prawns)
+;> (bill 3)
+;13.85
+;> (bill 5)
+;2.75
+
+
 (module+ test
   (require rackunit)
   (check-true #t)
@@ -190,11 +284,18 @@ I might go back and change things
                 '(dah dah didah))
 
   ; 23.5
-  (check-equal? (my-vector-map more:square '#(2 3 4)) '#(4 9 16))
-  (check-equal? (my-vector-map cadr '#((a b) (d e) (g h)))
-#(b e h)
-)
+  (check-equal? (my-vector-map more:square (list->vector '(2 3 4))) '#(4 9 16))
+  (check-equal? (my-vector-map cadr '#((a b) (d e) (g h))) #(b e h))
 
+  ; 23.6
+  (begin
+    (define vec-23-6-a (list->vector '(2 3 4)))
+    (define vec-23-6-b (my-vector-map! more:square vec-23-6-a))
+    (check-equal? vec-23-6-a vec-23-6-b))
+ 
+  ; 23.9
+  (check-equal? (my-leader-2 (list->vector '(4 5 6 3 8 2 2 7 1 6))) 8)
+  (check-equal? (my-leader-2 (list->vector '(4 5 6 3 1 2 2 7 1 6))) 7)
 
 #|
   (check-equal?  )
