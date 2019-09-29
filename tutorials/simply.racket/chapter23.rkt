@@ -3,7 +3,7 @@
 ; Chapter 23 Vectors
 
 (require (prefix-in more: "more-simply.rkt"))
-; (require (prefix-in srfi-13: srfi/13))
+(require (prefix-in srfi-69: srfi/69)) ; hash tables
 
 ;; Chapter 23 Vectors
 (butfirst '(this is chapter 23: vectors))
@@ -163,7 +163,7 @@ I might go back and change things
   (cond [(equal? counter (vector-length the-vec)) the-vec]
         [else
           (begin
-            (let [(temp-data (the-func (vector-ref the-vec counter)))]
+            (let ([temp-data (the-func (vector-ref the-vec counter))])
               (vector-set! the-vec counter temp-data)
               (m-v-m-helper! the-func the-vec (+ 1 counter))))]))
 
@@ -252,6 +252,60 @@ and some that are not in the original vector
 ;> (bill 5)
 ;2.75
 
+(define *menu* (srfi-69:make-hash-table))
+(srfi-69:hash-table-set! *menu* 'potstickers 3.50)
+(srfi-69:hash-table-set! *menu* 'wor-won-ton 4)
+(srfi-69:hash-table-set! *menu* 'shin-shin-special-prawns 6.35)
+(srfi-69:hash-table-set! *menu* 'egg-rolls 2.75)
+
+(define *23-11-tables* (make-vector 10 0))
+
+(define (order table-num the-item)
+  (let ([temp-hold (vector-ref *23-11-tables* table-num)])
+    (vector-set! *23-11-tables* 
+                 table-num 
+                 (+ temp-hold 
+                    (srfi-69:hash-table-ref *menu* the-item)))))
+
+(define (bill table-num)
+  (let ([temp-hold (vector-ref *23-11-tables* table-num)])
+    (begin
+      (vector-set! *23-11-tables* table-num 0)
+      temp-hold)))
+
+; 23.12  Rewrite selection sort (from Chapter 15) to sort a vector. 
+; This can be done in a way similar to the procedure for shuffling a deck: 
+; Find the smallest element of the vector and exchange it (using vector-swap!) with the value in the first box. 
+; Then find the smallest element not including the first box, 
+; and exchange that with the second box, and so on. 
+; For example, suppose we have a vector of numbers:
+
+;#(23 4 18 7 95 60)
+
+; Your program should transform the vector through these intermediate stages:
+
+;#(4 23 18 7 95 60)   ; exchange 4 with 23
+;#(4 7 18 23 95 60)   ; exchange 7 with 23
+;#(4 7 18 23 95 60)   ; exchange 18 with itself
+;#(4 7 18 23 95 60)   ; exchange 23 with itself
+;#(4 7 18 23 60 95)   ; exchange 60 with 95
+
+(define (vector-swap! vector index1 index2)
+  (let ((temp (vector-ref vector index1)))
+    (vector-set! vector index1 (vector-ref vector index2))
+    (vector-set! vector index2 temp)))
+
+(define (get-smallest-vec-index the-vec small-index index)
+  (cond [(equal? index (vector-length the-vec)) small-index]
+        [(< (vector-ref the-vec small-index) (vector-ref the-vec index))
+         (get-smallest-vec-index the-vec small-index (+ 1 index))]
+        [else (get-smallest-vec-index the-vec index (+ 1 index))]))
+
+(define (vector-sort-helper the-vec index) 
+  #true)
+
+(define (vector-sort the-vec)
+  (vector-sort-helper the-vec 0))
 
 (module+ test
   (require rackunit)
@@ -296,6 +350,23 @@ and some that are not in the original vector
   ; 23.9
   (check-equal? (my-leader-2 (list->vector '(4 5 6 3 8 2 2 7 1 6))) 8)
   (check-equal? (my-leader-2 (list->vector '(4 5 6 3 1 2 2 7 1 6))) 7)
+
+  ; 23.11
+  (order 3 'potstickers)
+  (order 3 'wor-won-ton)
+  (order 5 'egg-rolls)
+  (order 3 'shin-shin-special-prawns)
+  
+  (check-equal? (bill 3) 13.85)
+  (check-equal? (bill 5) 2.75)
+  (check-equal? (bill 2) 0)
+  (check-equal? (bill 5) 0)
+
+  ; 23.12
+  (check-equal? (get-smallest-vec-index (list->vector '(23 3 18 7 95 60)) 0 0) 1)
+  (check-equal? (get-smallest-vec-index (list->vector '(60 95 7 18 3 23)) 0 0) 4)
+
+
 
 #|
   (check-equal?  )
