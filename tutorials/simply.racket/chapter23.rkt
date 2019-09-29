@@ -296,6 +296,13 @@ and some that are not in the original vector
     (vector-set! vector index2 temp)))
 
 (define (get-smallest-vec-index the-vec small-index index)
+  (when (< index (vector-length the-vec))
+      (more:display-all "smallest: the-vec: " the-vec ", small-index: "
+                    small-index ", value: " (vector-ref the-vec small-index)
+                    ", index: " index ", value: " (vector-ref the-vec index))
+)
+
+
   (cond [(equal? index (vector-length the-vec)) small-index]
         [(< (vector-ref the-vec small-index) (vector-ref the-vec index))
          (get-smallest-vec-index the-vec small-index (+ 1 index))]
@@ -365,7 +372,7 @@ and some that are not in the original vector
   ; 23.12
   (check-equal? (get-smallest-vec-index (list->vector '(23 3 18 7 95 60)) 0 0) 1)
   (check-equal? (get-smallest-vec-index (list->vector '(60 95 7 18 3 23)) 0 0) 4)
-
+  (more:display-all "done")
 
 
 #|
