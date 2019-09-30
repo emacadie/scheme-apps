@@ -291,19 +291,11 @@ and some that are not in the original vector
 ;#(4 7 18 23 60 95)   ; exchange 60 with 95
 
 (define (vector-swap! vector index1 index2)
-  (let ((temp (vector-ref vector index1)))
+  (let ([temp (vector-ref vector index1)])
     (vector-set! vector index1 (vector-ref vector index2))
     (vector-set! vector index2 temp)))
 
 (define (get-smallest-vec-index-helper the-vec small-index index)
-#|
-  (when (< index (vector-length the-vec))
-      (more:display-all "smallest: the-vec: " the-vec ", small-index: "
-                    small-index ", value: " (vector-ref the-vec small-index)
-                    ", index: " index ", value: " (vector-ref the-vec index))
-)
-|#
-
   (cond [(equal? index (vector-length the-vec)) small-index]
         [(< (vector-ref the-vec small-index) (vector-ref the-vec index))
          (get-smallest-vec-index-helper the-vec small-index (+ 1 index))]
@@ -312,26 +304,48 @@ and some that are not in the original vector
 (define (get-smallest-vec-index the-vec index)
   (get-smallest-vec-index-helper the-vec index index))
 
-(define (vector-sort-helper the-vec index count) 
-  (more:display-all "v-s-h with vec " the-vec ", and count " count)
+(define (vector-sort-helper the-vec count) 
   (cond [(equal? count (vector-length the-vec)) the-vec]
-        ; [(< (vector-ref the-vec count))]
         [else
-         (let ([temp-vec (vector-swap! the-vec 
-                                       count 
-                                       (get-smallest-vec-index the-vec count))])
-           (more:display-all "Here is temp-vec: " temp-vec ", and the-vec: " the-vec)
-               (vector-sort-helper the-vec
-                                  index
-                                  (+ 1 count))
-)
-                                           
-]
-)
-  )
+         (begin 
+           (vector-swap! the-vec 
+                         count 
+                         (get-smallest-vec-index the-vec count))
+           (vector-sort-helper the-vec
+                               (+ 1 count)))]))
 
 (define (vector-sort the-vec)
-  (vector-sort-helper the-vec 0 0))
+  (vector-sort-helper the-vec 0))
+
+;; 23.13 will not work because it will set two slots to the same value.
+;; This is because there is no temp variable.
+
+;; 23.14  Implement a two-dimensional version of vectors. 
+;; (We'll call one of these structures a matrix.) 
+;; The implementation will use a vector of vectors. 
+;; For example, a three-by-five matrix will be a three-element vector, 
+;; in which each of the elements is a five-element vector. Here's how it should work:
+; > (define m (make-matrix 3 5))
+; > (matrix-set! m 2 1 '(her majesty))
+; > (matrix-ref m 2 1)
+; (HER MAJESTY)
+
+(define (matrix-ref the-m row column)
+  (vector-ref (vector-ref the-m row)
+              column))
+
+(define (matrix-set! matrix row column value)
+  (vector-set! (vector-ref matrix row) column value ))
+
+(define (build-matrix the-m counter num-el-in-vecs)
+  (cond [(equal? counter (vector-length the-m)) the-m]
+        [else (begin
+                (vector-set! the-m counter (make-vector num-el-in-vecs 0))
+                (build-matrix the-m (+ 1 counter) num-el-in-vecs))]))
+
+(define (make-matrix num-vecs num-el-in-vecs)
+  (let ([*matrix* (make-vector num-vecs)])
+    (build-matrix *matrix* 0 num-el-in-vecs)))
 
 (module+ test
   (require rackunit)
@@ -394,6 +408,29 @@ and some that are not in the original vector
 
   (check-equal? (get-smallest-vec-index (list->vector '(23 3 18 7 95 60)) 2) 3)
   (check-equal? (get-smallest-vec-index (list->vector '(60 95 7 18 3 23)) 2) 4)
+  (check-equal? (vector-sort (list->vector '(23 4 18 7 95 60)))
+                             (list->vector '(4 7 18 23 60 95)))
+
+
+  ; 23.14
+  (define prez (make-matrix 5 3))
+  (matrix-set! prez 0 0 '(George Washington))
+  (matrix-set! prez 0 1 'Virginia)
+  (matrix-set! prez 0 2 'None)
+  (matrix-set! prez 1 0 '(John Adams)) ; our only Federalist Pres
+  (matrix-set! prez 1 1 'Maaaas)
+  (matrix-set! prez 1 2 'Federalist)
+  (matrix-set! prez 2 0 '(Millard Fillmore))
+  (matrix-set! prez 2 1 '(New York))
+  (matrix-set! prez 2 2 'Whig)
+  (matrix-set! prez 3 0 '(Ulysses Grant))
+  (matrix-set! prez 3 1 'Ohio)
+  (matrix-set! prez 3 2 'Republican)
+  (matrix-set! prez 4 0 '(Harry Truman))
+  (matrix-set! prez 4 1 'Missouri)
+  (matrix-set! prez 4 2 'Democratic)
+
+
   (more:display-all "done")
 
 
