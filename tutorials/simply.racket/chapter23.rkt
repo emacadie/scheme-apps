@@ -295,24 +295,43 @@ and some that are not in the original vector
     (vector-set! vector index1 (vector-ref vector index2))
     (vector-set! vector index2 temp)))
 
-(define (get-smallest-vec-index the-vec small-index index)
+(define (get-smallest-vec-index-helper the-vec small-index index)
+#|
   (when (< index (vector-length the-vec))
       (more:display-all "smallest: the-vec: " the-vec ", small-index: "
                     small-index ", value: " (vector-ref the-vec small-index)
                     ", index: " index ", value: " (vector-ref the-vec index))
 )
-
+|#
 
   (cond [(equal? index (vector-length the-vec)) small-index]
         [(< (vector-ref the-vec small-index) (vector-ref the-vec index))
-         (get-smallest-vec-index the-vec small-index (+ 1 index))]
-        [else (get-smallest-vec-index the-vec index (+ 1 index))]))
+         (get-smallest-vec-index-helper the-vec small-index (+ 1 index))]
+        [else (get-smallest-vec-index-helper the-vec index (+ 1 index))]))
 
-(define (vector-sort-helper the-vec index) 
-  #true)
+(define (get-smallest-vec-index the-vec index)
+  (get-smallest-vec-index-helper the-vec index index))
+
+(define (vector-sort-helper the-vec index count) 
+  (more:display-all "v-s-h with vec " the-vec ", and count " count)
+  (cond [(equal? count (vector-length the-vec)) the-vec]
+        ; [(< (vector-ref the-vec count))]
+        [else
+         (let ([temp-vec (vector-swap! the-vec 
+                                       count 
+                                       (get-smallest-vec-index the-vec count))])
+           (more:display-all "Here is temp-vec: " temp-vec ", and the-vec: " the-vec)
+               (vector-sort-helper the-vec
+                                  index
+                                  (+ 1 count))
+)
+                                           
+]
+)
+  )
 
 (define (vector-sort the-vec)
-  (vector-sort-helper the-vec 0))
+  (vector-sort-helper the-vec 0 0))
 
 (module+ test
   (require rackunit)
@@ -370,8 +389,11 @@ and some that are not in the original vector
   (check-equal? (bill 5) 0)
 
   ; 23.12
-  (check-equal? (get-smallest-vec-index (list->vector '(23 3 18 7 95 60)) 0 0) 1)
-  (check-equal? (get-smallest-vec-index (list->vector '(60 95 7 18 3 23)) 0 0) 4)
+  (check-equal? (get-smallest-vec-index (list->vector '(23 3 18 7 95 60)) 0) 1)
+  (check-equal? (get-smallest-vec-index (list->vector '(60 95 7 18 3 23)) 0) 4)
+
+  (check-equal? (get-smallest-vec-index (list->vector '(23 3 18 7 95 60)) 2) 3)
+  (check-equal? (get-smallest-vec-index (list->vector '(60 95 7 18 3 23)) 2) 4)
   (more:display-all "done")
 
 
