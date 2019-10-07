@@ -347,6 +347,89 @@ and some that are not in the original vector
   (let ([*matrix* (make-vector num-vecs)])
     (build-matrix *matrix* 0 num-el-in-vecs)))
 
+; 23.16  We want to reimplement sentences as vectors instead of lists.
+; (a) Write versions of sentence, empty?, first, butfirst, last, and butlast 
+; that use vectors. Your selectors need only work for sentences, not for words.
+;> (sentence 'a 'b 'c)
+;#(A B C)
+;> (butfirst (sentence 'a 'b 'c))
+;#(B C)
+;(You don't have to make these procedures work on lists as well as vectors!)
+
+(define (v-sentence-helper the-vec the-list counter)
+  (cond [(empty? the-list) the-vec]
+        [else (begin
+                (vector-set! the-vec counter (car the-list))
+                (v-sentence-helper the-vec (cdr the-list) (+ 1 counter)))]))
+
+(define (v-sentence word . word-list)
+  (v-sentence-helper (make-vector (count (cons word word-list))) 
+                     (cons word word-list) 
+                     0))
+
+(define (v-first the-vec)
+  (vector-ref the-vec 0))
+
+(define (v-last the-vec)
+  (vector-ref the-vec (- (vector-length the-vec) 1)))
+
+(define (v-bf-helper orig-vec output-vec counter)
+  (cond [(equal? counter (vector-length orig-vec)) output-vec]
+        [else
+         (begin
+           (vector-set! output-vec (- counter 1) (vector-ref orig-vec counter))
+           (v-bf-helper orig-vec output-vec (+ 1 counter)))]))
+
+ (define (v-butfirst the-vec)
+   (v-bf-helper the-vec (make-vector (- (vector-length the-vec) 1)) 1 ))
+
+(define (v-bl-helper orig-vec output-vec counter)
+  (cond [(equal? counter (vector-length output-vec)) output-vec]
+        [else
+         (begin
+           (vector-set! output-vec counter (vector-ref orig-vec counter))
+           (v-bl-helper orig-vec output-vec (+ 1 counter)))]))
+
+(define (v-butlast the-vec)
+  (v-bl-helper the-vec (make-vector (- (vector-length the-vec) 1)) 0))
+
+(define (v-empty? the-vec)
+  (cond [(equal? 0 (vector-length the-vec)) #t]
+        [else #f]))
+
+#|
+
+|#
+
+;(b) Does the following program still work with the new implementation of sentences? If not, fix the program.
+;; okay, so I changed the call
+(define (praise stuff)
+  (v-sentence stuff 'is 'good))
+
+;(c) Does the following program still work with the new implementation of sentences? If not, fix the program.
+
+;(define (praise stuff)
+;  (sentence stuff 'rules!))
+
+;(d) Does the following program still work with the new implementation of sentences? 
+; If not, fix the program. If so, is there some optional rewriting that would improve its performance?
+
+;(define (v-item n sent)
+;  (if (= n 1)
+;      (v-first sent)
+;      (v-item (- n 1) (v-butfirst sent))))
+
+;(e) Does the following program still work with the new implementation of sentences?
+; If not, fix the program. If so, is there some optional rewriting that would improve its performance?
+
+;(define (every fn sent)
+;  (if (v-empty? sent)
+;      sent
+;      (v-sentence (fn (v-first sent));
+;		(every fn (v-butfirst sent)))))
+
+;(f) In what ways does using vectors to implement sentences affect the speed of the selectors and constructor? Why do you think we chose to use lists? 
+
 (module+ test
   (require rackunit)
   (check-true #t)
@@ -430,6 +513,13 @@ and some that are not in the original vector
   (matrix-set! prez 4 1 'Missouri)
   (matrix-set! prez 4 2 'Democratic)
 
+  ; 23.16 a
+  (check-equal? (v-sentence 'a 'b 'c) (list->vector '(a b c)))
+  (define q (v-sentence 7 8 9))
+  (check-equal? (v-first q) 7)
+  (check-equal? (v-last q) 9)
+  (check-equal? (v-butfirst q) (list->vector '(8 9)))
+  (check-equal? (v-butlast q) (list->vector '(7 8)))
 
   (more:display-all "done")
 
