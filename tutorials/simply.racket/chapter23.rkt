@@ -414,21 +414,35 @@ and some that are not in the original vector
 ;(d) Does the following program still work with the new implementation of sentences? 
 ; If not, fix the program. If so, is there some optional rewriting that would improve its performance?
 
-;(define (v-item n sent)
-;  (if (= n 1)
-;      (v-first sent)
-;      (v-item (- n 1) (v-butfirst sent))))
+(define (v-item n sent)
+  (cond [(< n 1) #f]
+        [(> n (vector-length sent)) #f] 
+        [(= n 1) (v-first sent)]
+        [else (v-item (- n 1) (v-butfirst sent))]))
 
 ;(e) Does the following program still work with the new implementation of sentences?
 ; If not, fix the program. If so, is there some optional rewriting that would improve its performance?
+; this makes nested vectors for me
+; gotta use a helper
+(define (v-every fn sent)
+  (more:display-all "in v-very with sent: " sent)
+  (cond [(v-empty? sent) sent]
+        [else (v-sentence (fn (v-first sent)) 
+                          (v-every fn (v-butfirst sent)))]))
 
-;(define (every fn sent)
-;  (if (v-empty? sent)
-;      sent
-;      (v-sentence (fn (v-first sent));
-;		(every fn (v-butfirst sent)))))
+(define (v-e-helper fn orig-v out-v counter)
+  (cond [(= counter (vector-length orig-v)) out-v]
+        [else (begin
+                (vector-set! out-v counter (fn (vector-ref orig-v counter)))
+                (v-e-helper fn orig-v out-v (+ 1 counter)))]))
+
+(define (v-every-r fn sent)
+  (v-e-helper fn sent (make-vector (vector-length sent)) 0))
 
 ;(f) In what ways does using vectors to implement sentences affect the speed of the selectors and constructor? Why do you think we chose to use lists? 
+;; I think I could have combined sentence, butfirst and butlast into one function
+;; with another argument if I did this with lists. I might try that just to 
+;; see if it can be done.
 
 (module+ test
   (require rackunit)
@@ -520,6 +534,24 @@ and some that are not in the original vector
   (check-equal? (v-last q) 9)
   (check-equal? (v-butfirst q) (list->vector '(8 9)))
   (check-equal? (v-butlast q) (list->vector '(7 8)))
+
+  ; 23.16 d
+  (define w (v-sentence 'a 'b 'c 'd 'e))
+  (check-equal? (v-item 0 w) #f)
+  (check-equal? (v-item 1 w) 'a)
+  (check-equal? (v-item 2 w) 'b)
+  (check-equal? (v-item 3 w) 'c)
+  (check-equal? (v-item 4 w) 'd)  
+  (check-equal? (v-item 5 w) 'e)
+  (check-equal? (v-item 6 w) #f)
+
+  ; 23.16 e
+  ; (v-every-r fn sent)
+  (define e (v-sentence 2 3 4 5))
+  (check-equal? (v-every-r more:square e) (v-sentence 4 9 16 25))
+  (define (double-num x)
+    (* x 2))
+  (check-equal? (v-every-r double-num e) (v-sentence 4 6 8 10))
 
   (more:display-all "done")
 
