@@ -225,8 +225,6 @@ and some that are not in the original vector
   (my-leader-helper-2 0 1 the-vec))
 
 (define (my-leader-helper-2 leader index the-vec)
-  #| (more:display-all "in my-leader-helper-2 with leader " leader ", index: " index ", vector: " the-vec) |#
-
   (cond [(= index (vector-length the-vec)) (vector-ref the-vec leader)]
         [(> (vector-ref the-vec index) (vector-ref the-vec leader))
          (my-leader-helper-2 index (+ index 1) the-vec)]
@@ -344,8 +342,28 @@ and some that are not in the original vector
                 (build-matrix the-m (+ 1 counter) num-el-in-vecs))]))
 
 (define (make-matrix num-vecs num-el-in-vecs)
-  (let ([*matrix* (make-vector num-vecs)])
-    (build-matrix *matrix* 0 num-el-in-vecs)))
+  (build-matrix (make-vector num-vecs) 0 num-el-in-vecs))
+
+; 23.15  Generalize Exercise 23.14 by implementing an array structure that can have any number of dimensions. 
+; Instead of taking two numbers as index arguments, as the matrix procedures do,
+; the array procedures will take one argument, a list of numbers. 
+; The number of numbers is the number of dimensions, and it will be constant for any particular array. 
+; For example, here is a three-dimensional array (4×5×6):
+; > (define a1 (make-array '(4 5 6)))
+; > (array-set! a1 '(3 2 3) '(the end))
+
+#| here is 5x3
+'#(#((George Washington) Virginia None)
+   #((John Adams) Maaaas Federalist)
+   #((Millard Fillmore) (New York) Whig)
+   #((Ulysses Grant) Ohio Republican)
+   #((Harry Truman) Missouri Democratic))
+'#(#((George Washington) Virginia None)
+   #((John Adams) Maaaas Federalist)
+   #((Millard Fillmore) (New York) Whig)
+   #((Ulysses Grant) Ohio Republican)
+   #((Harry Truman) Missouri Democratic))
+|#
 
 ; 23.16  We want to reimplement sentences as vectors instead of lists.
 ; (a) Write versions of sentence, empty?, first, butfirst, last, and butlast 
@@ -396,10 +414,6 @@ and some that are not in the original vector
 (define (v-empty? the-vec)
   (cond [(equal? 0 (vector-length the-vec)) #t]
         [else #f]))
-
-#|
-
-|#
 
 ;(b) Does the following program still work with the new implementation of sentences? If not, fix the program.
 ;; okay, so I changed the call
@@ -534,6 +548,9 @@ and some that are not in the original vector
   (check-equal? (v-last q) 9)
   (check-equal? (v-butfirst q) (list->vector '(8 9)))
   (check-equal? (v-butlast q) (list->vector '(7 8)))
+
+  ; 23.16 b
+  (check-equal? (praise 'Racket) (v-sentence 'Racket 'is 'good))
 
   ; 23.16 d
   (define w (v-sentence 'a 'b 'c 'd 'e))
