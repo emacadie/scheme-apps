@@ -1,17 +1,23 @@
 #lang simply-scheme
 
-; Chapter 23 Vectors
+; Chapter 23 Vectors, problem 15: arrays
 
 (require (prefix-in more: "more-simply.rkt"))
 (require (prefix-in srfi-69: srfi/69)) ; hash tables
 
 ;; Chapter 23 Vectors
-(butfirst '(this is chapter 23: vectors))
+(butfirst '(this is chapter 23 problem 15: vectors and arrays))
 
 
 ; (define *lap-vector* (make-vector 100))
 
 (define *lap-vector* (make-vector 100 0))
+
+; I will code 2-d vector
+; Then 3-d (which might call 2-d)
+; Then 4-d (which might call 3-d)
+; and go from there
+; This is how they introduce recursion in chapter 11
 
 (define (initialize-lap-vector index)
   (if (< index 0)
@@ -358,7 +364,46 @@ and some that are not in the original vector
 (define (make-matrix num-vecs num-el-in-vecs)
   (build-matrix (make-vector num-vecs) 0 num-el-in-vecs))
 
-; 23.15: In its own file
+; 23.15  Generalize Exercise 23.14 by implementing an array structure that can have any number of dimensions. 
+; Instead of taking two numbers as index arguments, as the matrix procedures do,
+; the array procedures will take one argument, a list of numbers. 
+; The number of numbers is the number of dimensions, and it will be constant for any particular array. 
+; For example, here is a three-dimensional array (4×5×6):
+; > (define a1 (make-array '(4 5 6)))
+; > (array-set! a1 '(3 2 3) '(the end))
+
+#| here is 5x3
+'#(#((George Washington) Virginia None)
+   #((John Adams) Maaaas Federalist)
+   #((Millard Fillmore) (New York) Whig)
+   #((Ulysses Grant) Ohio Republican)
+   #((Harry Truman) Missouri Democratic))
+'#(#((George Washington) Virginia None)
+   #((John Adams) Maaaas Federalist)
+   #((Millard Fillmore) (New York) Whig)
+   #((Ulysses Grant) Ohio Republican)
+   #((Harry Truman) Missouri Democratic))
+|#
+
+(define (2d-vec-helper the-m counter num-el-in-vecs)
+  (cond [(equal? counter (vector-length the-m)) the-m]
+        [else (begin
+                (vector-set! the-m counter (make-vector num-el-in-vecs 0))
+                (2d-vec-helper the-m (+ 1 counter) num-el-in-vecs))]))
+
+(define (make-2d-vec dim-list)
+  (2d-vec-helper (make-vector (car dim-list)) 0 (list-ref dim-list 1)))
+
+
+(define (3d-vec-helper 3d-vec counter dims-list)
+  (cond [(equal? counter (vector-length 3d-vec)) 3d-vec]
+        [else (begin
+                (vector-set! 3d-vec counter (make-2d-vec dims-list))
+                (3d-vec-helper 3d-vec (+ 1 counter) dims-list))]))
+
+(define (make-3d-vec dims-list)
+  (let ([*3d-vec* (make-vector (car dims-list))])
+    (3d-vec-helper *3d-vec* 0 (cdr dims-list))))
 
 ; 23.16  We want to reimplement sentences as vectors instead of lists.
 ; (a) Write versions of sentence, empty?, first, butfirst, last, and butlast 
