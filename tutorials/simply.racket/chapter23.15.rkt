@@ -8,35 +8,11 @@
 ;; Chapter 23 Vectors
 (butfirst '(this is chapter 23 problem 15: vectors and arrays))
 
-
-; (define *lap-vector* (make-vector 100))
-
-(define *lap-vector* (make-vector 100 0))
-
 ; I will code 2-d vector
 ; Then 3-d (which might call 2-d)
 ; Then 4-d (which might call 3-d)
 ; and go from there
 ; This is how they introduce recursion in chapter 11
-
-(define (initialize-lap-vector index)
-  (if (< index 0)
-      'done
-      (begin (vector-set! *lap-vector* index 0)
-	     (initialize-lap-vector (- index 1)))))
-
-; (initialize-lap-vector 99)
-
-;; an easier way to initialize a vector w/zeroes
-(define *lv-02* (make-vector 100 0))
-
-(define (lap car-number)
-  ;; set the veector element - side effect
-  (vector-set! *lap-vector*
-	       car-number
-	       (+ (vector-ref *lap-vector* car-number) 1))
-  ;; return that element - return value
-  (vector-ref *lap-vector* car-number))
 
 #|
 Vectors versus Lists
@@ -186,97 +162,6 @@ vector-filter! would be bad, because then you have some values that are changed
 and some that are not in the original vector
 |#
 
-;; 23.8  Modify the lap procedure to print "Car 34 wins!"
-;; when car 34 completes its 200th lap. 
-;; (A harder but more correct modification is to print the message 
-;; only if no other car has completed 200 laps.) 
-(define (my-lap-23-8 car-number)
-  (vector-set! *lap-vector*
-	       car-number
-	       (+ (vector-ref *lap-vector* car-number) 1))
-  (when (and (equal? 34 car-number)
-             (equal? 200 (vector-ref *lap-vector* car-number)))
-    (more:display-all "Car 34 wins!"))
-  (vector-ref *lap-vector* car-number))
-
-;; make a more manageable lap vector
-(define *my-lap-v* (make-vector 10 0))
-(define (my-lap car-number the-vec)
-  (vector-set! the-vec
-	       car-number
-	       (+ (vector-ref the-vec car-number) 1))
-  (vector-ref the-vec car-number))
-
-(define (my-leader the-vec)
-  (my-leader-helper 0 1 the-vec))
-
-(define (my-leader-helper leader index the-vec)
-  (more:display-all "in my-leader helper with leader " leader
-                    ", index: " index ", vector: " the-vec)
-  (cond [(= index (vector-length the-vec)) leader]
-        [(> (my-lap index the-vec) (my-lap leader the-vec))
-         (my-leader-helper index (+ index 1) the-vec)]
-        [else (my-leader-helper leader (+ index 1) the-vec)]))
-
-(define lap-a (list->vector '(4 5 6 3 1 2 2 7 1 6)))
-
-; 23.10
-; their version does not work because the "lap" function changes the vector
-; I should have seen that
-; I guess I would have if I went in order
-; And "leader" will return the index, not the value
-
-;; 23.9 Write a procedure leader that says which car is in the lead right now. 
-(define (my-leader-2 the-vec)
-  (my-leader-helper-2 0 1 the-vec))
-
-(define (my-leader-helper-2 leader index the-vec)
-  (cond [(= index (vector-length the-vec)) (vector-ref the-vec leader)]
-        [(> (vector-ref the-vec index) (vector-ref the-vec leader))
-         (my-leader-helper-2 index (+ index 1) the-vec)]
-        [else (my-leader-helper-2 leader (+ index 1) the-vec)]))
-
-;;  23.11  In some restaurants, the servers use computer terminals to keep track of what each table has ordered. 
-; Every time you order more food, the server enters your order into the computer. 
-; When you're ready for the check, the computer prints your bill.
-
-; You're going to write two procedures, order and bill. 
-; Order takes a table number and an item as arguments and adds the cost of that item to that table's bill. 
-; Bill takes a table number as its argument, 
-; returns the amount owed by that table, 
-; and resets the table for the next customers. 
-; (Your order procedure can examine a global variable *menu* to find the price of each item.)
-
-;> (order 3 'potstickers)
-;> (order 3 'wor-won-ton)
-;> (order 5 'egg-rolls)
-;> (order 3 'shin-shin-special-prawns)
-;> (bill 3)
-;13.85
-;> (bill 5)
-;2.75
-
-(define *menu* (srfi-69:make-hash-table))
-(srfi-69:hash-table-set! *menu* 'potstickers 3.50)
-(srfi-69:hash-table-set! *menu* 'wor-won-ton 4)
-(srfi-69:hash-table-set! *menu* 'shin-shin-special-prawns 6.35)
-(srfi-69:hash-table-set! *menu* 'egg-rolls 2.75)
-
-(define *23-11-tables* (make-vector 10 0))
-
-(define (order table-num the-item)
-  (let ([temp-hold (vector-ref *23-11-tables* table-num)])
-    (vector-set! *23-11-tables* 
-                 table-num 
-                 (+ temp-hold 
-                    (srfi-69:hash-table-ref *menu* the-item)))))
-
-(define (bill table-num)
-  (let ([temp-hold (vector-ref *23-11-tables* table-num)])
-    (begin
-      (vector-set! *23-11-tables* table-num 0)
-      temp-hold)))
-
 ; 23.12  Rewrite selection sort (from Chapter 15) to sort a vector. 
 ; This can be done in a way similar to the procedure for shuffling a deck: 
 ; Find the smallest element of the vector and exchange it (using vector-swap!) with the value in the first box. 
@@ -385,26 +270,94 @@ and some that are not in the original vector
    #((Harry Truman) Missouri Democratic))
 |#
 
-(define (2d-vec-helper the-m counter num-el-in-vecs)
+
+(define (get-2d-vec-dimensions matrix)
+  (list
+   (vector-length matrix)
+   (vector-length (vector-ref matrix 0))))
+
+(define (get-3d-vec-dimensions matrix)
+  (cons
+   (vector-length matrix)
+   (get-2d-vec-dimensions (vector-ref matrix 0))))
+
+(define (within-2d-vec-dimensions? the-m dims-in)
+  (let ([the-dims (get-2d-vec-dimensions the-m)]
+        [row (car dims-in)]
+        [column (list-ref dims-in 1)])
+    (cond [(or (> 0 row) (> 0 column)) #f]
+          [(or (> row (- (car the-dims) 1)) (> column (- (list-ref the-dims 1) 1))) #f]
+          [else #t])))
+
+(define (within-3d-vec-dimensions? the-m dims-in)
+  (let ([the-dims (get-3d-vec-dimensions the-m)]
+        [row (car dims-in)]
+        [columns (cdr dims-in)])
+    (cond [(> 0 row) #f]
+          [(> row (- (car the-dims) 1))  #f]
+          [else (within-2d-vec-dimensions? the-m columns)])))
+
+(define (2d-vec-ref the-m dims-in)
+  (cond [(not (within-2d-vec-dimensions? the-m dims-in)) #f]
+        [else (vector-ref (vector-ref the-m (car dims-in)) 
+                          (list-ref dims-in 1))]))
+
+(define (3d-vec-ref the-m dims-in)
+  (cond [(not (within-3d-vec-dimensions? the-m dims-in)) #f]
+        [else (2d-vec-ref (vector-ref the-m (car dims-in))
+                          (cdr dims-in))]))
+
+(define (2d-vec-set! matrix dims-in value)
+  (cond [(not (within-2d-vec-dimensions? matrix dims-in)) #f]
+        [else (vector-set! (vector-ref matrix (car dims-in)) 
+                           (list-ref dims-in 1) 
+                           value)]))
+
+(define (3d-vec-set! matrix dims-in value)
+  (cond [(not (within-3d-vec-dimensions? matrix dims-in)) #f]
+        [else (2d-vec-set! (vector-ref matrix (car dims-in))
+                           (cdr dims-in)
+                           value)]))
+
+(define (2d-vec-builder the-m counter num-el-in-vecs init-val)
   (cond [(equal? counter (vector-length the-m)) the-m]
         [else (begin
-                (vector-set! the-m counter (make-vector num-el-in-vecs 0))
-                (2d-vec-helper the-m (+ 1 counter) num-el-in-vecs))]))
+                (vector-set! the-m counter (make-vector num-el-in-vecs init-val))
+                (2d-vec-builder the-m 
+                                (+ 1 counter) 
+                                num-el-in-vecs
+                                (+ 1 init-val)))]))
 
-(define (make-2d-vec dim-list)
-  (2d-vec-helper (make-vector (car dim-list)) 0 (list-ref dim-list 1)))
-
-
-(define (3d-vec-helper 3d-vec counter dims-list)
+(define (3d-vec-builder 3d-vec counter dims-list init-val)
   (cond [(equal? counter (vector-length 3d-vec)) 3d-vec]
         [else (begin
-                (vector-set! 3d-vec counter (make-2d-vec dims-list))
-                (3d-vec-helper 3d-vec (+ 1 counter) dims-list))]))
+                (vector-set! 3d-vec 
+                             counter 
+                             (make-2d-vec dims-list 
+                                          (+ 1 init-val)))
+                (3d-vec-builder 3d-vec 
+                                (+ 1 counter) 
+                                dims-list 
+                                (+ 1 init-val)))]))
 
-(define (make-3d-vec dims-list)
-  (let ([*3d-vec* (make-vector (car dims-list))])
-    (3d-vec-helper *3d-vec* 0 (cdr dims-list))))
+(define (make-2d-vec dim-list init-val)
+  (2d-vec-builder (make-vector (car dim-list)) 
+                  0 
+                  (list-ref dim-list 1) 
+                  init-val))
 
+(define (make-3d-vec dims-list init-val)
+  (3d-vec-builder (make-vector (car dims-list)) 
+                  0 
+                  (cdr dims-list) 
+                  init-val))
+
+#|
+(define a3 (make-3d-vec '(4 5 6) 0))
+(3d-vec-set! a3 '(3 2 3) 'whatever)
+(3d-vec-ref a3 '(3 2 3))
+(3d-vec-ref a3 '(3 3 2))
+|#
 ; 23.16  We want to reimplement sentences as vectors instead of lists.
 ; (a) Write versions of sentence, empty?, first, butfirst, last, and butlast 
 ; that use vectors. Your selectors need only work for sentences, not for words.
@@ -537,21 +490,6 @@ and some that are not in the original vector
     (define vec-23-6-a (list->vector '(2 3 4)))
     (define vec-23-6-b (my-vector-map! more:square vec-23-6-a))
     (check-equal? vec-23-6-a vec-23-6-b))
- 
-  ; 23.9
-  (check-equal? (my-leader-2 (list->vector '(4 5 6 3 8 2 2 7 1 6))) 8)
-  (check-equal? (my-leader-2 (list->vector '(4 5 6 3 1 2 2 7 1 6))) 7)
-
-  ; 23.11
-  (order 3 'potstickers)
-  (order 3 'wor-won-ton)
-  (order 5 'egg-rolls)
-  (order 3 'shin-shin-special-prawns)
-  
-  (check-equal? (bill 3) 13.85)
-  (check-equal? (bill 5) 2.75)
-  (check-equal? (bill 2) 0)
-  (check-equal? (bill 5) 0)
 
   ; 23.12
   (check-equal? (get-smallest-vec-index (list->vector '(23 3 18 7 95 60)) 0) 1)
@@ -592,6 +530,49 @@ and some that are not in the original vector
   (check-equal? (matrix-set! prez 5 1 'Invalid) #f)
   (check-equal? (matrix-ref prez 4 1) 'Missouri)
   (check-equal? (matrix-ref prez 4 3) #f)
+
+  ; 23.15
+; (make-2d-vec dim-list) 
+  (define prez2 (make-2d-vec '(5 3) 0))
+  (2d-vec-set! prez2 '(0 0) '(George Washington))
+  (2d-vec-set! prez2 '(0 1) 'Virginia)
+  (2d-vec-set! prez2 '(0 2) 'None)
+  (2d-vec-set! prez2 '(1 0) '(John Adams)) ; our only Federalist Pres
+  (2d-vec-set! prez2 '(1 1) 'Maaaas)
+  (2d-vec-set! prez2 '(1 2) 'Federalist)
+  (2d-vec-set! prez2 '(2 0) '(Millard Fillmore))
+  (2d-vec-set! prez2 '(2 1) '(New York))
+  (2d-vec-set! prez2 '(2 2) 'Whig)
+  (2d-vec-set! prez2 '(3 0) '(Ulysses Grant))
+  (2d-vec-set! prez2 '(3 1) 'Ohio)
+  (2d-vec-set! prez2 '(3 2) 'Republican)
+  (2d-vec-set! prez2 '(4 0) '(Harry Truman))
+  (2d-vec-set! prez2 '(4 1) 'Missouri)
+  (2d-vec-set! prez2 '(4 2) 'Democratic)
+
+  (check-equal? (get-matrix-dimensions prez2) '(5 3))
+  (check-equal? (within-2d-vec-dimensions? prez2 '(5 2)) #f)
+  (check-equal? (within-2d-vec-dimensions? prez2 '(6 2)) #f)
+  (check-equal? (within-2d-vec-dimensions? prez2 '(4 2)) #t)
+
+  (check-equal? (within-matrix-dimensions? prez2 4 3) #f)
+  (check-equal? (within-matrix-dimensions? prez2 4 1) #t)
+  (check-equal? (within-matrix-dimensions? prez2 4 -1) #f)
+  (check-equal? (2d-vec-set! prez2 '(5 1) 'Invalid) #f)
+  
+  (check-equal? (2d-vec-ref prez2 '(4 1)) 'Missouri)
+  (check-equal? (2d-vec-ref prez2 '(4 3)) #f)
+  (check-equal? (matrix-ref prez 4 1) (2d-vec-ref prez2 '(4 1)))
+  (check-equal? (matrix-ref prez 4 3) (2d-vec-ref prez2 '(4 3)))
+#|
+(define (2d-vec-ref the-m dims-in)
+  (cond [(not (within-2d-vec-dimensions? the-m dims-in)) #f]
+        [else (vector-ref (vector-ref the-m (car dims-in)) (list-ref dims-in 1))]))
+
+(define (2d-vec-set! matrix dims-in value)
+  (cond [(not (within-2d-vec-dimensions? matrix dims-in)) #f]
+        [else (vector-set! (vector-ref matrix (car dims-in)) (list-ref dims-in 1) value)]))
+|#
 
   ; 23.16 a
   (check-equal? (v-sentence 'a 'b 'c) (list->vector '(a b c)))
