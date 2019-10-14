@@ -287,6 +287,7 @@ and some that are not in the original vector
   (let ([the-dims (get-2d-vec-dimensions the-m)]
         [row (car dims-in)]
         [column (list-ref dims-in 1)])
+    (more:display-all "2d-vec-dims: " the-dims ", your list: " dims-in)
     (cond [(or (> 0 row) (> 0 column)) #f]
           [(or (> row (- (car the-dims) 1)) (> column (- (list-ref the-dims 1) 1))) #f]
           [else #t])))
@@ -295,27 +296,27 @@ and some that are not in the original vector
   (let ([the-dims (get-3d-vec-dimensions the-m)]
         [row (car dims-in)]
         [columns (cdr dims-in)])
+    (more:display-all "3d-vec-dims: " the-dims ", your list: " dims-in)
     (cond [(> 0 row) #f]
           [(> row (- (car the-dims) 1))             
            (begin
              (more:display-all "row is: " row ", and needs to be more than: "
                                (- (car the-dims) 1))
              #f)]
-          [else (within-2d-vec-dimensions? the-m columns)])))
+          [else (within-2d-vec-dimensions? (vector-ref the-m 0) columns)])))
 
 (define (within-4d-vec-dimensions? the-m dims-in)
   (let ([the-dims (get-4d-vec-dimensions the-m)]
         [row (car dims-in)]
         [columns (cdr dims-in)])
+    (more:display-all "4d-vec-dims: " the-dims ", your list: " dims-in)
     (cond [(> 0 row) #f]
           [(> row (- (car the-dims) 1))  
            (begin
              (more:display-all "row is: " row ", and needs to be more than: "
                                (- (car the-dims) 1))
-             #f)
-
-]
-          [else (within-3d-vec-dimensions? the-m columns)])))
+             #f)]
+         [else (within-3d-vec-dimensions? (vector-ref the-m 0) columns)])))
 
 (define (2d-vec-ref the-m dims-in)
   (cond [(not (within-2d-vec-dimensions? the-m dims-in)) #f]
@@ -357,13 +358,21 @@ test-vec
 (initialize-final-vec test-vec 2 0)
 |#
 
+(define global-vec-num 0)
+
+(define (reset-global-vec-num)
+  (set! global-vec-num 0))
+
 (define (initialize-final-vec the-vec init-val index)
-  (more:display-all "in init-final-vec with init-val: " init-val ", index: " index)
   (if (>= index (vector-length the-vec))
-      'done
+      the-vec
       (begin
-        (more:display-all "index is: " index ", vector-length is: " (vector-length the-vec))
-        (vector-set! the-vec index (string->symbol (string-append (number->string init-val) "-" (number->string index))))
+        (vector-set! the-vec 
+                     index 
+                     (string->symbol (string-append (number->string init-val) 
+                                                    "-" 
+                                                    (number->string global-vec-num))))
+        (set! global-vec-num (+ 1 global-vec-num))
         (initialize-final-vec the-vec init-val (+ index 1)))))
 
 (define (2d-vec-builder the-m counter num-el-in-vecs init-val)
@@ -373,7 +382,10 @@ test-vec
         [else (begin
                 (vector-set! the-m 
                              counter 
-                             (make-vector num-el-in-vecs init-val))
+                             
+                             (initialize-final-vec (make-vector num-el-in-vecs init-val) 
+                                                   (+ init-val 1) 
+                                                   (+ 0)))
                 (2d-vec-builder the-m 
                                 (+ 1 counter) 
                                 num-el-in-vecs
