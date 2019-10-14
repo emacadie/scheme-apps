@@ -272,14 +272,16 @@ and some that are not in the original vector
 
 
 (define (get-2d-vec-dimensions matrix)
-  (list
-   (vector-length matrix)
-   (vector-length (vector-ref matrix 0))))
+  (list (vector-length matrix)
+        (vector-length (vector-ref matrix 0))))
 
 (define (get-3d-vec-dimensions matrix)
-  (cons
-   (vector-length matrix)
-   (get-2d-vec-dimensions (vector-ref matrix 0))))
+  (cons (vector-length matrix)
+        (get-2d-vec-dimensions (vector-ref matrix 0))))
+
+(define (get-4d-vec-dimensions matrix)
+  (cons (vector-length matrix)
+        (get-3d-vec-dimensions (vector-ref matrix 0))))
 
 (define (within-2d-vec-dimensions? the-m dims-in)
   (let ([the-dims (get-2d-vec-dimensions the-m)]
@@ -294,8 +296,26 @@ and some that are not in the original vector
         [row (car dims-in)]
         [columns (cdr dims-in)])
     (cond [(> 0 row) #f]
-          [(> row (- (car the-dims) 1))  #f]
+          [(> row (- (car the-dims) 1))             
+           (begin
+             (more:display-all "row is: " row ", and needs to be more than: "
+                               (- (car the-dims) 1))
+             #f)]
           [else (within-2d-vec-dimensions? the-m columns)])))
+
+(define (within-4d-vec-dimensions? the-m dims-in)
+  (let ([the-dims (get-4d-vec-dimensions the-m)]
+        [row (car dims-in)]
+        [columns (cdr dims-in)])
+    (cond [(> 0 row) #f]
+          [(> row (- (car the-dims) 1))  
+           (begin
+             (more:display-all "row is: " row ", and needs to be more than: "
+                               (- (car the-dims) 1))
+             #f)
+
+]
+          [else (within-3d-vec-dimensions? the-m columns)])))
 
 (define (2d-vec-ref the-m dims-in)
   (cond [(not (within-2d-vec-dimensions? the-m dims-in)) #f]
@@ -305,6 +325,11 @@ and some that are not in the original vector
 (define (3d-vec-ref the-m dims-in)
   (cond [(not (within-3d-vec-dimensions? the-m dims-in)) #f]
         [else (2d-vec-ref (vector-ref the-m (car dims-in))
+                          (cdr dims-in))]))
+
+(define (4d-vec-ref the-m dims-in)
+  (cond [(not (within-4d-vec-dimensions? the-m dims-in)) #f]
+        [else (3d-vec-ref (vector-ref the-m (car dims-in))
                           (cdr dims-in))]))
 
 (define (2d-vec-set! matrix dims-in value)
@@ -319,10 +344,36 @@ and some that are not in the original vector
                            (cdr dims-in)
                            value)]))
 
+(define (4d-vec-set! matrix dims-in value)
+  (cond [(not (within-4d-vec-dimensions? matrix dims-in)) #f]
+        [else (3d-vec-set! (vector-ref matrix (car dims-in))
+                           (cdr dims-in)
+                           value)]))
+
+#|
+(define test-vec (make-vector 5 0))
+test-vec
+'#(0 0 0 0 0)
+(initialize-final-vec test-vec 2 0)
+|#
+
+(define (initialize-final-vec the-vec init-val index)
+  (more:display-all "in init-final-vec with init-val: " init-val ", index: " index)
+  (if (>= index (vector-length the-vec))
+      'done
+      (begin
+        (more:display-all "index is: " index ", vector-length is: " (vector-length the-vec))
+        (vector-set! the-vec index (string->symbol (string-append (number->string init-val) "-" (number->string index))))
+        (initialize-final-vec the-vec init-val (+ index 1)))))
+
 (define (2d-vec-builder the-m counter num-el-in-vecs init-val)
+  (more:display-all "2d-vec-builder with counter " counter ", and init-val: "
+                    init-val)
   (cond [(equal? counter (vector-length the-m)) the-m]
         [else (begin
-                (vector-set! the-m counter (make-vector num-el-in-vecs init-val))
+                (vector-set! the-m 
+                             counter 
+                             (make-vector num-el-in-vecs init-val))
                 (2d-vec-builder the-m 
                                 (+ 1 counter) 
                                 num-el-in-vecs
@@ -339,6 +390,18 @@ and some that are not in the original vector
                                 (+ 1 counter) 
                                 dims-list 
                                 (+ 1 init-val)))]))
+;; dims-list has the remaining dimensions
+(define (4d-vec-builder 4d-vec counter dims-list init-val)
+  (cond [(equal? counter (vector-length 4d-vec)) 4d-vec]
+        [else (begin
+                (vector-set! 4d-vec 
+                             counter 
+                             (make-3d-vec dims-list 
+                                          (+ 1 init-val)))
+                (4d-vec-builder 4d-vec 
+                                (+ 1 counter) 
+                                dims-list 
+                                (+ 1 init-val)))]))
 
 (define (make-2d-vec dim-list init-val)
   (2d-vec-builder (make-vector (car dim-list)) 
@@ -352,11 +415,24 @@ and some that are not in the original vector
                   (cdr dims-list) 
                   init-val))
 
+(define (make-4d-vec dims-list init-val)
+  (4d-vec-builder (make-vector (car dims-list)) 
+                  0 
+                  (cdr dims-list) 
+                  init-val))
+
 #|
 (define a3 (make-3d-vec '(4 5 6) 0))
 (3d-vec-set! a3 '(3 2 3) 'whatever)
 (3d-vec-ref a3 '(3 2 3))
 (3d-vec-ref a3 '(3 3 2))
+
+(define a4 (make-4d-vec '(4 5 3 6) 0))
+(4d-vec-set! a4 '(3 3 2 4) 'whatever)
+(4d-vec-ref a4 '(3 3 2 4))
+(4d-vec-ref a4 '(3 3 2))
+
+
 |#
 ; 23.16  We want to reimplement sentences as vectors instead of lists.
 ; (a) Write versions of sentence, empty?, first, butfirst, last, and butlast 
@@ -574,6 +650,12 @@ and some that are not in the original vector
         [else (vector-set! (vector-ref matrix (car dims-in)) (list-ref dims-in 1) value)]))
 |#
 
+;; 3-d vecs
+(define a-3 (make-3d-vec '(4 5 6) 0))
+(3d-vec-set! a-3 '(3 2 3) 'whatever)
+(check-equal? (3d-vec-ref a-3 '(3 2 3)) 'whatever)
+
+; (3d-vec-ref a-3 '(3 3 2))
   ; 23.16 a
   (check-equal? (v-sentence 'a 'b 'c) (list->vector '(a b c)))
   (define q (v-sentence 7 8 9))
