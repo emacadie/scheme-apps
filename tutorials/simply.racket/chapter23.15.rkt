@@ -47,168 +47,6 @@ is better than
 I might go back and change things
 |#
 
-; Do not solve any of the following exercises by converting a vector to a list, 
-; using list procedures, and then converting the result back to a vector.
-
-; 23.1  Write a procedure sum-vector that takes a vector full of numbers as its argument 
-; and returns the sum of all the numbers:
-
-;> (sum-vector '#(6 7 8))
-;21
-
-(define (sum-vector-r the-vec total counter)
-  ; (more:display-all "sum-vector-r with the-vec: " the-vec ", total: " total ", counter: " counter)
-  (cond [(equal? counter (vector-length the-vec)) total]
-        [else (sum-vector-r the-vec 
-                            (+ total (vector-ref the-vec counter)) 
-                            (+ 1 counter))]))
-
-(define (sum-vector the-vec)
-  (sum-vector-r the-vec 0 0))
-
-;;  23.2  Some versions of Scheme provide a procedure vector-fill! 
-; that takes a vector and anything as its two arguments. 
-; It replaces every element of the vector with the second argument, like this:
-; > (define vec (vector 'one 'two 'three 'four))
-; > vec
-; #(one two three four)
-; > (vector-fill! vec 'yeah)
-; > vec
-; #(yeah yeah yeah yeah)
-
-; Write vector-fill!. (It doesn't matter what value it returns.) 
-
-(define (vector-fill-r! new-vec filler counter)
-  (cond [(equal? counter (vector-length new-vec)) new-vec]
-        [else (begin
-                (vector-set! new-vec counter filler)
-                (vector-fill-r! new-vec filler (+ 1 counter)))]))
-
-(define (my-vector-fill! the-vec filler)
-  (vector-fill-r! (make-vector (vector-length the-vec)) filler 0))
-
-;;  23.3  Write a function vector-append that works just like regular append, but for vectors:
-; > (vector-append '#(not a) '#(second time))
-; #(not a second time)
-
-(define (vec-append-helper output vec-a vec-b counter)
-  ; (more:display-all "In vec-append-helper with output: " output ", vec-a: " vec-a ", vec-b: " vec-b ", counter: " counter)
-  (cond [(equal? counter (vector-length output)) output]
-        [(< counter (vector-length vec-a)) 
-         (begin
-           (vector-set! output counter (vector-ref vec-a counter))
-           (vec-append-helper output vec-a vec-b (+ 1 counter)))]
-        [else 
-         (begin
-           (vector-set! output 
-                        counter 
-                        (vector-ref vec-b (- counter (vector-length vec-a))))
-           (vec-append-helper output vec-a vec-b (+ 1 counter)))]))
-
-(define (my-vector-append vec-a vec-b)
-  (vec-append-helper (make-vector (+ (vector-length vec-a)
-                                     (vector-length vec-b)))
-                     vec-a
-                     vec-b
-                     0))
-
-;; 23.4  Write vector->list. 
-;; I assume we do not have to do the one with indexes
-(define (my-v->l-helper the-vec output counter)
-  (cond [(equal? counter (vector-length the-vec)) output]
-        [else (my-v->l-helper the-vec 
-                              (append output (list (vector-ref the-vec counter))) 
-                              (+ 1 counter))]))
-
-(define (my-vector->list the-vec)
-  (my-v->l-helper the-vec '() 0))
-
-;; 23.5  Write a procedure vector-map that takes two arguments, 
-;; a function and a vector, 
-;; and returns a new vector in which each box contains the result of applying the function to the corresponding element of the argument vector. 
-(define (vec-map-helper the-func the-vec output counter)
-  (cond [(equal? counter (vector-length output)) output]
-        [else
-         (begin
-           (vector-set! output counter (the-func (vector-ref the-vec counter)))
-           (vec-map-helper the-func the-vec output (+ 1 counter)))]))
-
-(define (my-vector-map the-func the-vec)
-  (vec-map-helper the-func the-vec (make-vector (vector-length the-vec)) 0))
-
-;; 23.6  Write a procedure vector-map! that takes two arguments, 
-;; a function and a vector, 
-;; and modifies the argument vector by replacing each element with the result of applying the function to that element. 
-;; Your procedure should return the same vector. 
-
-(define (m-v-m-helper! the-func the-vec counter)
-  (cond [(equal? counter (vector-length the-vec)) the-vec]
-        [else
-          (begin
-            (let ([temp-data (the-func (vector-ref the-vec counter))])
-              (vector-set! the-vec counter temp-data)
-              (m-v-m-helper! the-func the-vec (+ 1 counter))))]))
-
-(define (my-vector-map! the-func the-vec)
-  (m-v-m-helper! the-func the-vec 0))
-
-#|
-23.7  Could you write vector-filter? How about vector-filter!? 
-Explain the issues involved. 
-You would have to run through the vector twice for vector-filter: 
-once to filter, and iterate through the first result to get rid of empties
-or maybe three times depending on how/when you want to count empties
-vector-filter! would be bad, because then you have some values that are changed
-and some that are not in the original vector
-|#
-
-; 23.12  Rewrite selection sort (from Chapter 15) to sort a vector. 
-; This can be done in a way similar to the procedure for shuffling a deck: 
-; Find the smallest element of the vector and exchange it (using vector-swap!) with the value in the first box. 
-; Then find the smallest element not including the first box, 
-; and exchange that with the second box, and so on. 
-; For example, suppose we have a vector of numbers:
-
-;#(23 4 18 7 95 60)
-
-; Your program should transform the vector through these intermediate stages:
-
-;#(4 23 18 7 95 60)   ; exchange 4 with 23
-;#(4 7 18 23 95 60)   ; exchange 7 with 23
-;#(4 7 18 23 95 60)   ; exchange 18 with itself
-;#(4 7 18 23 95 60)   ; exchange 23 with itself
-;#(4 7 18 23 60 95)   ; exchange 60 with 95
-
-(define (vector-swap! vector index1 index2)
-  (let ([temp (vector-ref vector index1)])
-    (vector-set! vector index1 (vector-ref vector index2))
-    (vector-set! vector index2 temp)))
-
-(define (get-smallest-vec-index-helper the-vec small-index index)
-  (cond [(equal? index (vector-length the-vec)) small-index]
-        [(< (vector-ref the-vec small-index) (vector-ref the-vec index))
-         (get-smallest-vec-index-helper the-vec small-index (+ 1 index))]
-        [else (get-smallest-vec-index-helper the-vec index (+ 1 index))]))
-
-(define (get-smallest-vec-index the-vec index)
-  (get-smallest-vec-index-helper the-vec index index))
-
-(define (vector-sort-helper the-vec count) 
-  (cond [(equal? count (vector-length the-vec)) the-vec]
-        [else
-         (begin 
-           (vector-swap! the-vec 
-                         count 
-                         (get-smallest-vec-index the-vec count))
-           (vector-sort-helper the-vec
-                               (+ 1 count)))]))
-
-(define (vector-sort the-vec)
-  (vector-sort-helper the-vec 0))
-
-;; 23.13 will not work because it will set two slots to the same value.
-;; This is because there is no temp variable.
-
 ;; 23.14  Implement a two-dimensional version of vectors. 
 ;; (We'll call one of these structures a matrix.) 
 ;; The implementation will use a vector of vectors. 
@@ -283,11 +121,15 @@ and some that are not in the original vector
   (cons (vector-length matrix)
         (get-3d-vec-dimensions (vector-ref matrix 0))))
 
+(define (get-5d-vec-dimensions matrix)
+  (cons (vector-length matrix)
+        (get-4d-vec-dimensions (vector-ref matrix 0))))
+
 (define (within-2d-vec-dimensions? the-m dims-in)
   (let ([the-dims (get-2d-vec-dimensions the-m)]
         [row (car dims-in)]
         [column (list-ref dims-in 1)])
-    (more:display-all "2d-vec-dims: " the-dims ", your list: " dims-in)
+    ; (more:display-all "2d-vec-dims: " the-dims ", your list: " dims-in)
     (cond [(or (> 0 row) (> 0 column)) #f]
           [(or (> row (- (car the-dims) 1)) (> column (- (list-ref the-dims 1) 1))) #f]
           [else #t])))
@@ -296,12 +138,11 @@ and some that are not in the original vector
   (let ([the-dims (get-3d-vec-dimensions the-m)]
         [row (car dims-in)]
         [columns (cdr dims-in)])
-    (more:display-all "3d-vec-dims: " the-dims ", your list: " dims-in)
+    ; (more:display-all "3d-vec-dims: " the-dims ", your list: " dims-in)
     (cond [(> 0 row) #f]
           [(> row (- (car the-dims) 1))             
            (begin
-             (more:display-all "row is: " row ", and needs to be more than: "
-                               (- (car the-dims) 1))
+             ; (more:display-all "row is: " row ", and needs to be less than or equal to: " (- (car the-dims) 1))
              #f)]
           [else (within-2d-vec-dimensions? (vector-ref the-m 0) columns)])))
 
@@ -309,14 +150,25 @@ and some that are not in the original vector
   (let ([the-dims (get-4d-vec-dimensions the-m)]
         [row (car dims-in)]
         [columns (cdr dims-in)])
-    (more:display-all "4d-vec-dims: " the-dims ", your list: " dims-in)
+    ; (more:display-all "4d-vec-dims: " the-dims ", your list: " dims-in)
     (cond [(> 0 row) #f]
           [(> row (- (car the-dims) 1))  
            (begin
-             (more:display-all "row is: " row ", and needs to be more than: "
-                               (- (car the-dims) 1))
+             ;(more:display-all "row is: " row ", and needs to be less than or equal to: " (- (car the-dims) 1))
              #f)]
          [else (within-3d-vec-dimensions? (vector-ref the-m 0) columns)])))
+
+(define (within-5d-vec-dimensions? the-m dims-in)
+  (let ([the-dims (get-5d-vec-dimensions the-m)]
+        [row (car dims-in)]
+        [columns (cdr dims-in)])
+    ; (more:display-all "5d-vec-dims: " the-dims ", your list: " dims-in)
+    (cond [(> 0 row) #f]
+          [(> row (- (car the-dims) 1))  
+           (begin
+             ; (more:display-all "row is: " row ", and needs to be less than or equal to: " (- (car the-dims) 1))
+             #f)]
+         [else (within-4d-vec-dimensions? (vector-ref the-m 0) columns)])))
 
 (define (2d-vec-ref the-m dims-in)
   (cond [(not (within-2d-vec-dimensions? the-m dims-in)) #f]
@@ -331,6 +183,11 @@ and some that are not in the original vector
 (define (4d-vec-ref the-m dims-in)
   (cond [(not (within-4d-vec-dimensions? the-m dims-in)) #f]
         [else (3d-vec-ref (vector-ref the-m (car dims-in))
+                          (cdr dims-in))]))
+
+(define (5d-vec-ref the-m dims-in)
+  (cond [(not (within-4d-vec-dimensions? the-m dims-in)) #f]
+        [else (4d-vec-ref (vector-ref the-m (car dims-in))
                           (cdr dims-in))]))
 
 (define (2d-vec-set! matrix dims-in value)
@@ -348,6 +205,12 @@ and some that are not in the original vector
 (define (4d-vec-set! matrix dims-in value)
   (cond [(not (within-4d-vec-dimensions? matrix dims-in)) #f]
         [else (3d-vec-set! (vector-ref matrix (car dims-in))
+                           (cdr dims-in)
+                           value)]))
+
+(define (5d-vec-set! matrix dims-in value)
+  (cond [(not (within-5d-vec-dimensions? matrix dims-in)) #f]
+        [else (4d-vec-set! (vector-ref matrix (car dims-in))
                            (cdr dims-in)
                            value)]))
 
@@ -376,8 +239,7 @@ test-vec
         (initialize-final-vec the-vec init-val (+ index 1)))))
 
 (define (2d-vec-builder the-m counter num-el-in-vecs init-val)
-  (more:display-all "2d-vec-builder with counter " counter ", and init-val: "
-                    init-val)
+  ; (more:display-all "2d-vec-builder with counter " counter ", and init-val: " init-val)
   (cond [(equal? counter (vector-length the-m)) the-m]
         [else (begin
                 (vector-set! the-m 
@@ -415,6 +277,18 @@ test-vec
                                 dims-list 
                                 (+ 1 init-val)))]))
 
+(define (5d-vec-builder 5d-vec counter dims-list init-val)
+  (cond [(equal? counter (vector-length 5d-vec)) 5d-vec]
+        [else (begin
+                (vector-set! 5d-vec 
+                             counter 
+                             (make-4d-vec dims-list 
+                                          (+ 1 init-val)))
+                (5d-vec-builder 5d-vec 
+                                (+ 1 counter) 
+                                dims-list 
+                                (+ 1 init-val)))]))
+
 (define (make-2d-vec dim-list init-val)
   (2d-vec-builder (make-vector (car dim-list)) 
                   0 
@@ -433,7 +307,14 @@ test-vec
                   (cdr dims-list) 
                   init-val))
 
+(define (make-5d-vec dims-list init-val)
+  (5d-vec-builder (make-vector (car dims-list)) 
+                  0 
+                  (cdr dims-list) 
+                  init-val))
+
 #|
+(reset-global-vec-num)
 (define a3 (make-3d-vec '(4 5 6) 0))
 (3d-vec-set! a3 '(3 2 3) 'whatever)
 (3d-vec-ref a3 '(3 2 3))
@@ -444,150 +325,193 @@ test-vec
 (4d-vec-ref a4 '(3 3 2 4))
 (4d-vec-ref a4 '(3 3 2))
 
+(define a5 (make-5d-vec '(4 5 3 2 4) 0))
+(4d-vec-set! a4 '(3 3 2 4) 'whatever)
+(4d-vec-ref a4 '(3 3 2 4))
+(4d-vec-ref a4 '(3 3 2))
+
 
 |#
-; 23.16  We want to reimplement sentences as vectors instead of lists.
-; (a) Write versions of sentence, empty?, first, butfirst, last, and butlast 
-; that use vectors. Your selectors need only work for sentences, not for words.
-;> (sentence 'a 'b 'c)
-;#(A B C)
-;> (butfirst (sentence 'a 'b 'c))
-;#(B C)
-;(You don't have to make these procedures work on lists as well as vectors!)
 
-(define (v-sentence-helper the-vec the-list counter)
-  (cond [(empty? the-list) the-vec]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; now try to generalize it
+
+(define (get-multi-dimensions matrix dim-list)
+  (cond [(not (vector? matrix)) dim-list]
+        [else (get-multi-dimensions (vector-ref matrix 0) 
+                                    (append dim-list 
+                                            (list (vector-length matrix))))]))
+
+(define (within-multi-dims-helper m-dims dim-list result)
+  (cond [(not (equal? (count m-dims) (count dim-list))) #f]
+        [(empty? m-dims) result]
+        [(> 0 (car dim-list)) #f]
+        [(> (+ 1 (car dim-list)) (car m-dims)) #f]
+        [else (within-multi-dims-helper (cdr m-dims) (cdr dim-list) result)]))
+
+(define (within-multi-dimensions? matrix dim-list)
+  (within-multi-dims-helper (get-multi-dimensions matrix '()) dim-list #t))
+
+(define (multi-vec-ref-helper matrix dims-path result)
+  (cond [(equal? 1 (count dims-path)) (vector-ref matrix (car dims-path))]
+        [else (multi-vec-ref-helper (vector-ref matrix (car dims-path))
+                                    (cdr dims-path)
+                                    #f)]))
+
+(define (multi-vec-ref matrix dims-path)
+  (cond [(not (within-multi-dimensions? matrix dims-path)) #f]
+        [else (multi-vec-ref-helper matrix dims-path #f)]))
+
+(define (2d-vec-refx the-m dims-in)
+  (cond [(not (within-2d-vec-dimensions? the-m dims-in)) #f]
+        [else (vector-ref (vector-ref the-m (car dims-in)) 
+                          (list-ref dims-in 1))]))
+
+(define (3d-vec-refx the-m dims-in)
+  (cond [(not (within-3d-vec-dimensions? the-m dims-in)) #f]
+        [else (2d-vec-refx (vector-ref the-m (car dims-in))
+                          (cdr dims-in))]))
+
+(define (4d-vec-refx the-m dims-in)
+  (cond [(not (within-4d-vec-dimensions? the-m dims-in)) #f]
+        [else (3d-vec-refx (vector-ref the-m (car dims-in))
+                          (cdr dims-in))]))
+
+(define (5d-vec-refx the-m dims-in)
+  (cond [(not (within-4d-vec-dimensions? the-m dims-in)) #f]
+        [else (4d-vec-refx (vector-ref the-m (car dims-in))
+                          (cdr dims-in))]))
+
+(define (2d-vec-setx! matrix dims-in value)
+  (cond [(not (within-2d-vec-dimensions? matrix dims-in)) #f]
+        [else (vector-set! (vector-ref matrix (car dims-in)) 
+                           (list-ref dims-in 1) 
+                           value)]))
+
+(define (3d-vec-setx! matrix dims-in value)
+  (cond [(not (within-3d-vec-dimensions? matrix dims-in)) #f]
+        [else (2d-vec-setx! (vector-ref matrix (car dims-in))
+                           (cdr dims-in)
+                           value)]))
+
+(define (4d-vec-setx! matrix dims-in value)
+  (cond [(not (within-4d-vec-dimensions? matrix dims-in)) #f]
+        [else (3d-vec-setx! (vector-ref matrix (car dims-in))
+                           (cdr dims-in)
+                           value)]))
+
+(define (5d-vec-setx! matrix dims-in value)
+  (cond [(not (within-5d-vec-dimensions? matrix dims-in)) #f]
+        [else (4d-vec-setx! (vector-ref matrix (car dims-in))
+                           (cdr dims-in)
+                           value)]))
+
+#|
+(define test-vec (make-vector 5 0))
+test-vec
+'#(0 0 0 0 0)
+(initialize-final-vec test-vec 2 0)
+|#
+
+(define global-vec-numx 0)
+
+(define (reset-global-vec-numx)
+  (set! global-vec-numx 0))
+
+(define (initialize-final-vecx the-vec init-val index)
+  (if (>= index (vector-length the-vec))
+      the-vec
+      (begin
+        (vector-set! the-vec 
+                     index 
+                     (string->symbol (string-append (number->string init-val) 
+                                                    "-" 
+                                                    (number->string global-vec-numx))))
+        (set! global-vec-numx (+ 1 global-vec-numx))
+        (initialize-final-vecx the-vec init-val (+ index 1)))))
+
+(define (2d-vec-builderx the-m counter num-el-in-vecs init-val)
+  (more:display-all "2d-vec-builder with counter " counter ", and init-val: "
+                    init-val)
+  (cond [(equal? counter (vector-length the-m)) the-m]
         [else (begin
-                (vector-set! the-vec counter (car the-list))
-                (v-sentence-helper the-vec (cdr the-list) (+ 1 counter)))]))
+                (vector-set! the-m 
+                             counter 
+                             
+                             (initialize-final-vecx (make-vector num-el-in-vecs init-val) 
+                                                   (+ init-val 1) 
+                                                   (+ 0)))
+                (2d-vec-builderx the-m 
+                                (+ 1 counter) 
+                                num-el-in-vecs
+                                (+ 1 init-val)))]))
 
-(define (v-sentence word . word-list)
-  (v-sentence-helper (make-vector (count (cons word word-list))) 
-                     (cons word word-list) 
-                     0))
-
-(define (v-first the-vec)
-  (vector-ref the-vec 0))
-
-(define (v-last the-vec)
-  (vector-ref the-vec (- (vector-length the-vec) 1)))
-
-(define (v-bf-helper orig-vec output-vec counter)
-  (cond [(equal? counter (vector-length orig-vec)) output-vec]
-        [else
-         (begin
-           (vector-set! output-vec (- counter 1) (vector-ref orig-vec counter))
-           (v-bf-helper orig-vec output-vec (+ 1 counter)))]))
-
-(define (v-butfirst the-vec)
-  (v-bf-helper the-vec (make-vector (- (vector-length the-vec) 1)) 1 ))
-
-(define (v-bl-helper orig-vec output-vec counter)
-  (cond [(equal? counter (vector-length output-vec)) output-vec]
-        [else
-         (begin
-           (vector-set! output-vec counter (vector-ref orig-vec counter))
-           (v-bl-helper orig-vec output-vec (+ 1 counter)))]))
-
-(define (v-butlast the-vec)
-  (v-bl-helper the-vec (make-vector (- (vector-length the-vec) 1)) 0))
-
-(define (v-empty? the-vec)
-  (cond [(equal? 0 (vector-length the-vec)) #t]
-        [else #f]))
-
-;(b) Does the following program still work with the new implementation of sentences? If not, fix the program.
-;; okay, so I changed the call
-(define (praise stuff)
-  (v-sentence stuff 'is 'good))
-
-;(c) Does the following program still work with the new implementation of sentences? If not, fix the program.
-
-;(define (praise stuff)
-;  (sentence stuff 'rules!))
-
-;(d) Does the following program still work with the new implementation of sentences? 
-; If not, fix the program. If so, is there some optional rewriting that would improve its performance?
-
-(define (v-item n sent)
-  (cond [(< n 1) #f]
-        [(> n (vector-length sent)) #f] 
-        [(= n 1) (v-first sent)]
-        [else (v-item (- n 1) (v-butfirst sent))]))
-
-;(e) Does the following program still work with the new implementation of sentences?
-; If not, fix the program. If so, is there some optional rewriting that would improve its performance?
-; this makes nested vectors for me
-; gotta use a helper
-(define (v-every fn sent)
-  (more:display-all "in v-very with sent: " sent)
-  (cond [(v-empty? sent) sent]
-        [else (v-sentence (fn (v-first sent)) 
-                          (v-every fn (v-butfirst sent)))]))
-
-(define (v-e-helper fn orig-v out-v counter)
-  (cond [(= counter (vector-length orig-v)) out-v]
+(define (3d-vec-builderx 3d-vec counter dims-list init-val)
+  (cond [(equal? counter (vector-length 3d-vec)) 3d-vec]
         [else (begin
-                (vector-set! out-v counter (fn (vector-ref orig-v counter)))
-                (v-e-helper fn orig-v out-v (+ 1 counter)))]))
+                (vector-set! 3d-vec 
+                             counter 
+                             (make-2d-vecx dims-list 
+                                          (+ 1 init-val)))
+                (3d-vec-builderx 3d-vec 
+                                (+ 1 counter) 
+                                dims-list 
+                                (+ 1 init-val)))]))
+;; dims-list has the remaining dimensions
+(define (4d-vec-builderx 4d-vec counter dims-list init-val)
+  (cond [(equal? counter (vector-length 4d-vec)) 4d-vec]
+        [else (begin
+                (vector-set! 4d-vec 
+                             counter 
+                             (make-3d-vecx dims-list 
+                                          (+ 1 init-val)))
+                (4d-vec-builderx 4d-vec 
+                                (+ 1 counter) 
+                                dims-list 
+                                (+ 1 init-val)))]))
 
-(define (v-every-r fn sent)
-  (v-e-helper fn sent (make-vector (vector-length sent)) 0))
+(define (5d-vec-builderx 5d-vec counter dims-list init-val)
+  (cond [(equal? counter (vector-length 5d-vec)) 5d-vec]
+        [else (begin
+                (vector-set! 5d-vec 
+                             counter 
+                             (make-4d-vecx dims-list 
+                                          (+ 1 init-val)))
+                (5d-vec-builderx 5d-vec 
+                                (+ 1 counter) 
+                                dims-list 
+                                (+ 1 init-val)))]))
 
-;(f) In what ways does using vectors to implement sentences affect the speed of the selectors and constructor? Why do you think we chose to use lists? 
-;; I think I could have combined sentence, butfirst and butlast into one function
-;; with another argument if I did this with lists. I might try that just to 
-;; see if it can be done.
+(define (make-2d-vecx dim-list init-val)
+  (2d-vec-builderx (make-vector (car dim-list)) 
+                  0 
+                  (list-ref dim-list 1) 
+                  init-val))
 
+(define (make-3d-vecx dims-list init-val)
+  (3d-vec-builderx (make-vector (car dims-list)) 
+                  0 
+                  (cdr dims-list) 
+                  init-val))
+
+(define (make-4d-vecx dims-list init-val)
+  (4d-vec-builderx (make-vector (car dims-list)) 
+                  0 
+                  (cdr dims-list) 
+                  init-val))
+
+(define (make-5d-vecx dims-list init-val)
+  (5d-vec-builderx (make-vector (car dims-list)) 
+                  0 
+                  (cdr dims-list) 
+                  init-val))
+
+
+; line 554 2019-10-14_02.00.07
 (module+ test
   (require rackunit)
   (check-true #t)
-  (define (check-three-things-equal? result their-append-rsl my-append-rsl)
-  (unless (and (check-equal? result their-append-rsl)
-               (check-equal? result my-append-rsl))
-    (fail-check)))
-
-  ; 23.1
-  (check-equal? (sum-vector '#(6 7 8))   21)
-  (check-equal? (sum-vector '#(1 2 3))   6)
-  (check-equal? (sum-vector '#(1 2 3 4)) 10)
-
-  ; 23.2
-  (check-equal? (my-vector-fill! #(one two three four) 'yeah)
-                #(yeah yeah yeah yeah))
-  (check-equal? (my-vector-fill! #(one two three four five) 'no)
-                #(no no no no no))
-
-  ; 23.3
-  (check-equal? (my-vector-append '#(not a) '#(second time))
-                #(not a second time))
-
-  (check-equal? (my-vector-append #(a b c) #(d e f))
-                #(a b c d e f))
-
-  ; 23.4
-  (check-equal? (my-vector->list '#(dah dah didah))
-                '(dah dah didah))
-
-  ; 23.5
-  (check-equal? (my-vector-map more:square (list->vector '(2 3 4))) '#(4 9 16))
-  (check-equal? (my-vector-map cadr '#((a b) (d e) (g h))) #(b e h))
-
-  ; 23.6
-  (begin
-    (define vec-23-6-a (list->vector '(2 3 4)))
-    (define vec-23-6-b (my-vector-map! more:square vec-23-6-a))
-    (check-equal? vec-23-6-a vec-23-6-b))
-
-  ; 23.12
-  (check-equal? (get-smallest-vec-index (list->vector '(23 3 18 7 95 60)) 0) 1)
-  (check-equal? (get-smallest-vec-index (list->vector '(60 95 7 18 3 23)) 0) 4)
-
-  (check-equal? (get-smallest-vec-index (list->vector '(23 3 18 7 95 60)) 2) 3)
-  (check-equal? (get-smallest-vec-index (list->vector '(60 95 7 18 3 23)) 2) 4)
-  (check-equal? (vector-sort (list->vector '(23 4 18 7 95 60)))
-                             (list->vector '(4 7 18 23 60 95)))
-
+  
 
   ; 23.14
   (define prez (make-matrix 5 3))
@@ -620,7 +544,8 @@ test-vec
   (check-equal? (matrix-ref prez 4 3) #f)
 
   ; 23.15
-; (make-2d-vec dim-list) 
+; (make-2d-vec dim-list)
+  (reset-global-vec-num)
   (define prez2 (make-2d-vec '(5 3) 0))
   (2d-vec-set! prez2 '(0 0) '(George Washington))
   (2d-vec-set! prez2 '(0 1) 'Virginia)
@@ -652,50 +577,97 @@ test-vec
   (check-equal? (2d-vec-ref prez2 '(4 3)) #f)
   (check-equal? (matrix-ref prez 4 1) (2d-vec-ref prez2 '(4 1)))
   (check-equal? (matrix-ref prez 4 3) (2d-vec-ref prez2 '(4 3)))
+
+  ;; 3-d vecs
+  (reset-global-vec-num)
+  (define a-3 (make-3d-vec '(4 5 6) 0))
+  (3d-vec-set! a-3 '(3 2 3) 'whatever)
+  (check-equal? (3d-vec-ref a-3 '(3 2 3)) 'whatever)
+
+  ; (3d-vec-ref a-3 '(3 3 2))
+
+
+  ; test generic against specific
+  (reset-global-vec-num)
+  (define adams-3 (make-3d-vec '(4 5 6) 0))
+  (reset-global-vec-num)
+  (define alexander-4 (make-4d-vec '(4 5 3 6) 0))
+  (reset-global-vec-num)
+  (define bond-5 (make-5d-vec '(4 5 3 2 4) 0))
+  (more:check-three-things-equal? '(5 3)
+                                  (get-multi-dimensions prez2 '())
+                                  (get-2d-vec-dimensions prez2))
+
+  (more:check-three-things-equal? '(4 5 6)
+                                  (get-multi-dimensions adams-3 '())
+                                  (get-3d-vec-dimensions adams-3))
+
+  (more:check-three-things-equal? '(4 5 3 6)
+                                  (get-multi-dimensions alexander-4 '())
+                                  (get-4d-vec-dimensions alexander-4))
+
+  (more:check-three-things-equal? '(4 5 3 2 4)
+                                  (get-multi-dimensions bond-5 '())
+                                  (get-5d-vec-dimensions bond-5))
+
+  (more:check-three-things-equal? #f
+                                  (within-multi-dimensions? prez2 '(5 3))
+                                  (within-2d-vec-dimensions? prez2 '(5 3)))
+
+  (more:check-three-things-equal? #f
+                                  (within-multi-dimensions? prez2 '(-2 3))
+                                  (within-2d-vec-dimensions? prez2 '(-1 3)))
+
+  (more:check-three-things-equal? #t
+                                  (within-multi-dimensions? prez2 '(0 0))
+                                  (within-2d-vec-dimensions? prez2 '(0 0)))
+
+  (more:check-three-things-equal? #t
+                                  (within-multi-dimensions? prez2 '(4 2))
+                                  (within-2d-vec-dimensions? prez2 '(4 2)))
+
+  (more:check-three-things-equal? #f ; 
+                                  (within-multi-dimensions? bond-5 '(4 5 3 2 4))
+                                  (within-5d-vec-dimensions? bond-5 '(4 5 3 2 4)))
+
+  (more:check-three-things-equal? #f ; 
+                                  (within-multi-dimensions? bond-5 '(3 5 3 2 4))
+                                  (within-5d-vec-dimensions? bond-5 '(3 5 3 2 4)))
+
+  (more:check-three-things-equal? #f ; 
+                                  (within-multi-dimensions? bond-5 '(3 4 3 2 4))
+                                  (within-5d-vec-dimensions? bond-5 '(3 4 3 2 4)))
+
+  (more:check-three-things-equal? #f ; 
+                                  (within-multi-dimensions? bond-5 '(3 4 2 2 4))
+                                  (within-5d-vec-dimensions? bond-5 '(3 4 2 2 4)))
+
+  (more:check-three-things-equal? #f ; 
+                                  (within-multi-dimensions? bond-5 '(3 4 2 1 4))
+                                  (within-5d-vec-dimensions? bond-5 '(3 4 2 1 4)))
+
+  (more:check-three-things-equal? #t ; 
+                                  (within-multi-dimensions? bond-5 '(3 4 2 1 3))
+                                  (within-5d-vec-dimensions? bond-5 '(3 4 2 1 3)))
+
+(more:check-three-things-equal? #f ; 
+                                  (within-multi-dimensions? bond-5 '(3 4 2 1 3 0))
+                                  (within-multi-dimensions? bond-5 '(3 4 2 1)))
+
+
 #|
-(define (2d-vec-ref the-m dims-in)
-  (cond [(not (within-2d-vec-dimensions? the-m dims-in)) #f]
-        [else (vector-ref (vector-ref the-m (car dims-in)) (list-ref dims-in 1))]))
 
-(define (2d-vec-set! matrix dims-in value)
-  (cond [(not (within-2d-vec-dimensions? matrix dims-in)) #f]
-        [else (vector-set! (vector-ref matrix (car dims-in)) (list-ref dims-in 1) value)]))
+(define (multi-vec-ref matrix dims-path)
+  (cond [(not (within-multi-dimensions? matrix dims-path)) #f]
+        [else (multi-vec-ref-helper matrix dims-path #f)]))
+
+(define (2d-vec-refx the-m dims-in)
+
+(define (within-multi-dimensions? matrix dim-list)
+  (within-multi-dims-helper (get-multi-dimensions matrix '()) dim-list #t))
+
+(define (within-2d-vec-dimensionsx? the-m dims-in)
 |#
-
-;; 3-d vecs
-(define a-3 (make-3d-vec '(4 5 6) 0))
-(3d-vec-set! a-3 '(3 2 3) 'whatever)
-(check-equal? (3d-vec-ref a-3 '(3 2 3)) 'whatever)
-
-; (3d-vec-ref a-3 '(3 3 2))
-  ; 23.16 a
-  (check-equal? (v-sentence 'a 'b 'c) (list->vector '(a b c)))
-  (define q (v-sentence 7 8 9))
-  (check-equal? (v-first q) 7)
-  (check-equal? (v-last q) 9)
-  (check-equal? (v-butfirst q) (list->vector '(8 9)))
-  (check-equal? (v-butlast q) (list->vector '(7 8)))
-
-  ; 23.16 b
-  (check-equal? (praise 'Racket) (v-sentence 'Racket 'is 'good))
-
-  ; 23.16 d
-  (define w (v-sentence 'a 'b 'c 'd 'e))
-  (check-equal? (v-item 0 w) #f)
-  (check-equal? (v-item 1 w) 'a)
-  (check-equal? (v-item 2 w) 'b)
-  (check-equal? (v-item 3 w) 'c)
-  (check-equal? (v-item 4 w) 'd)  
-  (check-equal? (v-item 5 w) 'e)
-  (check-equal? (v-item 6 w) #f)
-
-  ; 23.16 e
-  ; (v-every-r fn sent)
-  (define e (v-sentence 2 3 4 5))
-  (check-equal? (v-every-r more:square e) (v-sentence 4 9 16 25))
-  (define (double-num x)
-    (* x 2))
-  (check-equal? (v-every-r double-num e) (v-sentence 4 6 8 10))
 
   (more:display-all "done")
 

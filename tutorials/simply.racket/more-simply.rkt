@@ -1,6 +1,10 @@
 #lang simply-scheme
 
+(require (prefix-in runit: rackunit))
+
+
 (provide base-grade
+         check-three-things-equal?
          display-all
          divisible?
          do-great-stuff
@@ -19,6 +23,11 @@
         [(equal? (first grade) 'C) 2]
         [(equal? (first grade) 'D) 1]
         [else 0]))
+
+ (define (check-three-things-equal? result their-append-rsl my-append-rsl)
+   (unless (and (runit:check-equal? result their-append-rsl)
+                (runit:check-equal? result my-append-rsl))
+     (runit:fail-check)))
 
 (define (display-all . vs)
   (for-each display vs)
