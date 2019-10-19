@@ -232,8 +232,7 @@ test-vec
       (begin
         (vector-set! the-vec 
                      index 
-                     (string->symbol (string-append (number->string init-val) 
-                                                    "-" 
+                     (string->symbol (string-append "x-" 
                                                     (number->string global-vec-num))))
         (set! global-vec-num (+ 1 global-vec-num))
         (initialize-final-vec the-vec init-val (+ index 1)))))
@@ -336,11 +335,14 @@ test-vec
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; now try to generalize it
 
-(define (get-multi-dimensions matrix dim-list)
+(define (get-multi-dims-helper matrix dim-list)
   (cond [(not (vector? matrix)) dim-list]
-        [else (get-multi-dimensions (vector-ref matrix 0) 
-                                    (append dim-list 
-                                            (list (vector-length matrix))))]))
+        [else (get-multi-dims-helper (vector-ref matrix 0) 
+                                     (append dim-list 
+                                             (list (vector-length matrix))))]))
+
+(define (get-multi-dimensions matrix)
+  (get-multi-dims-helper matrix '()))
 
 (define (within-multi-dims-helper m-dims dim-list result)
   (cond [(not (equal? (count m-dims) (count dim-list))) #f]
@@ -350,7 +352,7 @@ test-vec
         [else (within-multi-dims-helper (cdr m-dims) (cdr dim-list) result)]))
 
 (define (within-multi-dimensions? matrix dim-list)
-  (within-multi-dims-helper (get-multi-dimensions matrix '()) dim-list #t))
+  (within-multi-dims-helper (get-multi-dimensions matrix) dim-list #t))
 
 (define (multi-vec-ref-helper matrix dims-path result)
   (cond [(equal? 1 (count dims-path)) (vector-ref matrix (car dims-path))]
@@ -362,49 +364,17 @@ test-vec
   (cond [(not (within-multi-dimensions? matrix dims-path)) #f]
         [else (multi-vec-ref-helper matrix dims-path #f)]))
 
-(define (2d-vec-refx the-m dims-in)
-  (cond [(not (within-2d-vec-dimensions? the-m dims-in)) #f]
-        [else (vector-ref (vector-ref the-m (car dims-in)) 
-                          (list-ref dims-in 1))]))
+(define (multi-vec-set-helper matrix dims-path value)
+  (cond [(equal? 1 (count dims-path)) (vector-set! matrix 
+                                                   (car dims-path) 
+                                                   value)]
+        [else (multi-vec-set-helper (vector-ref matrix (car dims-path)) 
+                                    (cdr dims-path) 
+                                    value)]))
 
-(define (3d-vec-refx the-m dims-in)
-  (cond [(not (within-3d-vec-dimensions? the-m dims-in)) #f]
-        [else (2d-vec-refx (vector-ref the-m (car dims-in))
-                          (cdr dims-in))]))
-
-(define (4d-vec-refx the-m dims-in)
-  (cond [(not (within-4d-vec-dimensions? the-m dims-in)) #f]
-        [else (3d-vec-refx (vector-ref the-m (car dims-in))
-                          (cdr dims-in))]))
-
-(define (5d-vec-refx the-m dims-in)
-  (cond [(not (within-4d-vec-dimensions? the-m dims-in)) #f]
-        [else (4d-vec-refx (vector-ref the-m (car dims-in))
-                          (cdr dims-in))]))
-
-(define (2d-vec-setx! matrix dims-in value)
-  (cond [(not (within-2d-vec-dimensions? matrix dims-in)) #f]
-        [else (vector-set! (vector-ref matrix (car dims-in)) 
-                           (list-ref dims-in 1) 
-                           value)]))
-
-(define (3d-vec-setx! matrix dims-in value)
-  (cond [(not (within-3d-vec-dimensions? matrix dims-in)) #f]
-        [else (2d-vec-setx! (vector-ref matrix (car dims-in))
-                           (cdr dims-in)
-                           value)]))
-
-(define (4d-vec-setx! matrix dims-in value)
-  (cond [(not (within-4d-vec-dimensions? matrix dims-in)) #f]
-        [else (3d-vec-setx! (vector-ref matrix (car dims-in))
-                           (cdr dims-in)
-                           value)]))
-
-(define (5d-vec-setx! matrix dims-in value)
-  (cond [(not (within-5d-vec-dimensions? matrix dims-in)) #f]
-        [else (4d-vec-setx! (vector-ref matrix (car dims-in))
-                           (cdr dims-in)
-                           value)]))
+(define (multi-vec-set! matrix dims-path value)
+  (cond [(not (within-multi-dimensions? matrix dims-path)) #f]
+        [else (multi-vec-set-helper matrix dims-path value)]))
 
 #|
 (define test-vec (make-vector 5 0))
@@ -586,7 +556,6 @@ test-vec
 
   ; (3d-vec-ref a-3 '(3 3 2))
 
-
   ; test generic against specific
   (reset-global-vec-num)
   (define adams-3 (make-3d-vec '(4 5 6) 0))
@@ -595,19 +564,19 @@ test-vec
   (reset-global-vec-num)
   (define bond-5 (make-5d-vec '(4 5 3 2 4) 0))
   (more:check-three-things-equal? '(5 3)
-                                  (get-multi-dimensions prez2 '())
+                                  (get-multi-dimensions prez2)
                                   (get-2d-vec-dimensions prez2))
 
   (more:check-three-things-equal? '(4 5 6)
-                                  (get-multi-dimensions adams-3 '())
+                                  (get-multi-dimensions adams-3)
                                   (get-3d-vec-dimensions adams-3))
 
   (more:check-three-things-equal? '(4 5 3 6)
-                                  (get-multi-dimensions alexander-4 '())
+                                  (get-multi-dimensions alexander-4)
                                   (get-4d-vec-dimensions alexander-4))
 
   (more:check-three-things-equal? '(4 5 3 2 4)
-                                  (get-multi-dimensions bond-5 '())
+                                  (get-multi-dimensions bond-5)
                                   (get-5d-vec-dimensions bond-5))
 
   (more:check-three-things-equal? #f
@@ -651,11 +620,91 @@ test-vec
                                   (within-5d-vec-dimensions? bond-5 '(3 4 2 1 3)))
 
 (more:check-three-things-equal? #f ; 
-                                  (within-multi-dimensions? bond-5 '(3 4 2 1 3 0))
-                                  (within-multi-dimensions? bond-5 '(3 4 2 1)))
+                                (within-multi-dimensions? bond-5 '(3 4 2 1 3 0))
+                                (within-multi-dimensions? bond-5 '(3 4 2 1)))
+
+(more:check-three-things-equal? 'Democratic 
+                                (2d-vec-ref prez2 '(4 2)) 
+                                (multi-vec-ref prez2 '(4 2)))
+
+(more:check-three-things-equal? '(Harry Truman)
+                                (2d-vec-ref prez2 '(4 0)) 
+                                (multi-vec-ref prez2 '(4 0)))
+
+(multi-vec-set! prez2 '(4 0) 'Truman)
+(more:check-three-things-equal? 'Truman
+                                (2d-vec-ref prez2 '(4 0)) 
+                                (multi-vec-ref prez2 '(4 0)))
+
+(more:check-three-things-equal? 'x-342 
+                                (5d-vec-ref bond-5 '(2 4 0 1 2))
+                                (multi-vec-ref bond-5 '(2 4 0 1 2)))
+(multi-vec-set! bond-5 '(2 4 0 1 2) 'Boone)
+(more:check-three-things-equal? 'Boone
+                                (5d-vec-ref bond-5 '(2 4 0 1 2))
+                                (multi-vec-ref bond-5 '(2 4 0 1 2)))
+
+(more:check-three-things-equal? 'x-294
+                                (5d-vec-ref bond-5 '(2 2 0 1 2))
+                                (multi-vec-ref bond-5 '(2 2 0 1 2)))
+(multi-vec-set! bond-5 '(2 2 0 1 2) 'Brown)
+(more:check-three-things-equal? 'Brown
+                                (5d-vec-ref bond-5 '(2 2 0 1 2))
+                                (multi-vec-ref bond-5 '(2 2 0 1 2)))
+
+(more:check-three-things-equal? 'x-94
+                                (3d-vec-ref adams-3 '(3 0 4))
+                                (multi-vec-ref adams-3 '(3 0 4)))
+(multi-vec-set! adams-3 '(3 0 4) 'Bureau)
+(more:check-three-things-equal? 'Bureau
+                                (3d-vec-ref adams-3 '(3 0 4))
+                                (multi-vec-ref adams-3 '(3 0 4)))
+
+(more:check-three-things-equal? 'x-64
+                                (3d-vec-ref adams-3 '(2 0 4))
+                                (multi-vec-ref adams-3 '(2 0 4)))
+(multi-vec-set! adams-3 '(2 0 4) 'Calhoun)
+(more:check-three-things-equal? 'Calhoun
+                                (3d-vec-ref adams-3 '(2 0 4))
+                                (multi-vec-ref adams-3 '(2 0 4)))
+
+(more:check-three-things-equal? #f
+                                (4d-vec-ref alexander-4 '(2 0 4 5))
+                                (multi-vec-ref alexander-4 '(2 0 4 5)))
+(check-equal? (multi-vec-set! alexander-4 '(2 0 4 5) 'Carroll) #f)
+
+(more:check-three-things-equal? #f
+                                (4d-vec-ref alexander-4 '(2 0 3 5))
+                                (multi-vec-ref alexander-4 '(2 0 3 5)))
+(check-equal? (multi-vec-set! alexander-4 '(2 0 3 5) 'Carroll) #f)
+
+(more:check-three-things-equal? 'x-197
+                                (4d-vec-ref alexander-4 '(2 0 2 5))
+                                (multi-vec-ref alexander-4 '(2 0 2 5)))
+(multi-vec-set! alexander-4 '(2 0 2 5) 'Carroll)
+(more:check-three-things-equal? 'Carroll
+                                (4d-vec-ref alexander-4 '(2 0 2 5))
+                                (multi-vec-ref alexander-4 '(2 0 2 5)))
 
 
+; (multi-vec-ref matrix dims-path)
 #|
+(define 
+  (cond [(not (within-multi-dimensions? matrix dims-path)) #f]
+        [else (multi-vec-set-helper matrix dims-path value)]))
+
+(define (2d-vec-setx! matrix dims-in value)
+  (cond [(not (within-2d-vec-dimensions? matrix dims-in)) #f]
+        [else (vector-set! (vector-ref matrix (car dims-in)) 
+                           (list-ref dims-in 1) 
+                           value)]))
+  (more:check-three-things-equal? '(4 5 6)
+                                  (get-multi-dimensions adams-3 '())
+                                  (get-3d-vec-dimensions adams-3))
+
+  (more:check-three-things-equal? '(4 5 3 6)
+                                  (get-multi-dimensions alexander-4 '())
+                                  (get-4d-vec-dimensions alexander-4))
 
 (define (multi-vec-ref matrix dims-path)
   (cond [(not (within-multi-dimensions? matrix dims-path)) #f]
