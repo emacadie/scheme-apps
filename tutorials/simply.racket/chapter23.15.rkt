@@ -226,91 +226,79 @@ test-vec
 (define (reset-global-vec-num)
   (set! global-vec-num 0))
 
-(define (initialize-final-vec the-vec init-val index)
+(define (initialize-final-vec the-vec index)
   (if (>= index (vector-length the-vec))
       the-vec
       (begin
         (vector-set! the-vec 
                      index 
-                     (string->symbol (string-append "x-" 
-                                                    (number->string global-vec-num))))
+                     (string->symbol 
+                      (string-append "x-" 
+                                     (number->string global-vec-num))))
         (set! global-vec-num (+ 1 global-vec-num))
-        (initialize-final-vec the-vec init-val (+ index 1)))))
+        (initialize-final-vec the-vec (+ index 1)))))
 
-(define (2d-vec-builder the-m counter num-el-in-vecs init-val)
+(define (2d-vec-builder the-m counter num-el-in-vecs)
   ; (more:display-all "2d-vec-builder with counter " counter ", and init-val: " init-val)
   (cond [(equal? counter (vector-length the-m)) the-m]
         [else (begin
                 (vector-set! the-m 
                              counter 
-                             
-                             (initialize-final-vec (make-vector num-el-in-vecs init-val) 
-                                                   (+ init-val 1) 
+                             (initialize-final-vec (make-vector num-el-in-vecs) 
                                                    (+ 0)))
                 (2d-vec-builder the-m 
                                 (+ 1 counter) 
-                                num-el-in-vecs
-                                (+ 1 init-val)))]))
+                                num-el-in-vecs))]))
 
-(define (3d-vec-builder 3d-vec counter dims-list init-val)
+(define (3d-vec-builder 3d-vec counter dims-list)
   (cond [(equal? counter (vector-length 3d-vec)) 3d-vec]
         [else (begin
                 (vector-set! 3d-vec 
                              counter 
-                             (make-2d-vec dims-list 
-                                          (+ 1 init-val)))
+                             (make-2d-vec dims-list))
                 (3d-vec-builder 3d-vec 
                                 (+ 1 counter) 
-                                dims-list 
-                                (+ 1 init-val)))]))
+                                dims-list ))]))
 ;; dims-list has the remaining dimensions
-(define (4d-vec-builder 4d-vec counter dims-list init-val)
+(define (4d-vec-builder 4d-vec counter dims-list)
   (cond [(equal? counter (vector-length 4d-vec)) 4d-vec]
         [else (begin
                 (vector-set! 4d-vec 
                              counter 
-                             (make-3d-vec dims-list 
-                                          (+ 1 init-val)))
+                             (make-3d-vec dims-list ))
                 (4d-vec-builder 4d-vec 
                                 (+ 1 counter) 
-                                dims-list 
-                                (+ 1 init-val)))]))
+                                dims-list ))]))
 
-(define (5d-vec-builder 5d-vec counter dims-list init-val)
+(define (5d-vec-builder 5d-vec counter dims-list)
   (cond [(equal? counter (vector-length 5d-vec)) 5d-vec]
         [else (begin
                 (vector-set! 5d-vec 
                              counter 
-                             (make-4d-vec dims-list 
-                                          (+ 1 init-val)))
+                             (make-4d-vec dims-list))
                 (5d-vec-builder 5d-vec 
                                 (+ 1 counter) 
-                                dims-list 
-                                (+ 1 init-val)))]))
+                                dims-list ))]))
 
-(define (make-2d-vec dim-list init-val)
+(define (make-2d-vec dim-list)
   (2d-vec-builder (make-vector (car dim-list)) 
                   0 
-                  (list-ref dim-list 1) 
-                  init-val))
+                  (list-ref dim-list 1)))
 
-(define (make-3d-vec dims-list init-val)
+(define (make-3d-vec dims-list)
   (3d-vec-builder (make-vector (car dims-list)) 
                   0 
-                  (cdr dims-list) 
-                  init-val))
+                  (cdr dims-list)))
 
-(define (make-4d-vec dims-list init-val)
+(define (make-4d-vec dims-list)
   (4d-vec-builder (make-vector (car dims-list)) 
                   0 
-                  (cdr dims-list) 
-                  init-val))
+                  (cdr dims-list)))
 
-(define (make-5d-vec dims-list init-val)
+(define (make-5d-vec dims-list)
   (5d-vec-builder (make-vector (car dims-list)) 
                   0 
-                  (cdr dims-list) 
-                  init-val))
+                  (cdr dims-list)))
 
 #|
 (reset-global-vec-num)
@@ -388,93 +376,80 @@ test-vec
 (define (reset-global-vec-numx)
   (set! global-vec-numx 0))
 
-(define (initialize-final-vecx the-vec init-val index)
+(define (initialize-final-vecx the-vec index)
   (if (>= index (vector-length the-vec))
       the-vec
       (begin
         (vector-set! the-vec 
                      index 
-                     (string->symbol (string-append (number->string init-val) 
-                                                    "-" 
-                                                    (number->string global-vec-numx))))
+                     (string->symbol 
+                      (string-append "x-" 
+                                     (number->string global-vec-numx))))
         (set! global-vec-numx (+ 1 global-vec-numx))
-        (initialize-final-vecx the-vec init-val (+ index 1)))))
+        (initialize-final-vecx the-vec 
+                               (+ index 1)))))
 
-(define (2d-vec-builderx the-m counter num-el-in-vecs init-val)
-  (more:display-all "2d-vec-builder with counter " counter ", and init-val: "
-                    init-val)
+(define (2d-vec-builderx the-m counter num-el-in-vecs)
+  (more:display-all "2d-vec-builder with counter " counter)
   (cond [(equal? counter (vector-length the-m)) the-m]
         [else (begin
                 (vector-set! the-m 
                              counter 
-                             
-                             (initialize-final-vecx (make-vector num-el-in-vecs init-val) 
-                                                   (+ init-val 1) 
+                             (initialize-final-vecx (make-vector num-el-in-vecs)
                                                    (+ 0)))
                 (2d-vec-builderx the-m 
                                 (+ 1 counter) 
-                                num-el-in-vecs
-                                (+ 1 init-val)))]))
+                                num-el-in-vecs))]))
 
-(define (3d-vec-builderx 3d-vec counter dims-list init-val)
+(define (3d-vec-builderx 3d-vec counter dims-list)
   (cond [(equal? counter (vector-length 3d-vec)) 3d-vec]
         [else (begin
                 (vector-set! 3d-vec 
                              counter 
-                             (make-2d-vecx dims-list 
-                                          (+ 1 init-val)))
+                             (make-2d-vecx dims-list))
                 (3d-vec-builderx 3d-vec 
                                 (+ 1 counter) 
-                                dims-list 
-                                (+ 1 init-val)))]))
+                                dims-list ))]))
 ;; dims-list has the remaining dimensions
-(define (4d-vec-builderx 4d-vec counter dims-list init-val)
+(define (4d-vec-builderx 4d-vec counter dims-list)
   (cond [(equal? counter (vector-length 4d-vec)) 4d-vec]
         [else (begin
                 (vector-set! 4d-vec 
                              counter 
-                             (make-3d-vecx dims-list 
-                                          (+ 1 init-val)))
+                             (make-3d-vecx dims-list ))
                 (4d-vec-builderx 4d-vec 
                                 (+ 1 counter) 
-                                dims-list 
-                                (+ 1 init-val)))]))
+                                dims-list))]))
 
-(define (5d-vec-builderx 5d-vec counter dims-list init-val)
+(define (5d-vec-builderx 5d-vec counter dims-list)
   (cond [(equal? counter (vector-length 5d-vec)) 5d-vec]
         [else (begin
                 (vector-set! 5d-vec 
                              counter 
-                             (make-4d-vecx dims-list 
-                                          (+ 1 init-val)))
+                             (make-4d-vecx dims-list))
                 (5d-vec-builderx 5d-vec 
                                 (+ 1 counter) 
-                                dims-list 
-                                (+ 1 init-val)))]))
+                                dims-list))]))
 
-(define (make-2d-vecx dim-list init-val)
+(define (make-2d-vecx dim-list)
   (2d-vec-builderx (make-vector (car dim-list)) 
                   0 
-                  (list-ref dim-list 1) 
-                  init-val))
+                  (list-ref dim-list 1)))
 
-(define (make-3d-vecx dims-list init-val)
+(define (make-3d-vecx dims-list)
   (3d-vec-builderx (make-vector (car dims-list)) 
                   0 
-                  (cdr dims-list) 
-                  init-val))
+                  (cdr dims-list)))
 
-(define (make-4d-vecx dims-list init-val)
+(define (make-4d-vecx dims-list)
   (4d-vec-builderx (make-vector (car dims-list)) 
                   0 
-                  (cdr dims-list) 
-                  init-val))
+                  (cdr dims-list)))
 
-(define (make-5d-vecx dims-list init-val)
+(define (make-5d-vecx dims-list)
   (5d-vec-builderx (make-vector (car dims-list)) 
                   0 
-                  (cdr dims-list) 
-                  init-val))
+                  (cdr dims-list)))
 
 
 ; line 554 2019-10-14_02.00.07
@@ -516,7 +491,7 @@ test-vec
   ; 23.15
 ; (make-2d-vec dim-list)
   (reset-global-vec-num)
-  (define prez2 (make-2d-vec '(5 3) 0))
+  (define prez2 (make-2d-vec '(5 3)))
   (2d-vec-set! prez2 '(0 0) '(George Washington))
   (2d-vec-set! prez2 '(0 1) 'Virginia)
   (2d-vec-set! prez2 '(0 2) 'None)
@@ -550,7 +525,7 @@ test-vec
 
   ;; 3-d vecs
   (reset-global-vec-num)
-  (define a-3 (make-3d-vec '(4 5 6) 0))
+  (define a-3 (make-3d-vec '(4 5 6)))
   (3d-vec-set! a-3 '(3 2 3) 'whatever)
   (check-equal? (3d-vec-ref a-3 '(3 2 3)) 'whatever)
 
@@ -558,11 +533,11 @@ test-vec
 
   ; test generic against specific
   (reset-global-vec-num)
-  (define adams-3 (make-3d-vec '(4 5 6) 0))
+  (define adams-3 (make-3d-vec '(4 5 6)))
   (reset-global-vec-num)
-  (define alexander-4 (make-4d-vec '(4 5 3 6) 0))
+  (define alexander-4 (make-4d-vec '(4 5 3 6)))
   (reset-global-vec-num)
-  (define bond-5 (make-5d-vec '(4 5 3 2 4) 0))
+  (define bond-5 (make-5d-vec '(4 5 3 2 4)))
   (more:check-three-things-equal? '(5 3)
                                   (get-multi-dimensions prez2)
                                   (get-2d-vec-dimensions prez2))
