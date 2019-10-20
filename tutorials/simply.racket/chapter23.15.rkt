@@ -108,7 +108,6 @@ I might go back and change things
    #((Harry Truman) Missouri Democratic))
 |#
 
-
 (define (get-2d-vec-dimensions matrix)
   (list (vector-length matrix)
         (vector-length (vector-ref matrix 0))))
@@ -214,32 +213,37 @@ test-vec
 (define (reset-global-vec-num)
   (set! global-vec-num 0))
 
-(define (initialize-final-vec the-vec index)
-  (if (>= index (vector-length the-vec))
-      the-vec
-      (begin
-        (vector-set! the-vec 
-                     index 
-                     (string->symbol 
-                      (string-append "x-" 
-                                     (number->string global-vec-num))))
-        (set! global-vec-num (+ 1 global-vec-num))
-        (initialize-final-vec the-vec (+ index 1)))))
+(define (initialize-final-vec the-vec index dims-list)
+  (cond [(>= index (vector-length the-vec)) the-vec] 
+        [else
+         (begin
+           (vector-set! the-vec 
+                        index 
+                        (string->symbol 
+                         (string-append "x-" 
+                                        (number->string global-vec-num))))
+           (set! global-vec-num (+ 1 global-vec-num))
+           (initialize-final-vec the-vec (+ index 1) dims-list))]))
 
-(define (2d-vec-builder the-m counter num-el-in-vecs)
-  (cond ; [(= 0 counter) ] 
-    [(equal? counter (vector-length the-m)) the-m]
+(define (2d-vec-builder 2d-vec counter dims-list)
+  (more:display-all "in 2d-vec-builder with dims-list: " dims-list)
+  (cond [(and (list? 2d-vec) (empty? 2d-vec))  
+         (2d-vec-builder (make-vector (car dims-list)) 
+                         0 
+                         (cdr dims-list))] 
+        [(equal? counter (vector-length 2d-vec)) 2d-vec]
         [else (begin
-                (vector-set! the-m 
+                (vector-set! 2d-vec
                              counter 
-                             (initialize-final-vec (make-vector num-el-in-vecs) 
-                                                   (+ 0)))
-                (2d-vec-builder the-m 
+                             (initialize-final-vec (make-vector (car dims-list))
+                                                   0
+                                                   (cdr dims-list)))
+                (2d-vec-builder 2d-vec 
                                 (+ 1 counter) 
-                                num-el-in-vecs))]))
+                                dims-list))]))
 
 (define (3d-vec-builder 3d-vec counter dims-list)
-  (cond [(= 3 (count dims-list))
+  (cond [(and (list? 3d-vec) (empty? 3d-vec)) 
          (3d-vec-builder (make-vector (car dims-list)) 
                          0 
                          (cdr dims-list))]
@@ -249,13 +253,13 @@ test-vec
                              counter 
                              (2d-vec-builder (make-vector (car dims-list)) 
                                              0 
-                                             (list-ref dims-list 1)))
+                                             (cdr dims-list)))
                 (3d-vec-builder 3d-vec 
                                 (+ 1 counter) 
                                 dims-list ))]))
 ;; dims-list has the remaining dimensions
 (define (4d-vec-builder 4d-vec counter dims-list)
-  (cond [(= 4 (count dims-list))
+  (cond [(and (list? 4d-vec) (empty? 4d-vec)) 
          (4d-vec-builder (make-vector (car dims-list)) 
                          0 
                          (cdr dims-list))]
@@ -271,7 +275,7 @@ test-vec
                                 dims-list))]))
 
 (define (5d-vec-builder 5d-vec counter dims-list)
-  (cond [(= 5 (count dims-list))
+  (cond [(and (list? 5d-vec) (empty? 5d-vec)) 
          (5d-vec-builder (make-vector (car dims-list)) 
                          0 
                          (cdr dims-list))]
@@ -285,12 +289,6 @@ test-vec
                 (5d-vec-builder 5d-vec 
                                 (+ 1 counter) 
                                 dims-list ))]))
-
-(define (make-2d-vec dim-list)
-  (2d-vec-builder (make-vector (car dim-list)) 
-                  0 
-                  (list-ref dim-list 1))
-)
 
 
 #|
@@ -489,7 +487,8 @@ test-vec
   ; 23.15
 ; (make-2d-vec dim-list)
   (reset-global-vec-num)
-  (define prez2 (make-2d-vec '(5 3)))
+  ; (define prez2 (make-2d-vec '(5 3)))
+  (define prez2 (2d-vec-builder '() 0 '(5 3)))
   (2d-vec-set! prez2 '(0 0) '(George Washington))
   (2d-vec-set! prez2 '(0 1) 'Virginia)
   (2d-vec-set! prez2 '(0 2) 'None)
