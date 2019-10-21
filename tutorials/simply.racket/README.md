@@ -5,7 +5,7 @@ repo for "Simply Scheme": https://people.eecs.berkeley.edu/~bh/ss-toc2.html
 A big part of the reason is that I want to be able to run some tests.  
 I can run tests in Clojure, but Scheme is not as good in this area.  
 
-ttt.rkt from https://people.eecs.berkeley.edu/~bh/downloads/simply/ I could not find links to them on the "Simply Scheme" site. I found them through a Google search.
+ttt.rkt and spread.rkt and changed somewhat to work with Racket mode. Original Scheme files downloaded from https://people.eecs.berkeley.edu/~bh/downloads/simply/ I could not find links to them on the "Simply Scheme" site. I found them through a Google search.
 
 "dddbmt", "grades", and "r5rs" from Chapter 22 of the text.   
 
