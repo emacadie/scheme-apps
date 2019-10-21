@@ -108,6 +108,11 @@ I might go back and change things
    #((Harry Truman) Missouri Democratic))
 |#
 
+(define global-vec-num 0)
+
+(define (reset-global-vec-num)
+  (set! global-vec-num 0))
+
 (define (get-2d-vec-dimensions matrix)
   (list (vector-length matrix)
         (vector-length (vector-ref matrix 0))))
@@ -201,18 +206,6 @@ I might go back and change things
                            (cdr dims-in)
                            value)]))
 
-#|
-(define test-vec (make-vector 5 0))
-test-vec
-'#(0 0 0 0 0)
-(initialize-final-vec test-vec 2 0)
-|#
-
-(define global-vec-num 0)
-
-(define (reset-global-vec-num)
-  (set! global-vec-num 0))
-
 (define (initialize-final-vec the-vec index dims-list)
   (cond [(>= index (vector-length the-vec)) the-vec] 
         [else
@@ -301,25 +294,6 @@ test-vec
 
 (define (5d-vec-builder dims-list)
   (5d-vec-builder-h '() 0 dims-list))
-#|
-(reset-global-vec-num)
-(define a3 (make-3d-vec '(4 5 6) 0))
-(3d-vec-set! a3 '(3 2 3) 'whatever)
-(3d-vec-ref a3 '(3 2 3))
-(3d-vec-ref a3 '(3 3 2))
-
-(define a4 (make-4d-vec '(4 5 3 6) 0))
-(4d-vec-set! a4 '(3 3 2 4) 'whatever)
-(4d-vec-ref a4 '(3 3 2 4))
-(4d-vec-ref a4 '(3 3 2))
-
-(define a5 (make-5d-vec '(4 5 3 2 4) 0))
-(4d-vec-set! a4 '(3 3 2 4) 'whatever)
-(4d-vec-ref a4 '(3 3 2 4))
-(4d-vec-ref a4 '(3 3 2))
-
-
-|#
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; now try to generalize it
@@ -364,18 +338,6 @@ test-vec
 (define (multi-vec-set! matrix dims-path value)
   (cond [(not (within-multi-dimensions? matrix dims-path)) #f]
         [else (multi-vec-set-helper matrix dims-path value)]))
-
-#|
-(define test-vec (make-vector 5 0))
-test-vec
-'#(0 0 0 0 0)
-(initialize-final-vec test-vec 2 0)
-|#
-
-(define global-vec-numx 0)
-
-(define (reset-global-vec-numx)
-  (set! global-vec-numx 0))
 
 (define (initialize-final-vecx the-vec index dims-list)
   (cond [(>= index (vector-length the-vec)) the-vec] 
@@ -458,8 +420,8 @@ test-vec
   ; 23.15
 ; (make-2d-vec dim-list)
   (reset-global-vec-num)
-  ; (define prez2 (make-2d-vec '(5 3)))
   (define prez2 (2d-vec-builder '(5 3)))
+  (define prez3-m (multi-vec-builder '(5 3)))
   (2d-vec-set! prez2 '(0 0) '(George Washington))
   (2d-vec-set! prez2 '(0 1) 'Virginia)
   (2d-vec-set! prez2 '(0 2) 'None)
@@ -476,15 +438,37 @@ test-vec
   (2d-vec-set! prez2 '(4 1) 'Missouri)
   (2d-vec-set! prez2 '(4 2) 'Democratic)
 
-  (check-equal? (get-matrix-dimensions prez2) '(5 3))
-  (check-equal? (within-2d-vec-dimensions? prez2 '(5 2)) #f)
-  (check-equal? (within-2d-vec-dimensions? prez2 '(6 2)) #f)
-  (check-equal? (within-2d-vec-dimensions? prez2 '(4 2)) #t)
+  (more:check-three-things-equal? '(5 3)
+                                  (get-matrix-dimensions prez2)
+                                  (get-matrix-dimensions prez3-m))
 
-  (check-equal? (within-matrix-dimensions? prez2 4 3) #f)
-  (check-equal? (within-matrix-dimensions? prez2 4 1) #t)
-  (check-equal? (within-matrix-dimensions? prez2 4 -1) #f)
-  (check-equal? (2d-vec-set! prez2 '(5 1) 'Invalid) #f)
+  (more:check-three-things-equal?  #f 
+                                   (within-2d-vec-dimensions? prez2 '(5 2)) 
+                                   (within-multi-dimensions? prez3-m '(5 2)))
+
+  (more:check-three-things-equal?  #f 
+                                   (within-2d-vec-dimensions? prez2 '(6 2)) 
+                                   (within-multi-dimensions? prez3-m '(6 2)))
+
+  (more:check-three-things-equal?  #t
+                                   (within-2d-vec-dimensions? prez2 '(4 2))
+                                   (within-multi-dimensions? prez3-m '(4 2)))
+
+  (more:check-three-things-equal?  #f 
+                                   (within-matrix-dimensions? prez2 4 3) 
+                                   (within-matrix-dimensions? prez3-m 4 3))
+
+  (more:check-three-things-equal?  #t 
+                                   (within-matrix-dimensions? prez2 4 1)
+                                   (within-matrix-dimensions? prez3-m 4 1))
+
+  (more:check-three-things-equal?  #f 
+                                   (within-matrix-dimensions? prez2 4 -1) 
+                                   (within-multi-dimensions? prez3-m '(4 -1)))
+
+  (more:check-three-things-equal?  #f 
+                                   (2d-vec-set! prez2 '(5 1) 'Invalid) 
+                                   (multi-vec-set! prez3-m '(5 1) 'Invalid))
   
   (check-equal? (2d-vec-ref prez2 '(4 1)) 'Missouri)
   (check-equal? (2d-vec-ref prez2 '(4 3)) #f)
@@ -495,22 +479,28 @@ test-vec
   (reset-global-vec-num)
   ; (define a-3 (make-3d-vec '(4 5 6)))
   (define a-3 (3d-vec-builder '(4 5 6)))
+  (reset-global-vec-num)
+  (define b-3 (multi-vec-builder '(4 5 6)))  
   (3d-vec-set! a-3 '(3 2 3) 'whatever)
-  (check-equal? (3d-vec-ref a-3 '(3 2 3)) 'whatever)
-
-  ; (3d-vec-ref a-3 '(3 3 2))
+  (3d-vec-set! b-3 '(3 2 3) 'whatever)
+  (more:check-three-things-equal? 'whatever
+                                  (3d-vec-ref a-3 '(3 2 3)) 
+                                  (multi-vec-ref b-3 '(3 2 3)))
 
   ; test generic against specific
   (reset-global-vec-num)
   ; (define adams-3 (make-3d-vec '(4 5 6)))
   (define adams-3 (3d-vec-builder '(4 5 6)))
   (reset-global-vec-num)
-  ; (define alexander-4 (make-4d-vec '(4 5 3 6)))
+  (define cass-3-m (multi-vec-builder '(4 5 6)))
+  (reset-global-vec-num)
   (define alexander-4 (4d-vec-builder '(4 5 3 6)))
   (reset-global-vec-num)
-  ; (define bond-5 (make-5d-vec '(4 5 3 2 4)))
+  (define champaign-4-m (multi-vec-builder '(4 5 3 6)))
+  (reset-global-vec-num)
   (define bond-5 (5d-vec-builder '(4 5 3 2 4)))
-
+  (reset-global-vec-num)
+  (define christian-5-m (multi-vec-builder '(4 5 3 2 4)))
 
   (more:check-three-things-equal? '(5 3)
                                   (get-multi-dimensions prez2)
@@ -520,13 +510,25 @@ test-vec
                                   (get-multi-dimensions adams-3)
                                   (get-3d-vec-dimensions adams-3))
 
+(more:check-three-things-equal? '(4 5 6)
+                                  (get-multi-dimensions adams-3)
+                                  (get-multi-dimensions cass-3-m))
+
   (more:check-three-things-equal? '(4 5 3 6)
                                   (get-multi-dimensions alexander-4)
                                   (get-4d-vec-dimensions alexander-4))
 
+  (more:check-three-things-equal? '(4 5 3 6)
+                                  (get-multi-dimensions alexander-4)
+                                  (get-multi-dimensions champaign-4-m))
+
   (more:check-three-things-equal? '(4 5 3 2 4)
                                   (get-multi-dimensions bond-5)
                                   (get-5d-vec-dimensions bond-5))
+
+  (more:check-three-things-equal? '(4 5 3 2 4)
+                                  (get-multi-dimensions bond-5)
+                                  (get-multi-dimensions christian-5-m))
 
   (more:check-three-things-equal? #f
                                   (within-multi-dimensions? prez2 '(5 3))
@@ -548,29 +550,54 @@ test-vec
                                   (within-multi-dimensions? bond-5 '(4 5 3 2 4))
                                   (within-5d-vec-dimensions? bond-5 '(4 5 3 2 4)))
 
+
+(more:check-three-things-equal? #f ; 
+                                  (within-multi-dimensions? bond-5 '(4 5 3 2 4))
+                                  (within-5d-vec-dimensions? bond-5 '(4 5 3 2 4)))
+
   (more:check-three-things-equal? #f ; 
                                   (within-multi-dimensions? bond-5 '(3 5 3 2 4))
-                                  (within-5d-vec-dimensions? bond-5 '(3 5 3 2 4)))
+                                  (within-multi-dimensions? christian-5-m '(3 5 3 2 4)))
 
   (more:check-three-things-equal? #f ; 
                                   (within-multi-dimensions? bond-5 '(3 4 3 2 4))
                                   (within-5d-vec-dimensions? bond-5 '(3 4 3 2 4)))
 
+(more:check-three-things-equal? #f ; 
+                                  (within-multi-dimensions? bond-5 '(3 4 3 2 4))
+                                  (within-multi-dimensions? christian-5-m '(3 4 3 2 4)))
+
   (more:check-three-things-equal? #f ; 
                                   (within-multi-dimensions? bond-5 '(3 4 2 2 4))
                                   (within-5d-vec-dimensions? bond-5 '(3 4 2 2 4)))
+
+(more:check-three-things-equal? #f ; 
+                                (within-multi-dimensions? bond-5 '(3 4 2 2 4))
+                                (within-multi-dimensions? christian-5-m '(3 4 2 2 4)))
 
   (more:check-three-things-equal? #f ; 
                                   (within-multi-dimensions? bond-5 '(3 4 2 1 4))
                                   (within-5d-vec-dimensions? bond-5 '(3 4 2 1 4)))
 
+  (more:check-three-things-equal? #f ; 
+                                  (within-multi-dimensions? bond-5 '(3 4 2 1 4))
+                                  (within-multi-dimensions? christian-5-m '(3 4 2 1 4)))
+
   (more:check-three-things-equal? #t ; 
                                   (within-multi-dimensions? bond-5 '(3 4 2 1 3))
                                   (within-5d-vec-dimensions? bond-5 '(3 4 2 1 3)))
 
+  (more:check-three-things-equal? #t ; 
+                                  (within-multi-dimensions? bond-5 '(3 4 2 1 3))
+                                  (within-multi-dimensions? christian-5-m '(3 4 2 1 3)))
+
 (more:check-three-things-equal? #f ; 
                                 (within-multi-dimensions? bond-5 '(3 4 2 1 3 0))
                                 (within-multi-dimensions? bond-5 '(3 4 2 1)))
+
+(more:check-three-things-equal? #f ; 
+                                (within-multi-dimensions? christian-5-m '(3 4 2 1 3 0))
+                                (within-multi-dimensions? christian-5-m '(3 4 2 1)))
 
 (more:check-three-things-equal? 'Democratic 
                                 (2d-vec-ref prez2 '(4 2)) 
@@ -581,24 +608,43 @@ test-vec
                                 (multi-vec-ref prez2 '(4 0)))
 
 (multi-vec-set! prez2 '(4 0) 'Truman)
+(multi-vec-set! prez3-m '(4 0) 'Truman)
 (more:check-three-things-equal? 'Truman
                                 (2d-vec-ref prez2 '(4 0)) 
+                                (multi-vec-ref prez2 '(4 0)))
+
+(more:check-three-things-equal? 'Truman
+                                (multi-vec-ref prez3-m '(4 0)) 
                                 (multi-vec-ref prez2 '(4 0)))
 
 (more:check-three-things-equal? 'x-342 
                                 (5d-vec-ref bond-5 '(2 4 0 1 2))
                                 (multi-vec-ref bond-5 '(2 4 0 1 2)))
+(more:check-three-things-equal? 'x-342 
+                                (multi-vec-ref christian-5-m '(2 4 0 1 2))
+                                (multi-vec-ref bond-5 '(2 4 0 1 2)))
+
 (multi-vec-set! bond-5 '(2 4 0 1 2) 'Boone)
+(multi-vec-set! christian-5-m '(2 4 0 1 2) 'Boone)
 (more:check-three-things-equal? 'Boone
                                 (5d-vec-ref bond-5 '(2 4 0 1 2))
                                 (multi-vec-ref bond-5 '(2 4 0 1 2)))
-
+(more:check-three-things-equal? 'Boone
+                                (multi-vec-ref christian-5-m '(2 4 0 1 2))
+                                (multi-vec-ref bond-5 '(2 4 0 1 2)))
 (more:check-three-things-equal? 'x-294
                                 (5d-vec-ref bond-5 '(2 2 0 1 2))
                                 (multi-vec-ref bond-5 '(2 2 0 1 2)))
+(more:check-three-things-equal? 'x-294
+                                (multi-vec-ref christian-5-m '(2 2 0 1 2))
+                                (multi-vec-ref bond-5 '(2 2 0 1 2)))
 (multi-vec-set! bond-5 '(2 2 0 1 2) 'Brown)
+(multi-vec-set! christian-5-m '(2 2 0 1 2) 'Brown)
 (more:check-three-things-equal? 'Brown
                                 (5d-vec-ref bond-5 '(2 2 0 1 2))
+                                (multi-vec-ref bond-5 '(2 2 0 1 2)))
+(more:check-three-things-equal? 'Brown
+                                (multi-vec-ref christian-5-m '(2 2 0 1 2))
                                 (multi-vec-ref bond-5 '(2 2 0 1 2)))
 
 (more:check-three-things-equal? 'x-94
