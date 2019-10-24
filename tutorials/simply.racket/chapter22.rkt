@@ -502,18 +502,18 @@ A line should be written in the output file only for the items that do appear in
   (check-equal?  )
 |#
   ;; 22.2
-  (check-equal? (count-file-lines "a-states") 4)
-  (check-equal? (count-file-lines "i-states") 4)
-  (check-equal? (count-file-lines "n-states") 8)
-  (check-equal? (count-file-lines "r5rs")    10)
+  (check-equal? (count-file-lines "files/a-states") 4)
+  (check-equal? (count-file-lines "files/i-states") 4)
+  (check-equal? (count-file-lines "files/n-states") 8)
+  (check-equal? (count-file-lines "files/r5rs")    10)
   
   ;; 22.3
-  (check-equal? (count-file-words "r5rs")   70)
-  (check-equal? (count-file-words "grades") 24)
+  (check-equal? (count-file-words "files/r5rs")   70)
+  (check-equal? (count-file-words "files/grades") 24)
 
   ;; 22.4
-  (check-equal? (count-file-chars "r5rs")   456)
-  (check-equal? (count-file-chars "grades") 84)
+  (check-equal? (count-file-chars "files/r5rs")   456)
+  (check-equal? (count-file-chars "files/grades") 84)
   
   ;; 22.8
   (define test-sent '(one two three four five))
