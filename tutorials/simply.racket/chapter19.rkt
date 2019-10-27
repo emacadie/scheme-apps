@@ -278,7 +278,7 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
         [(equal? wd (first the-sent)) (bf the-sent)]
         [else (se (first the-sent) (remove-once-sent wd (bf the-sent)))]))
 
-;; this is from the comments
+;; this is from the comments of chapter 15
 (define (earliest-word-sent the-sent pred)
   (accumulate (lambda (wd1 wd2) (if (pred wd1 wd2) wd1 wd2))
 	      the-sent))
@@ -291,7 +291,7 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
                                 pred))]))
 ;; now let's try with lists and reduce
 (define (remove-once-list wd the-list)
-  ; (printf "Calling remove-once-list with wd ~a and list ~a\n" wd the-list)
+  (printf "Calling remove-once-list with wd ~a and list ~a\n" wd the-list)
   (cond [(empty? the-list) '()]
         [(equal? wd (car the-list)) (cdr the-list)]
         [else (ch17:flatten2 (list (car the-list) 
@@ -299,30 +299,31 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 
 ;; tail-recursion is better; come back to this
 (define (remove-once-list-r wd the-list outp)
-  (printf "Calling remove-once-list with wd ~a and list ~a and output ~a\n" 
+  (printf "Calling remove-once-list-r with wd ~a and list ~a and output ~a\n" 
           wd the-list outp)
   (cond [(empty? the-list) '()]
-        [(equal? wd (car the-list)) (cdr the-list)]
+        [(= wd (car the-list)) (cdr the-list)]
         [else (list (car the-list) (remove-once-list wd (cdr the-list)))
               ; (remove-once-list-r wd)
 ]))
 
-;; this is from the comments
+;; this is from the comments of chapter 15
 (define (earliest-word-list the-list pred)
   ; (printf "calling earliest-word-list with list ~a \n" the-list)
   (reduce (lambda (wd1 wd2) (if (pred wd1 wd2) wd1 wd2))
 	      the-list))
 
-(define (sort-19-list the-list pred)
-  ; (printf "Calling sort-19-list with list ~a \n" the-list)
-  (cond [(empty? the-list) '()]
+(define (sort-19-list-hlpr the-list pred output)
+  (cond [(empty? the-list) (reverse output)]
         [else
-         (ch17:my-append (earliest-word-list the-list pred)
-                         (sort-19-list (remove-once-list (earliest-word-list the-list 
-                                                                             pred) 
-                                                         the-list) 
-                                       pred))]))
+         (let ([early-word (earliest-word-list the-list pred)])
+           (sort-19-list-hlpr ; (remove-once-list-r early-word the-list '()) 
+                              (remove-once-list early-word the-list ) 
+                              pred 
+                              (cons early-word output)))]))
 
+(define (sort-19-list the-list pred)
+  (sort-19-list-hlpr the-list pred '()))
 
 ;; 19.10  Write tree-map, analogous to our deep-map, 
 ; but for trees, using the datum and children selectors. 
@@ -652,10 +653,6 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (check-equal? (deep-reduce + num-tree) 27)
   (check-equal? (deep-reduce word-from-first-r tiny-world-tree)
                 "w z h h a v m n s w s q c d p")
-#|
-  (check-equal?  )
-
-|#
 
 ) ;; end module+ test 
   

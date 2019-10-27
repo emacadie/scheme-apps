@@ -230,10 +230,5 @@
                 '(this is the girl that saw the boy that owned the dog that chased the cat that bit the rat)
                 "Error for: (unscramble '(this is the rat the cat the dog the boy the girl saw owned chased bit))")
 
-  ; (printf ": ~a \n" )
-  ; (check-equal?  "Error for: ")
-
 ) ;; end module+ test 
-  ; (printf ": ~a \n"  )
-  ; (check-equal?  "Error for: ")
 
