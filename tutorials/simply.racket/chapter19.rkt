@@ -273,6 +273,7 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 ; > (sort '(john paul george ringo) before?)
 ; (GEORGE JOHN PAUL RINGO)
 ;; before? is a Simply Scheme function
+; remove-once was exercise 14.1
 (define (remove-once-sent wd the-sent)
   (cond [(empty? the-sent) '()]
         [(equal? wd (first the-sent)) (bf the-sent)]
@@ -286,30 +287,29 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 (define (sort-19-sent the-sent pred)
   (cond [(empty? the-sent) '()]
         [else (se (earliest-word-sent the-sent pred)
-                  (sort-19-sent (remove-once-sent (earliest-word-sent the-sent pred) 
+                  (sort-19-sent (remove-once-sent (earliest-word-sent the-sent 
+                                                                      pred) 
                                                   the-sent) 
                                 pred))]))
+
 ;; now let's try with lists and reduce
 (define (remove-once-list wd the-list)
-  (printf "Calling remove-once-list with wd ~a and list ~a\n" wd the-list)
   (cond [(empty? the-list) '()]
         [(equal? wd (car the-list)) (cdr the-list)]
         [else (ch17:flatten2 (list (car the-list) 
                                    (remove-once-list wd (cdr the-list))))]))
 
-;; tail-recursion is better; come back to this
-(define (remove-once-list-r wd the-list outp)
-  (printf "Calling remove-once-list-r with wd ~a and list ~a and output ~a\n" 
-          wd the-list outp)
-  (cond [(empty? the-list) '()]
-        [(= wd (car the-list)) (cdr the-list)]
-        [else (list (car the-list) (remove-once-list wd (cdr the-list)))
-              ; (remove-once-list-r wd)
-]))
+;; chapter 14's exercise, with lists
+;; it's like calling filter and you stop filtering after the first hit
+(define (remove-once-r bad-word inp outp)
+  (cond [(empty? inp) outp]
+        [(equal? bad-word (car inp)) (append outp (cdr inp))]
+        [else (remove-once-r bad-word 
+                             (cdr inp) 
+                             (append outp (list (car inp))))]))
 
 ;; this is from the comments of chapter 15
 (define (earliest-word-list the-list pred)
-  ; (printf "calling earliest-word-list with list ~a \n" the-list)
   (reduce (lambda (wd1 wd2) (if (pred wd1 wd2) wd1 wd2))
 	      the-list))
 
@@ -317,8 +317,7 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (cond [(empty? the-list) (reverse output)]
         [else
          (let ([early-word (earliest-word-list the-list pred)])
-           (sort-19-list-hlpr ; (remove-once-list-r early-word the-list '()) 
-                              (remove-once-list early-word the-list ) 
+           (sort-19-list-hlpr (remove-once-r early-word the-list '()) 
                               pred 
                               (cons early-word output)))]))
 
@@ -579,10 +578,35 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
                 '(george john paul ringo))
   (check-equal? (sort-19-list '(4 23 7 5 16 3) <)
                 '(3 4 5 7 16 23))
+  (check-equal? (sort-19-list '(4 23 7 3 5 16 3) <)
+                '(3 3 4 5 7 16 23))
+  (check-equal? (sort-19-list '(4 23 7 5 4 16 3) <)
+                '(3 4 4 5 7 16 23))
   (check-equal? (sort-19-list '(4 23 7 5 16 3) >)
                 '(23 16 7 5 4 3))
   (check-equal? (sort-19-list '(john paul george ringo) before?) 
                 '(george john paul ringo))
+
+  (check-equal? (remove-once-r 'paul '(john paul george ringo) '())
+                '(john george ringo))
+
+  (check-equal? (remove-once-r 'paul '(john paul paul george ringo) '())
+                '(john paul george ringo))
+
+  (check-equal? (remove-once-r 'pete '(john paul george ringo) '())
+                '(john paul george ringo))
+
+  (check-equal? (remove-once-r 4 '(23 4 7 5 16 3) '())
+                '(23 7 5 16 3))
+  (check-equal? (remove-once-r 4 '(4 23 4 7 5 16 3) '())
+                '(23 4 7 5 16 3))
+  (check-equal? (remove-once-r 4 '(23 4 4 7 5 16 3) '())
+                '(23 4 7 5 16 3))
+  (check-equal? (remove-once-r 4 '(23 4 7 5 16 3 4) '())
+                '(23 7 5 16 3 4))
+  (check-equal? (remove-once-r 5 '(23 4 7 5 16 3) '())
+                '(23 4 7 16 3))
+
 
   ;; 19.10
   ;; Mine works about as well as buntine's and mengsince's
