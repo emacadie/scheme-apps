@@ -12,6 +12,8 @@ ttt.rkt and spread.rkt and changed somewhat to work with Racket mode. Original S
 https://github.com/greghendershott/racket-mode  
 https://melpa.org/#/racket-mode  
 
+Racket Mode website: https://www.racket-mode.com/  
+
 https://docs.racket-lang.org/manual@simply-scheme/index.html  
 https://pkgs.racket-lang.org/package/simply-scheme  
 
