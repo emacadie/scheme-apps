@@ -61,17 +61,14 @@ Not tail-recursive.
 (define (my-keep predicate sent)
   (keep-r predicate sent '()))
 (define (keep-r predicate sent outp)
-  (cond [(empty? sent) outp] 
+  (cond [(empty? sent) (reverse outp)] 
         [(and (predicate (car sent)) (empty? outp)) (keep-r predicate 
                                                             (cdr sent)
                                                             (list (car sent)))]
 	    [(predicate (car sent)) (keep-r predicate 
                                         (cdr sent) 
-                                        (ch17:my-append outp 
-                                                        (car sent)))]
-	    [else (keep-r predicate 
-                      (cdr sent) 
-                      outp)]))
+                                        (cons (car sent) outp))]
+	    [else (keep-r predicate (cdr sent) outp)]))
 
 ; from chapter 14, tail-recursive
 (define (my-reduce func start sent)
@@ -497,9 +494,9 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
   (require rackunit)
   (check-true #t)
   (define (check-three-things-equal? result their-append-rsl my-append-rsl)
-  (unless (and (check-equal? result their-append-rsl)
-               (check-equal? result my-append-rsl))
-    (fail-check)))
+    (unless (and (check-equal? result their-append-rsl)
+                 (check-equal? result my-append-rsl))
+      (fail-check)))
 
   (define (leaf datum)
     (make-node datum '()))
