@@ -6,6 +6,11 @@
 
 (butfirst '(This is chapter 15 poker))
 
+
+;; from chapter 12
+(define (spell-digit digit)
+  (item (+ 1 digit)
+	'(zeroes ones twos threes fours fives sixes sevens eights nines tens jacks queens kings aces)))
 ;; from chapter 9 bridge:
 ; Write a procedure count-suit that takes a suit and a hand as arguments and returns the number of cards in the hand with the given suit.
 (define (count-suit suit card-list)
@@ -32,7 +37,35 @@
   (count (keep (lambda (x) (equal? rank x)) (every butfirst card-list))))
 
 (define (rank-counts rank-sentence)
-  (every (lambda (x) (count-rank x rank-sentence)) '(a 2 3 4 5 6 7 8 9 10 j q k)))
+  (every (lambda (x) (count-rank x rank-sentence)) 
+         '(0 1 2 3 4 5 6 7 8 9 10 j q k a)))
+
+; '(da d6 d3 c9 h6) -> card-sentence, like in the book
+; (check-for-single-pair '(da d6 d3 c9 h6))
+(define (check-for-single-pair card-sentence)
+  (more:display-all "Result of apprearances 2 on sent " card-sentence ": " (appearances 2 (rank-counts card-sentence)))
+  (if (equal? 1 (appearances 2 (rank-counts card-sentence)))
+    #t
+    #f))
+
+(define (check-for-two-pairs card-sentence)
+  (when (= 2 (appearances 2 (rank-counts card-sentence)))
+    #t))
+
+(define (check-for-four-of-a-kind card-sentence)
+  (if (= 1 (appearances 4 (rank-counts card-sentence)))
+    #t
+    #f))
+; check for a possible straight
+(define (check-for-poss-straight card-sentence)
+  (if (= 5 (appearances 1 (rank-counts card-sentence)))
+    #t
+    #f))
+
+(define (check-for-three-of-a-kind card-sentence)
+  (if (= 1 (appearances 3 (rank-counts card-sentence)))
+    #t
+    #f))
 
 (define (check-flush card-list)
   (check-flush-work (suit-counts card-list)))
