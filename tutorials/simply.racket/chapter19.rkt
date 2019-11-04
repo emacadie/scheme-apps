@@ -2,8 +2,11 @@
 
 ; Chapter 19 Higher Order Functions
 
-(require (prefix-in more: "more-simply.rkt"))
-(require (prefix-in ch17: "chapter17.rkt"))
+(require (prefix-in more: "more-simply.rkt")
+         (prefix-in ch17: "chapter17.rkt"))
+
+
+(provide sort-19-list)
 
 (butfirst '(This is chapter 19 Higher Order Functions))
 
@@ -401,8 +404,7 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
         [else (my-repeated func (- num 1) (func e))]))
 |#
 (define (bf3 input)
-  (butfirst (butfirst (butfirst input)))
-)
+  (butfirst (butfirst (butfirst input))))
 #|
 (define (inner-lambda func)
   (lambda (x) (func x))
@@ -437,21 +439,15 @@ I suppose you could make a helper func that calls a three-arg with (first sent) 
 ; this is when reduce goes in reverse order of how I think it should
 ; from end of list to beginning
 (define (word-from-first-r word-b word-a)
-  ; (printf "calling word-from-first-r w/word-b: ~a & word-a: ~a\n" word-b word-a)
   (cond [(null? word-a) (first word-b)]
         [(null? word-b) word-a]
         [(not (member? " "  word-a)) 
          (begin
-           ; (printf "word-a does not have a space \n" )
-           (word (first word-a) " " (first word-b))
-           )]
+           (word (first word-a) " " (first word-b)))]
         [else (begin
-                ; (printf "In the else\n")
-                (word (first word-b) " " word-a)
-                ) ]))
+                (word (first word-b) " " word-a))]))
 
 (define (word-from-first word-a word-b)
-  ; (printf "calling word-from-first w/word-a: ~a & word-b: ~a \n" word-a word-b)
   (cond [(null? word-a) (first word-b)]
         [(null? word-b) word-a]
         [else (word word-a " " (first word-b))]))
