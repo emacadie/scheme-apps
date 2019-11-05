@@ -50,7 +50,7 @@
 
 ;; Write a procedure bridge-val that takes a hand as its argument and returns the total number of points that the hand is worth.
 (define (bridge-val the-hand)
-(+ (high-card-points the-hand) (hand-dist-points the-hand)))
+  (+ (high-card-points the-hand) (hand-dist-points the-hand)))
 
 (module+ test
   (require rackunit)
