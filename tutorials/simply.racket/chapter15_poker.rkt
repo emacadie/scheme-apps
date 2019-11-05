@@ -10,6 +10,8 @@
 ;; also see
 ;; https://en.wikipedia.org/wiki/Texas_hold_%27em#Hand_values
 
+;; look at location from chapter14
+;; It should return a number indicating where in the sentence that word can be found.
 ;; from chapter 12
 (define (spell-digit-plural digit)
   (item (+ 1 digit)
@@ -104,7 +106,7 @@
         [else #f]))
 
 (define (change-card-sen-hlpr input output)
-  (more:display-all "change card helper with input: " input ", output: " output)
+  ;(more:display-all "change card helper with input: " input ", output: " output)
   (cond [(empty? input) (reverse output)]
         [(and (not (number? (butfirst (car input)))) (member? (butfirst (car input)) 'jqka)) 
          (change-card-sen-hlpr (cdr input)
@@ -122,6 +124,10 @@
 (define (change-card-sentence card-sentence)
   (change-card-sen-hlpr card-sentence '()))
 
+; (ch19:sort-19-list (change-card-sentence '(ca h4 d7 ck s2)) butfirst-before?) 
+; you might be able to use reduce to check for a straight
+; use the first value as the baseline
+; or look at 14.10
 (define (check-flush card-list)
   (check-flush-work (suit-counts card-list)))
 
@@ -173,6 +179,10 @@
   (check-equal? (suit-counts '(h8 d4 d10 c10 ha))  '(1 2 2 0) "Error for (suit-counts '(h8 d4 d10 c10 ha))")
 
   (check-equal? (change-card-sentence '(d2 cj h3 s10)) '(d02 c11 h03 s10))
+
+  (check-equal? (ch19:sort-19-list (change-card-sentence '(ca h4 d7 ck s2)) 
+                                   butfirst-before?) 
+                '(s02 h04 d07 c13 c14))
 
   ; (printf ": ~a \n" )
   ; (check-equal?  "Error for: ")
