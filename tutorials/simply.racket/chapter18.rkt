@@ -87,13 +87,9 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
          (parse-helper (cdr expr)
                        operators
                        (cons (parse (car expr)) operands))]
-        [else (if (or (null? operators)
-                      (> (precedence (car expr))
-                         (precedence (car operators))))
-                  (parse-helper (cdr expr)
-                                (cons (car expr) operators)
-                                operands)
-                  (handle-op expr operators operands))]))
+        [(or (null? operators) (> (precedence (car expr)) (precedence (car operators)))) 
+         (parse-helper (cdr expr) (cons (car expr) operators) operands)]
+        [else (handle-op expr operators operands)]))
 
 (define (handle-op expr operators operands)
   (parse-helper expr
