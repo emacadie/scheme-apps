@@ -30,10 +30,7 @@
 
 ;; 6.6  Write a predicate teen? that returns true if its argument is between 13 and 19.
 (define (teen? number)
-  (cond [(number? number)
-         (if (and (>= number 13) (<= number 19))
-             #t
-             #f)]
+  (cond [(and (number? number) (>= number 13) (<= number 19)) #t]
         [else #f]))
 
 ;; 6.7  Write a procedure type-of that takes anything as its argument and returns one of the words word, sentence, number, or boolean:
