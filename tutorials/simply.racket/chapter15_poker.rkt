@@ -3,8 +3,7 @@
 ; Chapter 15 project: Poker
 
 (require (prefix-in more: "more-simply.rkt")
-         (prefix-in ch19: "chapter19.rkt")
-)
+         (prefix-in ch19: "chapter19.rkt"))
 
 (butfirst '(This is chapter 15 poker))
 ;; also see
@@ -105,6 +104,7 @@
         [(equal? face 'a) 14]
         [else #f]))
 
+;; convert face cards to numbers
 (define (change-card-sen-hlpr input output)
   ;(more:display-all "change card helper with input: " input ", output: " output)
   (cond [(empty? input) (reverse output)]

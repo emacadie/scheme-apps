@@ -243,9 +243,5 @@ Glad to hear it.
   (check-equal? 6  (get-longest-lname-length jazz-list))
   (check-equal? 15 (get-longest-lname-length russ-composers))
 
-#|
-  (check-equal?  )
-|#
-
 ) ;; end module+ test 
 
