@@ -48,7 +48,6 @@
 ; (first-combine-r 'a 'def '())
 ; (first-combine-r 'a '(def ghi) '())
 (define (first-combine-r lttr sent outp)
-  ; (display-all "calling every-tail-r with sent: " sent ", outp: " outp)
   (if (empty? sent)
       outp ;; base case returns output
       (first-combine-r lttr (bf sent) (se outp (word (first sent) lttr)))))
