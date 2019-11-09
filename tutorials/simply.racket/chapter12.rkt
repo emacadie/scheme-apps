@@ -220,7 +220,7 @@ Tail-recursive:
   (if (zero? x)
       acc
       (factorial (sub1 x) (* x acc))))
-The last call to factorial is not tail-recursive because it is on the last line, 
+The last call to factorial is tail-recursive; not because it is on the last line, 
 but because its result is not fed into another function.
 |#
 ;; https://stackoverflow.com/questions/33923/what-is-tail-recursion
