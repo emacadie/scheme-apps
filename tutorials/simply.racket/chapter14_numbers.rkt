@@ -7,7 +7,6 @@
 ;; break a string into sets of 3
 
 (define (exponent-helper num group)
-  ; (printf "exponent-helper with num ~a and group ~a\n" num group)
   (cond [(empty? num) '()]
         [(equal? group 1)  (sentence num)]
         [(equal? group 2)  (sentence num 'thousand)]
@@ -51,7 +50,6 @@
         [else (word (first n) 'teen)]))
 
 (define (num-name2-work num-work output depth)
-  ; (printf "num-name2-work,  num-work: ~a, output: ~a, depth: ~a\n" num-work output depth)
   (cond [(empty? num-work) output]        ;; skip ending zero
         [(zero? (last num-work)) (num-name2-work (butlast num-work) 
                                                  output 
@@ -71,7 +69,6 @@
                                           (+ 1 depth))]))
 
 (define (grand-num-name-worker the-num outp group)
-  ; (printf "grand-num-name-worker, the-num: ~a, outp: ~a, group: ~a\n" the-num outp group)
   (cond [(empty? the-num) outp]
         [else (grand-num-name-worker (butlast the-num)
                                      (sentence (exponent-helper (num-name2-work (last the-num) "" 1) 
@@ -85,8 +82,6 @@
 (module+ test
   (require rackunit)
   (check-true #t)
-  ; (printf "(who '(sells out)): ~a \n" (who '(sells out)))
-  ; (check-equal? (who '(sells out)) '(pete sells out roger sells out john sells out keith sells out) "Error for (who '(sells out))")
 
   (printf "(do-string-break \"12345\" '()): ~a \n" (do-string-break "12345" '()))
   (check-equal? (do-string-break "12345" '()) 
@@ -116,12 +111,5 @@
   (check-equal? (grand-num-name-caller 5513345) 
                 '(five million five hundred thirteen thousand three hundred forty five) 
                 "Error for: (grand-num-name-caller 5513345)")
-
-  ; (printf ": ~a \n" )
-  ; (check-equal?  "Error for: ")
-
 ) ;; end module+ test 
-  ; (printf " : ~a \n"  )
-  ; (check-equal?  "Error for: ")
-
 
