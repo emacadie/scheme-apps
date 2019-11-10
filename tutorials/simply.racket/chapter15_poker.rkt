@@ -8,6 +8,19 @@
 (butfirst '(This is chapter 15 poker))
 ;; also see
 ;; https://en.wikipedia.org/wiki/Texas_hold_%27em#Hand_values
+;; https://en.wikipedia.org/wiki/List_of_poker_hands
+#|
+- Royal flush: ten, jack, queen, king, and ace, all of the same suit
+- Straight flush: five cards of sequential rank, all of the same suit
+- Four of a kind: four cards of the same rank
+- Full house: three cards of the same rank, and two of a second rank
+- Flush: five cards of the same suit, not sequential rank
+- Straight: five cards of sequential rank, not all of the same suit
+- Three of a kind: three cards of the same rank, no other matches
+- Two pair: two pairs of cards, of two different ranks
+- Pair: two cards of the same rank, no other matches
+- Nothing: none of the above 
+|#
 
 ;; look at location from chapter14
 ;; It should return a number indicating where in the sentence that word can be found.
@@ -44,8 +57,7 @@
   (every (lambda (x) (count-rank x card-sentence)) 
          '(0 1 2 3 4 5 6 7 8 9 10 j q k a)))
 ;; a hand with a 6 and 4 kings gives:
-;; '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0)
-
+;; '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0) it starts with 0
 ;; this could be filter, but I think for chapter 15 we are supposed to do it by hand
 (define (get-rank-numbers-hlpr rank-sentence number count output)
   (cond [(empty? rank-sentence) output] 
@@ -123,6 +135,12 @@
 ; '(d02 c11 h03 s10)
 (define (change-card-sentence card-sentence)
   (change-card-sen-hlpr card-sentence '()))
+
+; check for straight:
+; change-card-sentence to convert face cards
+; call ch19:sort-19-list with butfirst-before?
+; compare number of first to number of last
+; or if first is a two and last is an ace, and next-to-last is 5
 
 ; (ch19:sort-19-list (change-card-sentence '(ca h4 d7 ck s2)) butfirst-before?) 
 ; you might be able to use reduce to check for a straight
