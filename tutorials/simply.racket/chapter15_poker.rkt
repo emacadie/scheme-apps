@@ -118,7 +118,7 @@
 
 ;; convert face cards to numbers
 (define (change-card-sen-hlpr input output)
-  ;(more:display-all "change card helper with input: " input ", output: " output)
+  ; (more:display-all "change card helper with input: " input ", output: " output)
   (cond [(empty? input) (reverse output)]
         [(and (not (number? (butfirst (car input)))) (member? (butfirst (car input)) 'jqka)) 
          (change-card-sen-hlpr (cdr input)
@@ -141,6 +141,37 @@
 ; call ch19:sort-19-list with butfirst-before?
 ; compare number of first to number of last
 ; or if first is a two and last is an ace, and next-to-last is 5
+(define (first-last-diff sorted-sent)
+  ;(- (string->number (butfirst (list-ref sorted-sent 4)))
+  ;   (string->number (butfirst (list-ref sorted-sent 0))))
+(- (butfirst (list-ref sorted-sent 4))
+     (butfirst (list-ref sorted-sent 0)))
+)
+
+(define (first-is-two sorted-sent)
+  (cond [(equal? "02" (butfirst (first sorted-sent))) #t]
+        [else #f]))
+(define (last-is-ace sorted-sent)
+  (cond [(equal? "14" (butfirst (last sorted-sent))) #t]
+        [else #f]))
+(define (next-to-last-is-five sorted-sent)
+  (cond [(equal? "05" (butfirst (last (butlast sorted-sent)))) #t]
+        [else #f]))
+
+; true -> (check-for-straight '(d3 c4 h5 s6 d7))
+; false -> (check-for-straight '(d3 c4 h5 s6 d8))
+; true -> royal: (check-for-straight '(c10 dj sq hk ca))
+; true -> (check-for-straight '(h2 c3 d4 s5 ca))
+
+(define (check-for-straight card-sentence)
+  (let ([sorted-sent (ch19:sort-19-list 
+                      (change-card-sentence card-sentence)
+                      butfirst-before?)])
+    (cond [(equal? 4 (first-last-diff sorted-sent)) #t]
+          [(and (first-is-two sorted-sent)
+                (last-is-ace sorted-sent)
+                (next-to-last-is-five sorted-sent)) #t]
+          [else #f])))
 
 ; (ch19:sort-19-list (change-card-sentence '(ca h4 d7 ck s2)) butfirst-before?) 
 ; you might be able to use reduce to check for a straight
