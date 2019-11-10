@@ -151,6 +151,9 @@
 (define (first-is-two sorted-sent)
   (cond [(equal? "02" (butfirst (first sorted-sent))) #t]
         [else #f]))
+(define (first-is-ten sorted-sent)
+  (cond [(equal? "10" (butfirst (first sorted-sent))) #t]
+        [else #f]))
 (define (last-is-ace sorted-sent)
   (cond [(equal? "14" (butfirst (last sorted-sent))) #t]
         [else #f]))
@@ -162,7 +165,7 @@
 ; false -> (check-for-straight '(d3 c4 h5 s6 d8))
 ; true -> royal: (check-for-straight '(c10 dj sq hk ca))
 ; true -> (check-for-straight '(h2 c3 d4 s5 ca))
-
+; false -> (check-for-straight '(h2 c3 dq sk ca))
 (define (check-for-straight card-sentence)
   (let ([sorted-sent (ch19:sort-19-list 
                       (change-card-sentence card-sentence)
@@ -171,6 +174,16 @@
           [(and (first-is-two sorted-sent)
                 (last-is-ace sorted-sent)
                 (next-to-last-is-five sorted-sent)) #t]
+          [else #f])))
+
+; true (check-royal '(c10 da sk hq cj))
+; false (check-royal '(c10 da sk h9 cj))
+(define (check-royal card-sentence)
+  (let ([sorted-sent (ch19:sort-19-list 
+                      (change-card-sentence card-sentence)
+                      butfirst-before?)])
+    (cond [(and (first-is-ten sorted-sent)
+                (last-is-ace sorted-sent)) #t]
           [else #f])))
 
 ; (ch19:sort-19-list (change-card-sentence '(ca h4 d7 ck s2)) butfirst-before?) 
@@ -191,40 +204,27 @@
   (require rackunit)
   (check-true #t)
 
-  (printf "(count-suit 's '(sa s10 hq ck c4)): ~a \n" (count-suit 's '(sa s10 hq ck c4)))
+  (printf "checking count-suit \n")
   (check-equal? (count-suit 's '(sa s10 hq ck c4)) 
                 2 
                 "Error for: (count-suit 's '(sa s10 hq ck c4))")
-  (printf "(count-suit 'c '(c3 d8 dj c10 d5)): ~a \n" 
-          (count-suit 'c '(c3 d8 dj c10 d5)))
   (check-equal? (count-suit 'c '(c3 d8 dj c10 d5)) 
                 2 
                 "Error for: (count-suit 'c '(c3 d8 dj c10 d5))")
-  (printf "(count-suit 'd '(c3 d8 dj c10 d5)): ~a \n" (count-suit 'd '(c3 d8 dj c10 d5)))
   (check-equal? (count-suit 'd '(c3 d8 dj c10 d5)) 
                 3 
                 "Error for: (count-suit 'd '(c3 d8 dj c10 d5))")
    
-  (printf "(num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5))): ~a \n" (num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5))))
+  (printf "checking num-clubs, num-diamonds, num-hearts, num-spades \n")
   (check-equal? (num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5))) 1 "Error for (num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5)))")
-
-  (printf "(num-diamonds (suit-counts '(s4 s5 s9 c4 h6 h5))): ~a \n" (num-diamonds (suit-counts '(s4 s5 s9 c4 h6 h5))))
   (check-equal? (num-diamonds (suit-counts '(s4 s5 s9 c4 h6 h5))) 0 "Error for (num-diamonds (suit-counts '(s4 s5 s9 c4 h6 h5)))")
-
-  (printf "(num-hearts (suit-counts '(s4 s5 s9 c4 h6 h5))): ~a \n" (num-hearts (suit-counts '(s4 s5 s9 c4 h6 h5))))
   (check-equal? (num-hearts (suit-counts '(s4 s5 s9 c4 h6 h5))) 2 "Error for (num-hearts (suit-counts '(s4 s5 s9 c4 h6 h5)))")
-
-  (printf "(num-spades (suit-counts '(s4 s5 s9 c4 h6 h5))): ~a \n" (num-spades (suit-counts '(s4 s5 s9 c4 h6 h5))))
   (check-equal? (num-spades (suit-counts '(s4 s5 s9 c4 h6 h5))) 3 "Error for (num-spades (suit-counts '(s4 s5 s9 c4 h6 h5)))")
 
   ;; hands that we can use
-  (printf "(suit-counts '(c3 d8 dj c10 d5)): ~a\n" (suit-counts '(c3 d8 dj c10 d5)))
+  (printf "checking suit-counts \n")
   (check-equal? (suit-counts '(c3 d8 dj c10 d5)) '(2 3 0 0) "Error for (suit-counts '(c3 d8 dj c10 d5))")
-  (printf "(suit-counts '(s5 cj ca h2 h7)): ~a\n" (suit-counts '(s5 cj ca h2 h7))
-)
   (check-equal? (suit-counts '(s5 cj ca h2 h7))  '(2 0 2 1) "Error for (suit-counts '(s5 cj ca h2 h7))")
-
-  (printf "(suit-counts '(h8 d4 d10 c10 ha)): ~a\n" (suit-counts '(h8 d4 d10 c10 ha)))
   (check-equal? (suit-counts '(h8 d4 d10 c10 ha))  '(1 2 2 0) "Error for (suit-counts '(h8 d4 d10 c10 ha))")
 
   (check-equal? (change-card-sentence '(d2 cj h3 s10)) '(d02 c11 h03 s10))
@@ -233,10 +233,14 @@
                                    butfirst-before?) 
                 '(s02 h04 d07 c13 c14))
 
-  ; (printf ": ~a \n" )
-  ; (check-equal?  "Error for: ")
+  (check-equal? #t (check-for-straight '(d3 c7 h5 s6 d3)))
+  (check-equal? #f (check-for-straight '(d3 c4 h5 s6 d8)))
+  (check-equal? #t (check-for-straight '(ca dj s10 hk cq)))
+  (check-equal? #t (check-for-straight '(h4 ca d3 s5 c2)))
+  (check-equal? #f (check-for-straight '(h2 c3 dq sk ca)))
+
+  (check-equal? #t (check-royal '(c10 da sk hq cj)))
+  (check-equal? #f (check-royal '(c10 da sk h9 cj)))
 
 ) ;; end module+ test 
-  ; (printf ": ~a \n"  )
-; (check-equal?  "Error for: ")
 
