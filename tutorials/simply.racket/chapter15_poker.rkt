@@ -55,18 +55,22 @@
 
 ; (rank-counts '(d3 ca hk s10 h4))
 ; gives: '(0 0 0 1 1 0 0 0 0 0 1 0 0 1 1)
+; (rank-counts '(h4 s4 c6 s6 c4))
 (define (rank-counts card-sentence)
   (every (lambda (x) (count-rank x card-sentence)) 
          '(0 1 2 3 4 5 6 7 8 9 10 j q k a)))
 ;; a hand with a 6 and 4 kings gives:
 ;; '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0) it starts with 0
 ;; this could be filter, but I think for chapter 15 we are supposed to do it by hand
+; (get-numbers-from-rank-count (rank-counts '(ck hk d7 c7 s5)) 2)
+; (get-numbers-from-rank-count (rank-counts '(h4 s4 c6 s6 c4)) 2)
 (define (get-rank-numbers-hlpr rank-sentence number count output)
   ; (more:display-all "get-rank-hlpr with rank-sentence: " rank-sentence ", number: " number ", count: " count ", and output: " output)
   (cond [(empty? rank-sentence) output] 
     [(equal? (car rank-sentence ) number) 
          (begin
-           (get-rank-numbers-hlpr (cdr rank-sentence) number (+ 1 count) (append output count)))]
+           ; (more:display-all "in the equal")
+           (get-rank-numbers-hlpr (cdr rank-sentence) number (+ 1 count) (append output (list count))))]
         [else (get-rank-numbers-hlpr (cdr rank-sentence) number (+ 1 count) output)]))
 
 ;; (get-numbers-from-rank-count '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0) 4)
@@ -207,11 +211,18 @@
         [(equal? 5 (last list-suit-counts))               'spades]))
 
 ;; here is the main event
+
+; pair: (poker-value '(da d6 d3 c9 h6))
+; two pair: (poker-value '(hj sj c3 s3 h2))
+; three of a kind: (poker-value '(cq h9 sq hq s2))
 (define (poker-value card-sentence)
   (let ([rank-sentence (rank-counts card-sentence)])
-      (cond [(check-for-single-pair card-sentence)
-             (sentence 'pair 'of  (word (spell-digit-plural (get-numbers-from-rank-count (rank-counts card-sentence) 2))))
-]
+      (cond [(check-for-three-of-a-kind card-sentence)
+             (sentence 'three-of-a-kind (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 3)))))]
+            [(check-for-two-pairs card-sentence)
+             (sentence 'pair 'of (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))) 'and 'pair 'of (word (spell-digit-plural (list-ref (get-numbers-from-rank-count rank-sentence 2) 1))))]
+            [(check-for-single-pair card-sentence)
+             (sentence 'pair 'of  (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))))]
             [else '(no dice)]
 )
 )
@@ -250,9 +261,10 @@
                                    butfirst-before?) 
                 '(s02 h04 d07 c13 c14))
 
-  (check-equal? 13
-                (get-numbers-from-rank-count '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0) 
-                                             4))
+  (check-equal? '(13)                 (get-numbers-from-rank-count '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0)  
+                                                                   4))
+  (check-equal? '(6) (get-numbers-from-rank-count (rank-counts '(h4 s4 c6 s6 c4)) 2))
+  (check-equal? '(7 13) (get-numbers-from-rank-count (rank-counts '(ck hk d7 c7 s5)) 2))
 
   (check-equal? #t (check-for-straight '(d3 c7 h5 s6 d3)))
   (check-equal? #f (check-for-straight '(d3 c4 h5 s6 d8)))
