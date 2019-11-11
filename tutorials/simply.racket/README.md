@@ -94,3 +94,10 @@ expected a procedure that can be applied to arguments
 given: 1                                                                                                                                                           
 arguments...: [none] 
 I used (screen-num), which is a symbol, not a procedure
+
+; application: not a procedure;
+;  expected a procedure that can be applied to arguments
+;   given: '(hq h10 ha hk hj)
+;   arguments...: [none]
+; Context:
+;  /home/ericm/github/scheme-apps/tutorials/simply.racket/chapter15_poker.rkt:221:0 poker-value

@@ -200,8 +200,8 @@
 ; you might be able to use reduce to check for a straight
 ; use the first value as the baseline
 ; or look at 14.10
-(define (check-flush card-list)
-  (check-flush-work (suit-counts card-list)))
+(define (check-flush card-sentence)
+  (check-flush-work (suit-counts card-sentence)))
 
 (define (check-flush-work list-suit-counts)
   (cond [(equal? 0 (appearances 5 list-suit-counts))      'none]
@@ -215,9 +215,15 @@
 ; pair: (poker-value '(da d6 d3 c9 h6))
 ; two pair: (poker-value '(hj sj c3 s3 h2))
 ; three of a kind: (poker-value '(cq h9 sq hq s2))
+; straight: (poker-value '(d10 s9 h8 7d 6c))
+
+; royal flush: (poker-value '(hq h10 ha hk hj))
 (define (poker-value card-sentence)
   (let ([rank-sentence (rank-counts card-sentence)])
-      (cond [(check-for-three-of-a-kind card-sentence)
+      (cond [(and (check-royal card-sentence) 
+                  (not (equal? 'none (check-flush card-sentence))))
+             (sentence 'royal 'flush '- (check-flush card-sentence))] 
+        [(check-for-three-of-a-kind card-sentence)
              (sentence 'three-of-a-kind (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 3)))))]
             [(check-for-two-pairs card-sentence)
              (sentence 'pair 'of (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))) 'and 'pair 'of (word (spell-digit-plural (list-ref (get-numbers-from-rank-count rank-sentence 2) 1))))]
