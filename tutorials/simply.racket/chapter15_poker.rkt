@@ -215,21 +215,57 @@
 ; pair: (poker-value '(da d6 d3 c9 h6))
 ; two pair: (poker-value '(hj sj c3 s3 h2))
 ; three of a kind: (poker-value '(cq h9 sq hq s2))
-; straight: (poker-value '(d10 s9 h8 7d 6c))
+; straight: (poker-value '(d10 s9 h8 d7 c6)) 
 
+; flush: (poker-value '(c9 c2 ck c8 cq))
+; (poker-value '(d8 dj d3 d9 d4))
+; full house: (poker-value '(h4 s4 c6 s6 c4))
+; (poker-value '(hk h6 d6 sk c6))
+; four of a kind: (poker-value '(dk ck d5 sk hk))
+; straight flush: (poker-value '(d3 d4 d5 d6 d7))
+; (poker-value '(d6 d7 d5 d3 d4))
 ; royal flush: (poker-value '(hq h10 ha hk hj))
+
+(define (get-high-num card-sentence)
+  (car (reverse (get-numbers-from-rank-count (rank-counts card-sentence) 1))))
+
 (define (poker-value card-sentence)
   (let ([rank-sentence (rank-counts card-sentence)])
-      (cond [(and (check-royal card-sentence) 
+      (cond ; royal flush
+        [(and (check-royal card-sentence) 
                   (not (equal? 'none (check-flush card-sentence))))
-             (sentence 'royal 'flush '- (check-flush card-sentence))] 
+             (sentence 'royal 'flush '- (check-flush card-sentence))]
+        ; straight flush
+        [(and (check-for-straight card-sentence)
+                  (not (equal? 'none (check-flush card-sentence))))
+             (sentence 'straight 'flush (spell-digit-plural (get-high-num card-sentence)) 'high)
+]
+        ; four of a kind
+        [(check-for-four-of-a-kind card-sentence)
+         (sentence 'four-of-a-kind (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 4)))))]
+        ; full house
+        [(check-for-full-house card-sentence)
+         (sentence 'full 'house (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 3)))) 'over (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))))]
+        ; flush
+        [(not (equal? 'none (check-flush card-sentence)))
+             (sentence 'flush (spell-digit-plural (get-high-num card-sentence)) 'high (check-flush card-sentence))]
+        ; straight
+        [(check-for-straight card-sentence)
+         (sentence 'straight (spell-digit-plural (get-high-num card-sentence)) 'high)]
+            
+        ; three of a kind
         [(check-for-three-of-a-kind card-sentence)
-             (sentence 'three-of-a-kind (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 3)))))]
-            [(check-for-two-pairs card-sentence)
-             (sentence 'pair 'of (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))) 'and 'pair 'of (word (spell-digit-plural (list-ref (get-numbers-from-rank-count rank-sentence 2) 1))))]
-            [(check-for-single-pair card-sentence)
-             (sentence 'pair 'of  (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))))]
-            [else '(no dice)]
+             (sentence 'three-of-a-kind 
+                       (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 3))))
+)]
+        ; two pair
+        [(check-for-two-pairs card-sentence)
+         (sentence 'pair 'of (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))) 'and 'pair 'of (word (spell-digit-plural (list-ref (get-numbers-from-rank-count rank-sentence 2) 1))))]
+        ; pair
+        [(check-for-single-pair card-sentence)
+         (sentence 'pair 'of  (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2))))
+)]
+        [else '(no dice)]
 )
 )
 )
