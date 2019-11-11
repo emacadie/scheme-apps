@@ -38,18 +38,6 @@
 (define (suit-counts suit-sentence)
   (every (lambda (x) (count-suit x suit-sentence)) '(c d h s)))
 
-(define (num-clubs s-count)
-  (first s-count))
-
-(define (num-diamonds s-count)
-  (more:simply-second s-count))
-
-(define (num-hearts s-count)
-  (last (butlast s-count)))
-
-(define (num-spades s-count)
-  (last s-count))
-
 (define (count-rank rank card-list)
   (count (keep (lambda (x) (equal? rank x)) (every butfirst card-list))))
 
@@ -65,13 +53,17 @@
 ; (get-numbers-from-rank-count (rank-counts '(ck hk d7 c7 s5)) 2)
 ; (get-numbers-from-rank-count (rank-counts '(h4 s4 c6 s6 c4)) 2)
 (define (get-rank-numbers-hlpr rank-sentence number count output)
-  ; (more:display-all "get-rank-hlpr with rank-sentence: " rank-sentence ", number: " number ", count: " count ", and output: " output)
   (cond [(empty? rank-sentence) output] 
     [(equal? (car rank-sentence ) number) 
          (begin
-           ; (more:display-all "in the equal")
-           (get-rank-numbers-hlpr (cdr rank-sentence) number (+ 1 count) (append output (list count))))]
-        [else (get-rank-numbers-hlpr (cdr rank-sentence) number (+ 1 count) output)]))
+           (get-rank-numbers-hlpr (cdr rank-sentence) 
+                                  number 
+                                  (+ 1 count) 
+                                  (append output (list count))))]
+        [else (get-rank-numbers-hlpr (cdr rank-sentence) 
+                                     number 
+                                     (+ 1 count) 
+                                     output)]))
 
 ;; (get-numbers-from-rank-count '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0) 4)
 ; (get-numbers-from-rank-count '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0) 4)
@@ -83,7 +75,6 @@
 ; (check-for-single-pair '(da d6 d3 c9 h6))
 ; (check-for-single-pair '(da d6 d3 c9 h6))
 (define (check-for-single-pair card-sentence)
-  (more:display-all "Result of apprearances 2 on sent " card-sentence ": " (appearances 2 (rank-counts card-sentence)))
   (if (equal? 1 (appearances 2 (rank-counts card-sentence)))
     #t
     #f))
@@ -109,7 +100,8 @@
     #f))
 
 (define (check-for-full-house card-sentence)
-  (if (and (check-for-three-of-a-kind card-sentence) (check-for-single-pair card-sentence))
+  (if (and (check-for-three-of-a-kind card-sentence) 
+           (check-for-single-pair card-sentence))
    #t
    #f))
 
@@ -128,16 +120,19 @@
 
 ;; convert face cards to numbers
 (define (change-card-sen-hlpr input output)
-  ; (more:display-all "change card helper with input: " input ", output: " output)
   (cond [(empty? input) (reverse output)]
-        [(and (not (number? (butfirst (car input)))) (member? (butfirst (car input)) 'jqka)) 
+        [(and (not (number? (butfirst (car input)))) 
+              (member? (butfirst (car input)) 'jqka)) 
          (change-card-sen-hlpr (cdr input)
                                (cons (word (first (car input)) 
                                            (convert-face-to-num (butfirst (car input)))) 
                                      output))]
-        [(and (not (equal? 10 (butfirst (car input)))) (member? (butfirst (car input)) '23456789))
+        [(and (not (equal? 10 (butfirst (car input)))) 
+              (member? (butfirst (car input)) '23456789))
          (change-card-sen-hlpr (cdr input)
-                               (cons (word (first (car input)) 0 (butfirst (car input)))
+                               (cons (word (first (car input)) 
+                                           0 
+                                           (butfirst (car input)))
                                      output))]
         [else (change-card-sen-hlpr (cdr input) (cons (car input) output))]))
 
@@ -152,11 +147,8 @@
 ; compare number of first to number of last
 ; or if first is a two and last is an ace, and next-to-last is 5
 (define (first-last-diff sorted-sent)
-  ;(- (string->number (butfirst (list-ref sorted-sent 4)))
-  ;   (string->number (butfirst (list-ref sorted-sent 0))))
-(- (butfirst (list-ref sorted-sent 4))
-     (butfirst (list-ref sorted-sent 0)))
-)
+  (- (butfirst (list-ref sorted-sent 4))
+     (butfirst (list-ref sorted-sent 0))))
 
 (define (first-is-two sorted-sent)
   (cond [(equal? "02" (butfirst (first sorted-sent))) #t]
@@ -171,11 +163,6 @@
   (cond [(equal? "05" (butfirst (last (butlast sorted-sent)))) #t]
         [else #f]))
 
-; true -> (check-for-straight '(d3 c4 h5 s6 d7))
-; false -> (check-for-straight '(d3 c4 h5 s6 d8))
-; true -> royal: (check-for-straight '(c10 dj sq hk ca))
-; true -> (check-for-straight '(h2 c3 d4 s5 ca))
-; false -> (check-for-straight '(h2 c3 dq sk ca))
 (define (check-for-straight card-sentence)
   (let ([sorted-sent (ch19:sort-19-list 
                       (change-card-sentence card-sentence)
@@ -186,8 +173,6 @@
                 (next-to-last-is-five sorted-sent)) #t]
           [else #f])))
 
-; true (check-royal '(c10 da sk hq cj))
-; false (check-royal '(c10 da sk h9 cj))
 (define (check-royal card-sentence)
   (let ([sorted-sent (ch19:sort-19-list 
                       (change-card-sentence card-sentence)
@@ -210,25 +195,26 @@
         [(equal? 5 (last (butlast list-suit-counts)))     'hearts]
         [(equal? 5 (last list-suit-counts))               'spades]))
 
-;; here is the main event
-
-; pair: (poker-value '(da d6 d3 c9 h6))
-; two pair: (poker-value '(hj sj c3 s3 h2))
-; three of a kind: (poker-value '(cq h9 sq hq s2))
-; straight: (poker-value '(d10 s9 h8 d7 c6)) 
-
-; flush: (poker-value '(c9 c2 ck c8 cq))
-; (poker-value '(d8 dj d3 d9 d4))
-; full house: (poker-value '(h4 s4 c6 s6 c4))
-; (poker-value '(hk h6 d6 sk c6))
-; four of a kind: (poker-value '(dk ck d5 sk hk))
-; straight flush: (poker-value '(d3 d4 d5 d6 d7))
-; (poker-value '(d6 d7 d5 d3 d4))
-; royal flush: (poker-value '(hq h10 ha hk hj))
-
 (define (get-high-num card-sentence)
   (car (reverse (get-numbers-from-rank-count (rank-counts card-sentence) 1))))
 
+(define (make-two-pair-sentence rank-sentence)
+  (sentence 'pair 'of 
+            (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))) 
+            'and 'pair 'of 
+            (word (spell-digit-plural (list-ref (get-numbers-from-rank-count rank-sentence 2) 1)))))
+
+(define (make-full-house-sentence rank-sentence)
+  (sentence 'full 'house 
+            (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 3)))) 
+            'over 
+            (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2))))))
+
+(define (make-kind-sentence rank-sentence label num)
+  (sentence label 
+            (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence num))))))
+
+;; here is the main event
 (define (poker-value card-sentence)
   (let ([rank-sentence (rank-counts card-sentence)])
       (cond ; royal flush
@@ -238,37 +224,28 @@
         ; straight flush
         [(and (check-for-straight card-sentence)
                   (not (equal? 'none (check-flush card-sentence))))
-             (sentence 'straight 'flush (spell-digit-plural (get-high-num card-sentence)) 'high)
-]
+             (sentence 'straight 'flush (spell-digit-plural (get-high-num card-sentence)) 'high)]
         ; four of a kind
         [(check-for-four-of-a-kind card-sentence)
-         (sentence 'four-of-a-kind (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 4)))))]
+         (make-kind-sentence rank-sentence 'four-of-a-kind 4)]
         ; full house
-        [(check-for-full-house card-sentence)
-         (sentence 'full 'house (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 3)))) 'over (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))))]
+        [(check-for-full-house card-sentence) (make-full-house-sentence rank-sentence)]
         ; flush
         [(not (equal? 'none (check-flush card-sentence)))
              (sentence 'flush (spell-digit-plural (get-high-num card-sentence)) 'high (check-flush card-sentence))]
         ; straight
         [(check-for-straight card-sentence)
          (sentence 'straight (spell-digit-plural (get-high-num card-sentence)) 'high)]
-            
         ; three of a kind
         [(check-for-three-of-a-kind card-sentence)
-             (sentence 'three-of-a-kind 
-                       (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 3))))
-)]
+         (make-kind-sentence rank-sentence 'three-of-a-kind 3)]
         ; two pair
-        [(check-for-two-pairs card-sentence)
-         (sentence 'pair 'of (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2)))) 'and 'pair 'of (word (spell-digit-plural (list-ref (get-numbers-from-rank-count rank-sentence 2) 1))))]
+        [(check-for-two-pairs card-sentence) (make-two-pair-sentence rank-sentence)]
         ; pair
         [(check-for-single-pair card-sentence)
-         (sentence 'pair 'of  (word (spell-digit-plural (car (get-numbers-from-rank-count rank-sentence 2))))
-)]
-        [else '(no dice)]
-)
-)
-)
+         (make-kind-sentence rank-sentence 'pair-of 2)]
+        [else '(no dice)])))
+
 
 (module+ test
   (require rackunit)
@@ -285,12 +262,6 @@
                 3 
                 "Error for: (count-suit 'd '(c3 d8 dj c10 d5))")
    
-  (printf "checking num-clubs, num-diamonds, num-hearts, num-spades \n")
-  (check-equal? (num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5))) 1 "Error for (num-clubs (suit-counts '(s4 s5 s9 c4 h6 h5)))")
-  (check-equal? (num-diamonds (suit-counts '(s4 s5 s9 c4 h6 h5))) 0 "Error for (num-diamonds (suit-counts '(s4 s5 s9 c4 h6 h5)))")
-  (check-equal? (num-hearts (suit-counts '(s4 s5 s9 c4 h6 h5))) 2 "Error for (num-hearts (suit-counts '(s4 s5 s9 c4 h6 h5)))")
-  (check-equal? (num-spades (suit-counts '(s4 s5 s9 c4 h6 h5))) 3 "Error for (num-spades (suit-counts '(s4 s5 s9 c4 h6 h5)))")
-
   ;; hands that we can use
   (printf "checking suit-counts \n")
   (check-equal? (suit-counts '(c3 d8 dj c10 d5)) '(2 3 0 0) "Error for (suit-counts '(c3 d8 dj c10 d5))")
@@ -303,10 +274,15 @@
                                    butfirst-before?) 
                 '(s02 h04 d07 c13 c14))
 
-  (check-equal? '(13)                 (get-numbers-from-rank-count '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0)  
-                                                                   4))
-  (check-equal? '(6) (get-numbers-from-rank-count (rank-counts '(h4 s4 c6 s6 c4)) 2))
-  (check-equal? '(7 13) (get-numbers-from-rank-count (rank-counts '(ck hk d7 c7 s5)) 2))
+  (check-equal? '(13) 
+                (get-numbers-from-rank-count '(0 0 0 0 0 0 1 0 0 0 0 0 0 4 0)  
+                                             4))
+  (check-equal? '(6) 
+                (get-numbers-from-rank-count (rank-counts '(h4 s4 c6 s6 c4)) 
+                                             2))
+  (check-equal? '(7 13) 
+                (get-numbers-from-rank-count (rank-counts '(ck hk d7 c7 s5)) 
+                                             2))
 
   (check-equal? #t (check-for-straight '(d3 c7 h5 s6 d3)))
   (check-equal? #f (check-for-straight '(d3 c4 h5 s6 d8)))
@@ -316,6 +292,21 @@
 
   (check-equal? #t (check-royal '(c10 da sk hq cj)))
   (check-equal? #f (check-royal '(c10 da sk h9 cj)))
+
+  (check-equal? '(pair-of sixes) (poker-value '(da d6 d3 c9 h6)))
+  (check-equal? '(pair of threes and pair of jacks) 
+                (poker-value '(hj sj c3 s3 h2)))
+  (check-equal? '(three-of-a-kind queens) (poker-value '(cq h9 sq hq s2)))
+  (check-equal? '(straight tens high) (poker-value '(d10 s9 h8 d7 c6)))
+  (check-equal? '(flush kings high clubs) (poker-value '(c9 c2 ck c8 cq)))
+  (check-equal? '(flush jacks high diamonds) (poker-value '(d8 dj d3 d9 d4)))
+  (check-equal? '(full house fours over sixes) (poker-value '(h4 s4 c6 s6 c4)))
+  (check-equal? '(full house sixes over kings) (poker-value '(hk h6 d6 sk c6)))
+  (check-equal? '(four-of-a-kind kings) (poker-value '(dk ck d5 sk hk)))
+  (check-equal? '(straight flush sevens high) (poker-value '(d3 d4 d5 d6 d7)))
+  (check-equal? '(straight flush sevens high) (poker-value '(d6 d7 d5 d3 d4)))
+  (check-equal? '(royal flush - hearts) (poker-value '(hq h10 ha hk hj)))
+
 
 ) ;; end module+ test 
 
