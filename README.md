@@ -9,6 +9,10 @@ R6RS procedures/functions:
 http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-21.html#node_index_start  
 http://www.r6rs.org/final/html/r6rs-lib/r6rs-lib-Z-H-21.html#node_index_start  
 
+A better rendering of the R6RS standard (in my opinion): https://docs.racket-lang.org/r6rs/r6rs-std/index.html   
+
+R6RS in Racket: https://docs.racket-lang.org/r6rs/index.html    
+
 R7RS functions:  
 http://justinethier.github.io/husk-scheme/manual/node106.html   
 
