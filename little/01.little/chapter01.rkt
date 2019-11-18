@@ -7,7 +7,6 @@
 (module+ test
   (require (prefix-in runit: rackunit))
   (runit:check-true #t)
-  (runit:check-equal? (rb6:rational-valued? 6/10) #t)
   (lt-sc:display-all "testing chapter 1")
   (runit:check-equal? (lt-sc:atom? 'atom) #t)
   (runit:check-equal? (lt-sc:atom? 'turkey) #t)
@@ -85,7 +84,52 @@
   (lt-sc:display-all "The second argument to cons must be a list")
   (lt-sc:display-all "The result is a list")
 
+  ; If I could, I would insert the clip from Star Trek II of Kirk yelling
+  ; "cons! cons!"
+  
+  (runit:check-equal? (cons 'a (car '((b) c d))) '(a b))
+  (runit:check-equal? (cons 'a (cdr '((b) c d))) '(a c d))
+  (runit:check-equal? (null? '()) #t)
+  (runit:check-equal? (null? '(a b c)) #f) ; not an empty list
+  (runit:check-equal? (null? 'spaghetti) #f)
+  ; the book says you cannot ask null? of an atom, but in Racket you can.
+  ; But there is a footnote: In practice, (null? atom) is false for everything
+  ; except the empty list
 
+  (runit:check-equal? (lt-sc:atom? 'Harry) #t)
+  (runit:check-equal? (lt-sc:atom? '(Harry had a heap of apples)) #f)
+
+  ; atom? takes one arg, and it is an s-expr
+  (runit:check-equal? (lt-sc:atom? (car '(Harry had a heap of apples))) #t)
+  (runit:check-equal? (lt-sc:atom? (cdr '(Harry had a heap of apples))) #f)
+  ; (cdr '(Harry)) is an empty list, which is not an atom
+  (runit:check-equal? (lt-sc:atom? (cdr '(Harry))) #f) 
+  (runit:check-equal? (lt-sc:atom? (car (cdr '(swing low sweet cherry oat)))) 
+                      #t)
+  (runit:check-equal? (lt-sc:atom? (car (cdr '(swing (low sweet) cherry oat)))) 
+                      #f)
+  (runit:check-equal? 'Harry 'Harry)
+
+  ; In Racket, equal? checks value, eq? checks if same object
+  ; The R6RS spec goes into a LOT more detail. 
+  ; I think that Racket does it better.
+  (runit:check-equal? (equal? 'Harry 'Harry) #t)
+  (runit:check-equal? (eq? 'Harry 'Harry) #t)
+
+
+  (lt-sc:display-all "The Law of Null?:")
+  (lt-sc:display-all "The primitive null? is defined only for lists")
+
+  (newline)
+  (lt-sc:display-all "Done with chapter 01 tests at " (lt-sc:display-date))
+#|
+Can use rb6: prefix:
+eq?
+equal?
+list?
+null?
+quote
+|#
 )
 
 
