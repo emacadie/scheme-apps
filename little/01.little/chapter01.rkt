@@ -4,9 +4,6 @@
          (prefix-in ris6: rnrs/io/simple-6)
          (prefix-in lt-sc: "little-schemer.rkt"))
 
-
-
-
 (module+ test
   (require (prefix-in runit: rackunit))
   (runit:check-true #t)
@@ -40,6 +37,55 @@
   (runit:check-equal? (list? '(() () () ())) #t)
   ; 'a is the first atom of this list
   (runit:check-equal? (car '(a b c)) 'a)
+  (runit:check-equal? (car '((a b c) x y z)) '(a b c))
+  (lt-sc:display-all "You can't do (car 'hotdog) or (car '()), silly")
+  ; (runit:check-equal? (car 'hotdog) #f)
+  (lt-sc:display-all "Law of Car: The primitive car is defined only for non-empty lists")
+  
+  (runit:check-equal? (car '(((hotdogs)) (and) (pickle) relish)) '((hotdogs)))
+  (runit:check-equal? (car (car '(((hotdogs)) (and) (pickle) relish))) '(hotdogs))
+  (runit:check-equal? (car (car '(((hotdogs)) (and)))) '(hotdogs))
+  (runit:check-equal? (cdr '(a b c)) '(b c))
+  (runit:check-equal? (cdr '((a b c) x y z)) '(x y z))
+  ; you can't do (cdr 'hamburger)
+  ; they say it's '(), but that is not what I get
+  ; I misread it.
+  (runit:check-equal? (cdr '(hamburger)) '())
+  (runit:check-equal? (cdr '((x) t r)) '(t r))
+  ; Now they ask for (cdr 'hotdogs), now they are asking for cdr of an atom.
+  ; Which you cannot do.
+  ; or a null list
+  (lt-sc:display-all "The Law of Cdr: The primitive cdr is defined only for "
+                     "non-empty lists.")
+  (lt-sc:display-all "The cdr of any non-empty list is always another list")
+
+  (runit:check-equal? (car (cdr '((b) (x y) ((c))))) '(x y))
+  (runit:check-equal? (cdr (cdr '((b) (x y) ((c))))) '(((c))))
+  ; (runit:check-equal? (cdr (car '(a (b (c)) d))) '(b (c)))
+  ; undefined, the car is an atom
+  (runit:check-equal? (cons 'peanut '(butter and jelly)) '(peanut butter and jelly))
+  ; cons adds an atom to the front of a list
+  (runit:check-equal? (cons '(banana and) '(peanut butter and jelly))
+                      '((banana and) peanut butter and jelly))
+  ; cons will add a list to the front of a list and keep it as a list.
+  ; So cons-ing a list to the front of a list does not give you a flat list
+  (runit:check-equal? (cons '((help) this) '(is very ((hard) to learn)))
+                      '(((help) this) is very ((hard) to learn)))
+  ; arg for car: non-empty list
+  ; arg for cdr: non-empty list
+  ; args for cons: anything (any s-expr) and a non-empty list
+  (runit:check-equal? (cons '(a b (c)) '()) '((a b (c))))
+  (runit:check-equal? (cons 'a '()) '(a))
+  ; this won't work, b is not a list
+  (runit:check-equal? (cons '((a b c)) 'b) '(((a b c)) . b))
+  ; Okay, it works in Racket and Chicken
+  (runit:check-equal? (cons 'a 'b) '(a . b))
+  ; They say that will not work. Maybe Scheme has changed since the book was written.
+  (lt-sc:display-all "The Law of Cons: The primitive cons takes two arguments.")
+  (lt-sc:display-all "The second argument to cons must be a list")
+  (lt-sc:display-all "The result is a list")
+
+
 )
 
 
