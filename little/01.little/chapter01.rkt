@@ -119,6 +119,28 @@
 
   (lt-sc:display-all "The Law of Null?:")
   (lt-sc:display-all "The primitive null? is defined only for lists")
+  
+  (runit:check-equal? (eq? 'margarine 'butter) #f) ; different atoms
+
+  ; eq? takes 2 args, and they are non-numeric atoms
+  (runit:check-equal? (eq? '() '(strawberry)) #f)
+  (runit:check-equal? (eq? 6 7) #f)
+  ; Book says no answer, since they are lists, 
+  ; but in practice lists can be args to eq?
+
+  (lt-sc:display-all "The Law of Eq? The primitive eq? takes two arguments")
+  (lt-sc:display-all "Each must be a non-numeric atom")
+
+  (runit:check-equal? (eq? (car '(Mary had a little lamb)) 'Mary) #t)
+  (runit:check-equal? (eq? (cdr '(soured milk)) 'milk) #f)
+  ; book says "No answer"
+  ; cdr returns a list, and eq? likes to deal wit atoms
+  ; try this:
+  (runit:check-equal? (eq? (car (cdr '(soured milk))) 'milk) #t)
+  (runit:check-equal? (eq? (car '(beans beans we need jelly beans))
+                           (car (cdr '(beans beans we need jelly beans))))
+                      #t)
+  ; very verbose way to compare first and second atoms in a list
 
   (newline)
   (lt-sc:display-all "Done with chapter 01 tests at " (lt-sc:display-date))
