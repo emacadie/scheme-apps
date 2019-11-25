@@ -1,2 +1,23 @@
 Code for the exercises in "The Little Schemer", using the R6RS packages in Racket.    
 
+From Chapter 1:   
+The Law of Car: The primitive car is defined only for non-empty lists.   
+The Law of Cdr: The primitive cdr is defined only for non-empty lists.    
+The cdr of any non-empty list is always another list.     
+The Law of Cons: The primitive cons takes two arguments.     
+The second argument to cons must be a list.    
+The result is a list.    
+The Law of Null?: The primitive null? is defined only for lists.        
+The Law of Eq? The primitive eq? takes two arguments. Each must be a non-numeric atom.      
+
+
+
+Can use rb6: prefix:  
+* eq?  
+* equal?  
+* list?  
+* null?  
+* quote  
+
+
+

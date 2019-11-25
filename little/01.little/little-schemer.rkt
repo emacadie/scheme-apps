@@ -9,12 +9,13 @@
 
 (provide atom?
          display-all
-         display-date)
+         display-date
+         lat?)
 
-(define atom?
-  (lambda (x)
-    (and (not (pair? x))
-         (not (null? x)))))
+; in preface
+(define (atom? x)
+  (and (not (pair? x))
+       (not (null? x))))
 
 (define (display-all . vs)
   (for-each ris6:display vs)
@@ -23,6 +24,13 @@
 (define (display-date)
   (let ([the-date (seconds->date (current-seconds))] )
     (srfi-19:date->string the-date "~Y-~m-~d ~H:~M:~S")))
+
+; defined in chapter 2, after it is used
+; lat means list of atoms, I think
+(define (lat? l)
+  (cond [(null? l) #t]
+        [(atom? (car l)) (lat? (cdr l))]
+        [else #f]))
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 

@@ -7,7 +7,7 @@
 (module+ test
   (require (prefix-in runit: rackunit))
   (runit:check-true #t)
-  (lt-sc:display-all "testing chapter 1")
+  (lt-sc:display-all "testing chapter 1 of 'The Little Schemer'")
   (runit:check-equal? (lt-sc:atom? 'atom) #t)
   (runit:check-equal? (lt-sc:atom? 'turkey) #t)
   (runit:check-equal? (list? '(atom)) #t)
