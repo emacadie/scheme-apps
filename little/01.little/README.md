@@ -10,14 +10,18 @@ The result is a list.
 The Law of Null?: The primitive null? is defined only for lists.        
 The Law of Eq? The primitive eq? takes two arguments. Each must be a non-numeric atom.      
 
-
+The First Commandment: Always ask null? as the first question in expressing any function.  
 
 Can use rb6: prefix:  
 * eq?  
 * equal?  
 * list?  
 * null?  
+* or
 * quote  
 
+Does not work with rb6 prefix:
+* car
+* cdr
 
 

@@ -10,7 +10,8 @@
 (provide atom?
          display-all
          display-date
-         lat?)
+         lat?
+         member?)
 
 ; in preface
 (define (atom? x)
@@ -31,6 +32,12 @@
   (cond [(null? l) #t]
         [(atom? (car l)) (lat? (cdr l))]
         [else #f]))
+
+; Mine is tail-recursive.
+(define (member? the-atom the-list)
+  (cond [(null? the-list) #f]
+        [(eq? the-atom (car the-list)) #t]
+        [else (member? the-atom (cdr the-list))]))
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 
