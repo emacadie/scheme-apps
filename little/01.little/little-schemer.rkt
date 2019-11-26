@@ -11,7 +11,9 @@
          display-all
          display-date
          lat?
-         member?)
+         member?
+         my-rember
+         rember)
 
 ; in preface
 (define (atom? x)
@@ -38,6 +40,26 @@
   (cond [(null? the-list) #f]
         [(eq? the-atom (car the-list)) #t]
         [else (member? the-atom (cdr the-list))]))
+
+; Chapter Three
+(define (rember-helper a lat out-lat)
+  (display-all "rember-helper called with " a ", " lat ", " out-lat)
+  (cond [(null? lat) out-lat]
+        [(eq? a (car lat)) (cons out-lat (cdr lat))]
+        [else (rember-helper a (cdr lat) (cons (car lat) out-lat))]))
+
+(define (my-rember a lat)
+  (rember-helper a lat '()))
+
+
+(define (rember a lat)
+  (cond
+    [(null? lat) (quote ())]
+    [(eq? (car lat) a) (cdr lat)]
+    [else (cons (car lat) (rember a (cdr lat)))])) 
+
+
+
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 
