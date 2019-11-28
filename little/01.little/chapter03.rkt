@@ -20,13 +20,32 @@
                       '(coffee tea cup hick cup))
   (runit:check-equal? (lt-sc:rember 'and '(bacon lettuce and tomato))
                       '(bacon lettuce tomato))
-
-  ; up to page 42
-
-  ; This one I had trouble with.
+  (runit:check-equal? (lt-sc:rember 'sauce '(soy sauce and tomato sauce))
+                      '(soy and tomato sauce))
+  ; I had trouble with rember.
   ; I was never able to do it w/tail recursion in Simply Scheme
   ; "remove-once" in chs 14 and 19
   ; Harder to do here with only the functions they have introduced.
+
+  (runit:check-equal? (lt-sc:firsts '((apple peach pumpkin)
+                                      (plum pear cherry)
+                                      (grape raisin pea)
+                                      (bean carrot eggplant)))
+                      '(apple plum grape bean))
+  (runit:check-equal? (lt-sc:firsts '((a b) (c d) (e f))) '(a c e))
+  (runit:check-equal? (lt-sc:firsts '()) '())
+  (runit:check-equal? (lt-sc:firsts '((five plums) 
+                                      (four) 
+                                      (eleven green oranges)))
+                      '(five four eleven))
+    (runit:check-equal? (lt-sc:firsts '(((five plums) four)
+                                        (eleven green oranges)
+                                        ((no) more)))
+                      '((five plums) eleven (no)))
+    ; firsts takes a list of lists, and returns a list consisting of
+    ; the first item from each input list.
+    ; Yo dawg, I heard you like lists and cars, 
+    ; so I made a function that returns a list of the cars of your lists.
 
 
   (lt-sc:display-all "The Second Commandment: Use cons to build lists")

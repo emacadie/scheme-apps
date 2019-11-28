@@ -44,10 +44,16 @@
 ;; Sussman and Abelson
 
 ;;  11.5  Write a procedure initials that takes a sentence as its argument and returns a sentence of the first letters in each of the sentence's words:
+
+; tail recursive?
+(define (initls-helper the-sent outp)
+  (cond [(equal? 0 (length the-sent)) outp]
+        [else (initls-helper (butfirst the-sent) 
+                             (sentence outp 
+                                       (first (first the-sent))))]))
+
 (define (initials-r the-sent)
-  (cond [(equal? 0 (length the-sent)) '()]
-        [(equal? 1 (length the-sent)) (first (first the-sent))]
-        [else (sentence (first (first the-sent)) (initials-r (butfirst the-sent)))]))
+  (initls-helper the-sent '()))
 
 ;;  11.6  Write a procedure countdown that works like this:
 ; ** EXAMPLES OMITTED
