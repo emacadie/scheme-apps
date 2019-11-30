@@ -41,10 +41,9 @@
 ;; copied from chapter 8
 ;; do-great-stuff in more-simply
 (define (exaggerate12 the-sent)
-  (if (= (count the-sent) 1)
-      (more:do-great-stuff (first the-sent))
-      (sentence (more:do-great-stuff (first the-sent)) 
-                (exaggerate12 (butfirst the-sent)))))
+  (cond [(= (count the-sent) 1) (more:do-great-stuff (first the-sent))]
+        [else (sentence (more:do-great-stuff (first the-sent)) 
+                (exaggerate12 (butfirst the-sent)))]))
 
 ;; 12.6  [8.11] Write a GPA procedure. It should take a sentence of grades as its argument and return the corresponding grade point average:
 ;; > (gpa '(A A+ B+ B))

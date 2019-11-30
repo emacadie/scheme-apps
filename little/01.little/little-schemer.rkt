@@ -11,10 +11,14 @@
          display-all
          display-date
          firsts
+         insertL
+         insertR
          lat?
          member?
          my-rember
-         rember)
+         rember
+         subst
+         subst2)
 
 ; in preface
 (define (atom? x)
@@ -52,7 +56,6 @@
 (define (my-rember a lat)
   (rember-helper a lat '()))
 
-
 (define (rember a lat)
   (cond
     [(null? lat) (quote ())]
@@ -63,7 +66,32 @@
   (cond [(null? l) '()]
         [else (cons (car (car l)) (firsts (cdr l)))]))
 
+(define (insertR new old lat)
+  (cond [(null? lat) '()]
+        [(eq? (car lat) old) (cons old 
+                                   (cons new  (cdr lat)))]
+        [else (cons (car lat) (insertR new old (cdr lat)))]))
+; Yo dawg, I heard you like cons-ing lists, so I put a cons in your cons
+; so you can add a list to your list.
+; I really hate the way they put another "cond" inside their "else" clause.
 
+(define (insertL new old lat)
+  (cond [(null? lat) '()]
+        [(eq? (car lat) old) (cons new lat)  ]
+        [else (cons (car lat) (insertL new old (cdr lat)))]))
+
+; replace old with new
+(define (subst new old lat)
+  (cond [(null? lat) '()]
+        [(eq? (car lat) old) (cons new (cdr lat))]
+        [else (cons (car lat) (subst new old (cdr lat)))]))
+
+; replace either o1 or o2 with new
+; now we get "or"
+(define (subst2 new o1 o2 lat)
+  (cond [(null? lat) '()]
+        [(or (eq? (car lat) o1) (eq? (car lat) o2)) (cons new (cdr lat))]
+        [else (cons (car lat) (subst2 new o1 o2 (cdr lat)))]))
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 

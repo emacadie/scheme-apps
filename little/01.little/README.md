@@ -11,6 +11,9 @@ The Law of Null?: The primitive null? is defined only for lists.
 The Law of Eq? The primitive eq? takes two arguments. Each must be a non-numeric atom.      
 
 The First Commandment: Always ask null? as the first question in expressing any function.  
+The Second Commandment: Use cons to build lists.   
+The Third Commandment: When building a list, describe the first typical element, and then cons it onto the natural recursion.      
+
 
 Can use rb6: prefix:  
 * eq?  
