@@ -21,6 +21,7 @@
   ; here is a list w/6 s-exprs
   (runit:check-equal? (list? '(how are you doing so far)) #t)
   ; nested list, collection of s-exprs
+
   (runit:check-equal? (list? '(((how) are) ((you) (doing so)) far)) #t)
   ; how many s-exprs in '(((how) are) ((you) (doing so)) far))
   ; just by counting the closing parens, I get 7
@@ -116,7 +117,6 @@
   (runit:check-equal? (equal? 'Harry 'Harry) #t)
   (runit:check-equal? (eq? 'Harry 'Harry) #t)
 
-
   (lt-sc:display-all "The Law of Null?:")
   (lt-sc:display-all "The primitive null? is defined only for lists")
   
@@ -144,14 +144,7 @@
 
   (newline)
   (lt-sc:display-all "Done with chapter 01 tests at " (lt-sc:display-date))
-#|
-Can use rb6: prefix:
-eq?
-equal?
-list?
-null?
-quote
-|#
+
 )
 
 

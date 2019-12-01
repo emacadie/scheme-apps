@@ -2,9 +2,8 @@
 
 (require (prefix-in rb6:  rnrs/base-6)
          (prefix-in ris6: rnrs/io/simple-6)
-         (prefix-in srfi-19: srfi/19)
          ; (prefix-in rd:   racket/date)
-)
+         (prefix-in srfi-19: srfi/19))
 
 
 (provide atom?
@@ -15,6 +14,10 @@
          insertR
          lat?
          member?
+         multiinsertL
+         multiinsertR
+         multirember
+         multisubst
          my-rember
          rember
          subst
@@ -77,7 +80,7 @@
 
 (define (insertL new old lat)
   (cond [(null? lat) '()]
-        [(eq? (car lat) old) (cons new lat)  ]
+        [(eq? (car lat) old) (cons new lat)]
         [else (cons (car lat) (insertL new old (cdr lat)))]))
 
 ; replace old with new
@@ -92,6 +95,30 @@
   (cond [(null? lat) '()]
         [(or (eq? (car lat) o1) (eq? (car lat) o2)) (cons new (cdr lat))]
         [else (cons (car lat) (subst2 new o1 o2 (cdr lat)))]))
+
+(define (multirember a lat)
+  (cond [(null? lat) (quote ())]
+        [(eq? (car lat) a) (multirember a (cdr lat))]
+        [else (cons (car lat) (multirember a (cdr lat)))])) 
+
+(define (multiinsertR new old lat)
+  (cond [(null? lat) '()]
+        [(eq? (car lat) old) 
+         (cons old (cons new (multiinsertR new old (cdr lat))))]
+        [else (cons (car lat) (multiinsertR new old (cdr lat)))]))
+
+(define (multiinsertL new old lat)
+  (cond [(null? lat) '()]
+        [(eq? (car lat) old) 
+         (cons new (cons old (multiinsertL new old (cdr lat))))]
+        [else (cons (car lat) (multiinsertL new old (cdr lat)))]))
+
+(define (multisubst new old lat)
+  (cond [(null? lat) '()]
+        [(eq? (car lat) old) ; (cons new (cdr lat))
+         (multisubst new old (cons new (cdr lat)))
+                             ]
+        [else (cons (car lat) (multisubst new old (cdr lat)))]))
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 

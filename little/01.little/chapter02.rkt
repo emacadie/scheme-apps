@@ -40,14 +40,10 @@
   (runit:check-equal? (lt-sc:member? 'meat '(potatoes and meat gravy)) #t)
   (runit:check-equal? (lt-sc:member? 'liver '(bagels and lox)) #f)
   ; done w/chapter 2
-  
-
 
   (newline)
   (lt-sc:display-all "Done with chapter 02 tests at " (lt-sc:display-date))
-#|
 
-|#
 )
 
 
