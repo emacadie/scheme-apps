@@ -18,7 +18,11 @@
          multiinsertR
          multirember
          multisubst
-         my-rember
+         my+
+         my-
+         my-add1
+         my-rember ; I may get rid of this
+         my-sub1
          rember
          subst
          subst2)
@@ -115,10 +119,29 @@
 
 (define (multisubst new old lat)
   (cond [(null? lat) '()]
-        [(eq? (car lat) old) ; (cons new (cdr lat))
-         (multisubst new old (cons new (cdr lat)))
-                             ]
+        [(eq? (car lat) old) (multisubst new old (cons new (cdr lat)))]
         [else (cons (car lat) (multisubst new old (cdr lat)))]))
+
+; Chapter 04
+;; racket/base has a function "add1", but I will "add one" of my own.
+(define (my-add1 x)
+  (+ 1 x))
+
+; sub1 is another that is in racket/base, but not R6RS.
+; I assume they want us to write these ourselves.
+; Should I check for positivity?
+(define (my-sub1 x)
+  (- x 1))
+
+; define "+" (prefix w/"my" to distinguish from built-in "+")
+; recurse using add1
+(define (my+ x y)
+  (cond [(rb6:zero? y) x]
+        [else (my+ (add1 x) (sub1 y))]))
+
+(define (my- x y)
+  (cond [(rb6:zero? y) x]
+        [else (my- (sub1 x) (sub1 y))]))
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 

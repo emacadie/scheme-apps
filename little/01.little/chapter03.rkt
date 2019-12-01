@@ -148,9 +148,9 @@
   (lt-sc:display-all "The changing argument must be tested in the termination condition: ")
   (lt-sc:display-all "when using cdr, test termination with null?.")
 
-    (runit:check-equal? (lt-sc:multisubst 'topping 
-                                          'fudge 
-                                          '(ice cream with fudge for dessert))
+  (runit:check-equal? (lt-sc:multisubst 'topping 
+                                        'fudge 
+                                        '(ice cream with fudge for dessert))
                       '(ice cream with topping for dessert))
   (runit:check-equal? (lt-sc:multisubst 'jalapeno 
                                         'and

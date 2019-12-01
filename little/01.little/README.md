@@ -13,6 +13,9 @@ The Law of Eq? The primitive eq? takes two arguments. Each must be a non-numeric
 The First Commandment: Always ask null? as the first question in expressing any function.  
 The Second Commandment: Use cons to build lists.   
 The Third Commandment: When building a list, describe the first typical element, and then cons it onto the natural recursion.      
+The Fourth Commandment (preliminary): Always change at least one argument while recurring.    
+It must be changed to be closer to termination.    
+The changing argument must be tested in the termination condition: when using cdr, test termination with null?.      
 
 
 Can use rb6: prefix:  
@@ -22,6 +25,7 @@ Can use rb6: prefix:
 * null?  
 * or
 * quote  
+* zero?
 
 Does not work with rb6 prefix:
 * car
