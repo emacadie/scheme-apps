@@ -7,9 +7,9 @@
 
 
 (provide addtup ; chapter 04
-         atom? ; preface
-         display-all
-         display-date
+         atom?  ; preface
+         display-all  ; added by me
+         display-date ; added by me
          firsts
          insertL ; chapter 03
          insertR ; chapter 03
@@ -17,16 +17,21 @@
          member?
          multiinsertL ; chapter 03
          multiinsertR ; chapter 03
-         multirember ; chapter 03
-         multisubst ; chapter 03
-         my+ ; chapter 04
-         my- ; chapter 04
-         my-add1 ; chapter 04
+         multirember  ; chapter 03
+         multisubst   ; chapter 03
+         my+   ; chapter 04
+         my-   ; chapter 04
+         my-gt ; chapter 04
+         my-lt ; chapter 04
+         my-x  ; chapter 04
+         my-add1   ; chapter 04
          my-rember ; I may get rid of this
          my-sub1   ; chapter 04
          rember    ; chapter 03
-         subst ; chapter 03
-         subst2)
+         subst     ; chapter 03
+         subst2    ; chapter 03
+         tup+      ; chapter 04
+)
 
 ; in preface
 (define (atom? x)
@@ -65,10 +70,9 @@
   (rember-helper a lat '()))
 
 (define (rember a lat)
-  (cond
-    [(null? lat) (quote ())]
-    [(eq? (car lat) a) (cdr lat)]
-    [else (cons (car lat) (rember a (cdr lat)))])) 
+  (cond [(null? lat) (quote ())]
+        [(eq? (car lat) a) (cdr lat)]
+        [else (cons (car lat) (rember a (cdr lat)))])) 
 
 (define (firsts l)
   (cond [(null? l) '()]
@@ -146,9 +150,31 @@
 
 (define (addtup tup)
   (cond [(null? tup) 0]
-        [else (my+ (car tup) (addtup (cdr tup)))]
-)
-)
+        [else (my+ (car tup) (addtup (cdr tup)))]))
+
+(define (my-x n m)
+  (cond [(rb6:zero? m) 0]
+        [else (my+ n (my-x n (sub1 m)))]))
+
+(define (tup+ tup1 tup2)
+  (cond [(null? tup1) tup2]
+        [(null? tup2) tup1]
+        [else (cons (my+ (car tup1) (car tup2)) (tup+ (cdr tup1) (cdr tup2)))]))
+
+; using "gt" for greater than instead of ">" 
+; since that can be an arrow for conversion, like "string->number"
+(define (my-gt x y)
+  (cond [(rb6:zero? x) #f]
+        [(rb6:zero? y) #t]
+        [else (my-gt (sub1 x) (sub1 y))]))
+
+; less than
+(define (my-lt x y)
+  (cond [(rb6:zero? y) #f]
+        [(rb6:zero? x) #t]
+        
+        [else (my-lt (sub1 x) (sub1 y))]))
+
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 
