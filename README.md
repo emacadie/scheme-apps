@@ -16,6 +16,24 @@ R6RS in Racket: https://docs.racket-lang.org/r6rs/index.html
 R7RS functions:  
 http://justinethier.github.io/husk-scheme/manual/node106.html   
 
+Racket Mode website: https://www.racket-mode.com/  
+
+https://docs.racket-lang.org/manual@simply-scheme/index.html  
+https://pkgs.racket-lang.org/package/simply-scheme  
+
+Racket reference:  
+https://docs.racket-lang.org/reference/index.html   
+
+Racket Cheat Sheet:   
+https://docs.racket-lang.org/racket-cheat/index.html   
+
+Racket Unit Testing:  
+https://docs.racket-lang.org/rackunit/index.html  
+
+Racket SRFIs:   
+https://docs.racket-lang.org/srfi/   
+
+
 Chicken docs: http://api.call-cc.org/doc/   
 
 JEdit regex to clean up kawa prompt when I copy/paste: .*kawa:\d{1,}\|\#  then \s\n or \#\|kawa:\d{1,}\|\#\s    

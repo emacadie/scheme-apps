@@ -6,25 +6,26 @@
          (prefix-in srfi-19: srfi/19))
 
 
-(provide atom?
+(provide addtup ; chapter 04
+         atom? ; preface
          display-all
          display-date
          firsts
-         insertL
-         insertR
+         insertL ; chapter 03
+         insertR ; chapter 03
          lat?
          member?
-         multiinsertL
-         multiinsertR
-         multirember
-         multisubst
-         my+
-         my-
-         my-add1
+         multiinsertL ; chapter 03
+         multiinsertR ; chapter 03
+         multirember ; chapter 03
+         multisubst ; chapter 03
+         my+ ; chapter 04
+         my- ; chapter 04
+         my-add1 ; chapter 04
          my-rember ; I may get rid of this
-         my-sub1
-         rember
-         subst
+         my-sub1   ; chapter 04
+         rember    ; chapter 03
+         subst ; chapter 03
          subst2)
 
 ; in preface
@@ -142,6 +143,12 @@
 (define (my- x y)
   (cond [(rb6:zero? y) x]
         [else (my- (sub1 x) (sub1 y))]))
+
+(define (addtup tup)
+  (cond [(null? tup) 0]
+        [else (my+ (car tup) (addtup (cdr tup)))]
+)
+)
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 

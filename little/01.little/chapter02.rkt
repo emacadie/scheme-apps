@@ -43,7 +43,6 @@
 
   (newline)
   (lt-sc:display-all "Done with chapter 02 tests at " (lt-sc:display-date))
-
 )
 
 
