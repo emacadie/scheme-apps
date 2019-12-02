@@ -11,6 +11,7 @@
          atom?    ; preface
          display-all  ; added by me
          display-date ; added by me
+         eqan?        ; chapter 04
          firsts
          insertL  ; chapter 03
          insertR  ; chapter 03
@@ -32,6 +33,8 @@
          my-sub1     ; chapter 04
          my-x        ; chapter 04
          no-nums     ; chapter 04
+         occur       ; chapter 04
+         one?        ; chapter 04
          pick        ; chapter 04
          raise-power ; chapter 04
          rember      ; chapter 03
@@ -208,9 +211,7 @@
       [(eq? n 1) (car lat)]
       [else (pick (sub1 n) (cdr lat))]))
 
-(define (rempick n lat)
-  (cond [(eq? n 1) (cdr lat)]
-        [else (cons (car lat) (rempick (sub1 n) (cdr lat)))])) 
+; rempick was re-written; see below.
 
 (define (no-nums lat)
   (cond [(null? lat) '()]
@@ -222,7 +223,24 @@
         [(number? (car lat)) (cons (car lat) (all-nums (cdr lat))) ]
         [else (all-nums (cdr lat))]))
 
+; I assume we were supposed to use the "=" function we made in chapter 04
+(define (eqan? a1 a2)
+  (cond [(and (number? a1) (number? a2) (my-eq a1 a2)) #t]
+        [(and (not (number? a1)) (not (number? a2)) (eq? a1 a2)) #t]
+        [else #f]))
 
+; count number of times atom a appears in lat
+(define (occur a lat)
+  (cond [(null? lat) 0]
+        [(eqan? a (car lat)) (add1 (occur a (cdr lat)))]
+        [else (occur a (cdr lat))]))
+
+(define (one? n)
+  (eqan? n 1))
+
+(define (rempick n lat)
+  (cond [(one? n) (cdr lat)]
+        [else (cons (car lat) (rempick (sub1 n) (cdr lat)))])) 
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 

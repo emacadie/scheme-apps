@@ -99,7 +99,23 @@
                       '(5 6 9))
   (runit:check-equal? (lt-sc:all-nums '(5 pears prunes 9 dates))
                       '(5 9))
+  ; I think they want us to use this from now on
+  ; instead of =, my-eq or eq?
+  (runit:check-equal? (lt-sc:eqan? 4 4) #t)
+  (runit:check-equal? (lt-sc:eqan? 4 5) #f)
+  (runit:check-equal? (lt-sc:eqan? 4 'a) #f)
+  (runit:check-equal? (lt-sc:eqan? 'a 'a) #t)
+  (runit:check-equal? (lt-sc:eqan? 'a 'b) #f)
 
+  (runit:check-equal? (lt-sc:occur 'cup '(coffee cup tea cup and hick cup)) 3)
+  (runit:check-equal? (lt-sc:occur 'cup '(coffee cup tea cup and hick)) 2)
+  (runit:check-equal? (lt-sc:one? 1) #t)
+  (runit:check-equal? (lt-sc:one? 2) #f)
+  (runit:check-equal? (lt-sc:one? 'a) #f)
+
+  (lt-sc:display-all "using rempick with one?")
+  (runit:check-equal? (lt-sc:rempick 3 '(lemon meringue salty pie))
+                      '(lemon meringue pie))
 
   (newline)
   (lt-sc:display-all "Done with chapter 04 tests at " (lt-sc:display-date))
