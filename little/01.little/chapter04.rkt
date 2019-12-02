@@ -33,9 +33,7 @@
   (runit:check-equal? (lt-sc:addtup '(3 5 2 8)) 18)
   (runit:check-equal? (lt-sc:addtup '(15 6 7 12 3)) 43)
 
-  (lt-sc:display-all "The First Commandment (first revision): "
-  "When recurring on a list of atoms, lat, ask two questions about it: (null? lat) and else. "
-  "When recurring on a number, n, ask two questions about it: (zero? n) and else.")
+  (lt-sc:display-all "They revised the First Commandment")
 
   ; From text: cons builds lists, addtup builds a number from a tup.
   ; So addtup is like "reduce".
@@ -43,11 +41,7 @@
   ; last line of rember:  [else (cons (car lat) (rember a (cdr lat)))]
   
   (newline)
-  (lt-sc:display-all "The Fourth Commandment (first revision): "
-   "Always change at least one argument while recurring. "
-  "It must be changed to be closer to termination. " 
-  "The changing argument must be tested in the termination condition: "
-  "when using cdr, test termination with null? and when using sub1 , test termination with zero?.")
+  (lt-sc:display-all "They revised the Fourth Commandment")
   
   ; now multiplication
   (runit:check-equal? (lt-sc:my-x 5 3) 15)
@@ -55,10 +49,7 @@
   (runit:check-equal? (lt-sc:my-x 12 3) 36)
 
   (newline)
-  (lt-sc:display-all "The Fifth Commandment: " 
-                     "When building a value with +, always use 0 for the value of the terminating line, for adding 0 does not change the value of an addition. "
-  "When building a value with x (multiplication), always use 1 for the value of the terminating line, for multiplying by 1 does not change the value of a multiplication. "
-  "When building a value with cons, always consider '() for the value of the terminating line.")
+  (lt-sc:display-all "They introduced the Fifth Commandment")
 
   (runit:check-equal? (lt-sc:tup+ '(3 6 9 11 4) '(8 5 2 0 7))
                       '(11 11 11 11 11))
@@ -80,7 +71,34 @@
   (runit:check-equal? (lt-sc:my-lt 4 6) #t)
   (runit:check-equal? (lt-sc:my-lt 8 3) #f)
   (runit:check-equal? (lt-sc:my-lt 6 6) #f)
-  ; up to page 73
+  (lt-sc:display-all "up to page 73")
+  (runit:check-equal? (lt-sc:raise-power 1 1) 1)
+  (runit:check-equal? (lt-sc:raise-power 2 3) 8)
+  (runit:check-equal? (lt-sc:raise-power 5 3) 125)
+  (runit:check-equal? (lt-sc:my-div 15 4) 3)
+  (runit:check-equal? (lt-sc:my-length 
+                       '(hotdogs with mustard sauerkraut and pickles))
+                      6)
+  (runit:check-equal? (lt-sc:my-length 
+                       '(ham and cheese on rye))
+                      5)
+  (runit:check-equal? (lt-sc:pick 4 '(lasagna spaghetti ravioli macaroni meatball))
+                      'macaroni)
+  (runit:check-equal? (lt-sc:pick 3 '(lasagna spaghetti ravioli macaroni meatball))
+                      'ravioli)
+  (runit:check-equal? (lt-sc:rempick 3 '(hotdogs with hot mustard))
+                      '(hotdogs with mustard))
+  (runit:check-equal? (lt-sc:rempick 2 '(hotdogs with hot mustard))
+                      '(hotdogs hot mustard))
+  (lt-sc:display-all "Up to page 77")
+  (runit:check-equal? (lt-sc:no-nums '(5 pears 6 prunes 9 dates))
+                      '(pears prunes dates))
+  (runit:check-equal? (lt-sc:no-nums '(5 pears prunes 9 dates))
+                      '(pears prunes dates))
+  (runit:check-equal? (lt-sc:all-nums '(5 pears 6 prunes 9 dates))
+                      '(5 6 9))
+  (runit:check-equal? (lt-sc:all-nums '(5 pears prunes 9 dates))
+                      '(5 9))
 
 
   (newline)

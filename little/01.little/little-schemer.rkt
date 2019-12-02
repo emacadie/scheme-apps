@@ -6,31 +6,39 @@
          (prefix-in srfi-19: srfi/19))
 
 
-(provide addtup ; chapter 04
-         atom?  ; preface
+(provide addtup   ; chapter 04
+         all-nums ; chapter 04
+         atom?    ; preface
          display-all  ; added by me
          display-date ; added by me
          firsts
-         insertL ; chapter 03
-         insertR ; chapter 03
+         insertL  ; chapter 03
+         insertR  ; chapter 03
          lat?
          member?
          multiinsertL ; chapter 03
          multiinsertR ; chapter 03
          multirember  ; chapter 03
          multisubst   ; chapter 03
-         my+   ; chapter 04
-         my-   ; chapter 04
-         my-gt ; chapter 04
-         my-lt ; chapter 04
-         my-x  ; chapter 04
-         my-add1   ; chapter 04
-         my-rember ; I may get rid of this
-         my-sub1   ; chapter 04
-         rember    ; chapter 03
-         subst     ; chapter 03
-         subst2    ; chapter 03
-         tup+      ; chapter 04
+         my+          ; chapter 04
+         my-          ; chapter 04
+         my-add1      ; chapter 04
+         my-div    ; chatper 04
+         my-eq     ; chapter 04
+         my-gt     ; chapter 04
+         my-length ; chapter 04
+         my-lt     ; chapter 04
+         my-rember   ; I may get rid of this
+         my-sub1     ; chapter 04
+         my-x        ; chapter 04
+         no-nums     ; chapter 04
+         pick        ; chapter 04
+         raise-power ; chapter 04
+         rember      ; chapter 03
+         rempick     ; chapter 04
+         subst       ; chapter 03
+         subst2      ; chapter 03
+         tup+        ; chapter 04
 )
 
 ; in preface
@@ -171,9 +179,49 @@
 ; less than
 (define (my-lt x y)
   (cond [(rb6:zero? y) #f]
-        [(rb6:zero? x) #t]
-        
+        [(rb6:zero? x) #t]        
         [else (my-lt (sub1 x) (sub1 y))]))
+
+; equal, for numbers. eq? is for other atoms
+(define (my-eq x y)
+  (cond [(my-lt x y) #f]
+        [(my-gt x y) #f]
+        [else #t]))
+
+; use the first and fifth commandments
+; Raise a number to a power; I cannot use the arrow symbol they have
+(define (raise-power num pow)
+  (cond [(zero? pow) 1]
+        [else (my-x num (raise-power num (sub1 pow)))]))
+
+; quotient only
+(define (my-div n m)
+  (cond [(my-lt n m) 0]
+        [else (add1 (my-div (my- n m) m))]))
+
+(define (my-length lat)
+  (cond [(null? lat) 0]
+        [else (add1 (my-length (cdr lat)))]))
+
+(define (pick n lat)
+(cond [(null? lat) '()]
+      [(eq? n 1) (car lat)]
+      [else (pick (sub1 n) (cdr lat))]))
+
+(define (rempick n lat)
+  (cond [(eq? n 1) (cdr lat)]
+        [else (cons (car lat) (rempick (sub1 n) (cdr lat)))])) 
+
+(define (no-nums lat)
+  (cond [(null? lat) '()]
+        [(number? (car lat)) (no-nums (cdr lat))]
+        [else (cons (car lat) (no-nums (cdr lat)))]))
+
+(define (all-nums lat)
+  (cond [(null? lat) '()]
+        [(number? (car lat)) (cons (car lat) (all-nums (cdr lat))) ]
+        [else (all-nums (cdr lat))]))
+
 
 
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
