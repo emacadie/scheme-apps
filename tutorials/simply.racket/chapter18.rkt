@@ -71,9 +71,10 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
 
 
 ;; Here is the operator/operand program
+; from the text
 (define (parse expr)
   (parse-helper expr '() '()))
-
+; from the text
 (define (parse-helper expr operators operands)
   (cond [(null? expr)
          (if (null? operators)
@@ -91,6 +92,7 @@ Trees as lists: "In other words, a tree is a list whose first element is the dat
          (parse-helper (cdr expr) (cons (car expr) operators) operands)]
         [else (handle-op expr operators operands)]))
 
+; from the text
 (define (handle-op expr operators operands)
   (parse-helper expr
                 (cdr operators)

@@ -5,18 +5,18 @@
          ; (prefix-in rd:   racket/date)
          (prefix-in srfi-19: srfi/19))
 
-
-(provide addtup   ; chapter 04
-         all-nums ; chapter 04
-         atom?    ; preface
+(provide addtup       ; chapter 04
+         all-nums     ; chapter 04
+         atom?        ; preface
          display-all  ; added by me
          display-date ; added by me
          eqan?        ; chapter 04
-         firsts
-         insertL  ; chapter 03
-         insertR  ; chapter 03
-         lat?
-         member?
+         firsts       ; chapter 03
+         insertL      ; chapter 03
+         insertR      ; chapter 03
+         insertR*     ; chapter 05
+         lat?         ; chapter 02
+         member?      ; chapter 02
          multiinsertL ; chapter 03
          multiinsertR ; chapter 03
          multirember  ; chapter 03
@@ -24,25 +24,34 @@
          my+          ; chapter 04
          my-          ; chapter 04
          my-add1      ; chapter 04
-         my-div    ; chatper 04
-         my-eq     ; chapter 04
-         my-gt     ; chapter 04
-         my-length ; chapter 04
-         my-lt     ; chapter 04
-         my-rember   ; I may get rid of this
-         my-sub1     ; chapter 04
-         my-x        ; chapter 04
-         no-nums     ; chapter 04
-         occur       ; chapter 04
-         one?        ; chapter 04
-         pick        ; chapter 04
-         raise-power ; chapter 04
-         rember      ; chapter 03
-         rempick     ; chapter 04
-         subst       ; chapter 03
-         subst2      ; chapter 03
-         tup+        ; chapter 04
+         my-div       ; chatper 04
+         my-eq        ; chapter 04
+         my-gt        ; chapter 04
+         my-length    ; chapter 04
+         my-lt        ; chapter 04
+         my-rember    ; I may get rid of this
+         my-sub1      ; chapter 04
+         my-x         ; chapter 04
+         no-nums      ; chapter 04
+         occur        ; chapter 04
+         occur*       ; chapter 05
+         one?         ; chapter 04
+         pick         ; chapter 04
+         raise-power  ; chapter 04
+         rember       ; chapter 03
+         rember*      ; chapter 05
+         rempick      ; chapter 04
+         subst        ; chapter 03
+         subst*       ; chapter 05
+         subst2       ; chapter 03
+         tup+         ; chapter 04
 )
+
+#|
+Stats:
+chapter 02: 2
+chapter 04: 20
+|#
 
 ; in preface
 (define (atom? x)
@@ -59,6 +68,8 @@
 
 ; defined in chapter 2, after it is used
 ; lat means list of atoms, I think
+; I think they just use it to see if a list is flat.
+; It chokes if you give it an atom.
 (define (lat? l)
   (cond [(null? l) #t]
         [(atom? (car l)) (lat? (cdr l))]
@@ -70,7 +81,7 @@
         [(eq? the-atom (car the-list)) #t]
         [else (member? the-atom (cdr the-list))]))
 
-; Chapter Three
+; Chapter 03
 (define (rember-helper a lat out-lat)
   (display-all "rember-helper called with " a ", " lat ", " out-lat)
   (cond [(null? lat) out-lat]
@@ -242,6 +253,40 @@
   (cond [(one? n) (cdr lat)]
         [else (cons (car lat) (rempick (sub1 n) (cdr lat)))])) 
 
+; chapter 05
+; my attempt
+; I admit, I had to incorporate some of theirs.
+; And I changed it a bit, since I hate nested conds
+; I admit, I did not notice they were actually doing 
+; a nested multirember, not a nested rember
+(define (rember* a l)
+  (cond [(null? l) '()]
+        ; this is the new part
+        [(not (atom? (car l))) (cons (rember* a (car l)) (rember* a (cdr l)))]
+        ; this is like multirember, adding check for atom? before equality check
+        [(and (atom? (car l)) (eqan? (car l) a)) (rember* a (cdr l))]
+        ; this is also like multirember
+        [else (cons (car l) (rember* a (cdr l)))])) 
+
+(define (insertR* new old lat)
+  (cond [(null? lat) '()]
+        [(not (atom? (car lat))) (cons (insertR* new old (car lat)) (insertR* new old (cdr lat)))]
+        [(and (atom? (car lat)) (eq? (car lat) old)) 
+         (cons old (cons new (insertR* new old (cdr lat))))]
+        [else (cons (car lat) (insertR* new old (cdr lat)))]))
+
+; count number of times atom a appears in lat
+(define (occur* a lat)
+  (cond [(null? lat) 0]
+        [(not (atom? (car lat))) (my+ (occur* a (car lat)) (occur* a (cdr lat)))]
+        [(and (atom? (car lat)) (eqan? a (car lat))) (add1 (occur* a (cdr lat)))]
+        [else (occur* a (cdr lat))]))
+; For these, their "else" is my "not atom?" part.
+(define (subst* new old lat)
+  (cond [(null? lat) '()]
+        [(not (atom? (car lat))) (cons (subst* new old (car lat)) (subst* new old (cdr lat)))]
+        [(and (atom? (car lat)) (eqan? (car lat) old)) (subst* new old (cons new (cdr lat)))]
+        [else (cons (car lat) (subst* new old (cdr lat)))]))
 ; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
 
 (module+ test
