@@ -17,6 +17,7 @@
          insertR*     ; chapter 05
          lat?         ; chapter 02
          member?      ; chapter 02
+         member*      ; chapter 05
          multiinsertL ; chapter 03
          multiinsertR ; chapter 03
          multirember  ; chapter 03
@@ -287,7 +288,31 @@ chapter 04: 20
         [(not (atom? (car lat))) (cons (subst* new old (car lat)) (subst* new old (cdr lat)))]
         [(and (atom? (car lat)) (eqan? (car lat) old)) (subst* new old (cons new (cdr lat)))]
         [else (cons (car lat) (subst* new old (cdr lat)))]))
-; (display-all (rd:date->string the-date "~Y-~m-~d ~H:~M:~S"))
+
+(define (insertL* new old lat)
+  (cond [(null? lat) '()]
+        [(not (atom? (car lat))) (cons (insertL* new old (car lat)) (insertR* new old (cdr lat)))]
+        [(and (atom? (car lat)) (eqan? (car lat) old)) 
+         (cons new (cons old (insertL* new old (cdr lat))))]
+        [else (cons (car lat) (insertL* new old (cdr lat)))]))
+#|
+Mine:
+(define (member* the-atom the-list)
+  (cond [(null? the-list) #f]
+        [(not (atom? (car the-list))) (or (member* the-atom (car the-list))
+                                          (member* the-atom (cdr the-list)))]
+        [(and (atom? (car the-list)) (eqan? the-atom (car the-list))) #t]
+        ;[(and (atom? (car the-list)) (not (eqan? the-atom (car the-list)))) #f]
+        [else #f]))
+|#
+; Theirs is better:
+(define (member* a l)
+  (cond [(null? l) #f]
+        ; I had "(member* a (cdr l))" in my else for a while. I was pretty close.
+        [(atom? (car l)) (or (eqan? (car l) a) (member* a (cdr l)))]
+        ; I got the else right
+        [else (or (member* a (car l)) (member* a (cdr l)))])) 
+
 
 (module+ test
   (require (prefix-in runit: rackunit))

@@ -84,8 +84,37 @@
                         (bread)
                         (orange brandy)))
   (lt-sc:display-all "But is the juice worth the squeeze? Up to page 85")
-  
 
+  (runit:check-equal? (lt-sc:insertR* 'pecker 'chuck
+                                      '((how much (wood)) 
+                                        could ((a (wood) chuck)) (((chuck)))
+                                        (if (a) ((wood chuck))) 
+                                        could chuck wood))
+                      '((how much (wood)) 
+                        could ((a (wood) chuck pecker)) 
+                        (((chuck pecker))) 
+                        (if (a) ((wood chuck pecker))) 
+                        could chuck pecker wood))
+
+  (runit:check-equal? (lt-sc:insertR* 'pecker 'wood
+                                      '((how much (wood)) 
+                                        could ((a (wood) chuck)) (((chuck)))
+                                        (if (a) ((wood chuck))) 
+                                        could chuck wood))
+                      '((how much (wood pecker)) 
+                        could ((a (wood pecker) chuck)) (((chuck))) 
+                        (if (a) ((wood pecker chuck))) 
+                        could chuck wood pecker))
+
+  (runit:check-equal? (lt-sc:member* 'chips
+                                     '((potato) (chips ((with) fish) (chips))))
+                      #t)
+  (runit:check-equal? (lt-sc:member* 'clips
+                                     '((potato) (chips ((with) fish) (chips))))
+                      #f)
+  (runit:check-equal? (lt-sc:member* 'fish 
+                                     '((potato) (chips ((with) fish) (chips))))
+                      #t)
 
   (newline)
   (lt-sc:display-all "Done with chapter 05 tests at " (lt-sc:display-date))
