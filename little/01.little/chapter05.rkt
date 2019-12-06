@@ -180,10 +180,33 @@
   (runit:check-equal? (lt-sc:eqlist2? '(beef ((sausage)) (and (soda)))
                                       '(beef ((sausage)) (and (soda))))
                       #t)
-
   ; an S-expression is an atom 
   ; or a list, either empty, or containing a list of atoms and/or other lists
   (lt-sc:display-all "Up to page 92")
+  (runit:check-equal? (lt-sc:equal2? 'a 'a) #t)
+  (runit:check-equal? (lt-sc:equal2? 'a 'b) #f)
+  (runit:check-equal? (lt-sc:equal2? '(1 2 3) '(1 2 3)) #t)
+  (runit:check-equal? (lt-sc:equal2? '(1 2 3) '(1 2 4)) #f)
+
+  (runit:check-equal? (lt-sc:eqlist5? '(strawberry ice cream) 
+                                      '(strawberry ice cream))
+                      #t)
+  (runit:check-equal? (lt-sc:eqlist5? '(strawberry ice cream) 
+                                      '(strawberry cream ice))
+                      #f)
+  (runit:check-equal? (lt-sc:eqlist5? '(banana ((split)))
+                                      '((banana) (split)))
+                      #f)
+  (runit:check-equal? (lt-sc:eqlist5? '(beef ((sausage)) (and (soda)))
+                                      '(beef ((salami)) (and (soda))))
+                      #f)
+  (runit:check-equal? (lt-sc:eqlist5? '(beef ((sausage)) (and (soda)))
+                                      '(beef ((sausage)) (and (soda))))
+                      #t)
+
+  (lt-sc:display-all "The Sixth Commandment is to simplify, but I already simplidied rember")
+  (lt-sc:display-all "Their new rember looks like mine, and not more nested cond statements")
+
 
   (newline)
   (lt-sc:display-all "Done with chapter 05 tests at " (lt-sc:display-date))

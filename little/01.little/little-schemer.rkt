@@ -13,6 +13,9 @@
          eqan?        ; chapter 04
          eqlist?      ; chapter 05
          eqlist2?     ; chapter 05
+         eqlist5?     ; chapter 05
+         equal2?      ; chapter 05
+         equal5?      ; chapter 05
          firsts       ; chapter 03
          insertL      ; chapter 03
          insertR      ; chapter 03
@@ -106,8 +109,7 @@ chapter 04: 20
 
 (define (insertR new old lat)
   (cond [(null? lat) '()]
-        [(eq? (car lat) old) (cons old 
-                                   (cons new  (cdr lat)))]
+        [(eq? (car lat) old) (cons old (cons new  (cdr lat)))]
         [else (cons (car lat) (insertR new old (cdr lat)))]))
 ; Yo dawg, I heard you like cons-ing lists, so I put a cons in your cons
 ; so you can add a list to your list.
@@ -321,12 +323,13 @@ Mine:
         [(atom? (car l)) (car l)]
         [else (leftmost (car l))]))
 
+
 (define (eqlist? l1 l2)
   (cond [(rb6:and (null? l1) (null? l2)) #t]
         [(rb6:and (not (atom? (car l1))) 
                   (not (atom? (car l2)))) 
-           (and (eqlist? (car l1) (car l2))
-                (eqlist? (cdr l1) (cdr l2)))]
+           (rb6:and (eqlist? (car l1) (car l2))
+                    (eqlist? (cdr l1) (cdr l2)))]
         [(rb6:and (atom? (car l1)) 
                   (atom? (car l2))
                   (eqan? (car l1) (car l2))) 
@@ -358,6 +361,49 @@ Mine:
         [(or (atom? (car l1)) (atom? (car l2))) #f]
         [else (and (eqlist3? (car l1) (car l2))
                    (eqlist3? (cdr l1) (cdr l2)))]))
+
+; calling this equal2? since "equal?" is already in Racket and R6RS
+#|
+; my first version
+; works, but after seeing theirs I see a few chances for improvement
+(define (equal2? a b)
+  (cond [(rb6:and (null? a) (null? b)) #t]
+        [(rb6:and (atom? a) (atom? b) (eqan? a b)) #t]
+        [(rb6:and (not (atom? a)) (not (atom? b))) 
+        (rb6:and (equal2? (car a) (car b)) (equal2? (cdr a) (cdr b)))]
+        [else #f]))
+|#
+(define (equal2? a b)
+  (cond [(rb6:and (atom? a) (atom? b)) (eqan? a b)]
+        [else (eqlist? a b)]))
+
+; their first version
+(define (equal3? s1 s2)
+  (cond [(and (atom? s1) (atom? s2)) (eqan? s1 s2)]
+        [(atom? s1) #f] ; we know s2 is not an atom if this is true
+        [(atom? s2) #f] ; If you get here, you know s1 is NOT an atom
+        [else (eqlist? s1 s2)]))
+
+; their second version
+(define (equal4? s1 s2)
+  (cond [(and (atom? s1) (atom? s2)) (eqan? s1 s2)]
+        [(or (atom? s1) (atom? s2)) #f] 
+        [else (eqlist? s1 s2)]))
+; now rewrite eqlist? using equal2?
+; using their second version
+
+; to do the mutual calls, I need their equal, not mine.
+(define (equal5? a b)
+  (cond [(and (atom? a) (atom? b)) (eqan? a b)]
+        [(or (atom? a) (atom? b)) #f] 
+        [else (eqlist5? a b)]))
+
+; no eqlist4?
+(define (eqlist5? l1 l2)
+  (cond [(rb6:and (null? l1) (null? l2)) #t]
+        [(rb6:or (null? l1) (null? l2)) #f]
+        [else (and (equal5? (car l1) (car l2))
+                   (eqlist5? (cdr l1) (cdr l2)))]))
 
 (module+ test
   (require (prefix-in runit: rackunit))

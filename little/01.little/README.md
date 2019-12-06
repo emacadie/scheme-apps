@@ -36,6 +36,8 @@ When building a value with +, always use 0 for the value of the terminating line
 When building a value with x (multiplication), always use 1 for the value of the terminating line, for multiplying by 1 does not change the value of a multiplication.    
 When building a value with cons, always consider '() for the value of the terminating line.    
 
+The Sixth Commandment: Simplify only after the function is correct.   
+
 
 
 Can use rb6: prefix:  
