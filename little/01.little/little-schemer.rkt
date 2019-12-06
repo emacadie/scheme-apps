@@ -100,7 +100,8 @@ chapter 04: 20
 
 (define (rember a lat)
   (cond [(null? lat) (quote ())]
-        [(eq? (car lat) a) (cdr lat)]
+        ; [(eq? (car lat) a) (cdr lat)]
+        [(equal5? (car lat) a) (cdr lat)] ; from chapter 5
         [else (cons (car lat) (rember a (cdr lat)))])) 
 
 (define (firsts l)
