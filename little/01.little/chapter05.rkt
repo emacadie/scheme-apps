@@ -116,6 +116,75 @@
                                      '((potato) (chips ((with) fish) (chips))))
                       #t)
 
+  (runit:check-equal? (lt-sc:leftmost '((potato) (chips ((with) fish) (chips)))) 
+                      'potato)
+  (runit:check-equal? (lt-sc:leftmost '(((hot) (tuna (and))) cheese)) 
+                      'hot)
+  (lt-sc:display-all "about to do bad ones")
+  (runit:check-equal? (lt-sc:leftmost '(((() four)) 17 (seventeen)))
+                      '())
+  (runit:check-equal? (lt-sc:leftmost '()) '())
+  ; leftmost: intent: to return leftmost atom in a non-empty list of s-exprs
+  
+  (runit:check-equal? (and (lt-sc:atom? (car '(mozzarella pizza)))
+                           (lt-sc:eqan? (car '(mozzarella pizza)) 'pizza))
+                      #f)
+  (runit:check-equal? (and (lt-sc:atom? (car '((mozzarella mushroom) pizza)))
+                           (lt-sc:eqan? (car '((mozzarella mushroom) pizza))) 
+                                        'pizza)
+                      #f)
+  ; make it true
+  ; use the Little Caesar's slogan
+  (runit:check-equal? (and (lt-sc:atom? (car '(pizza (tastes good))))
+                           (lt-sc:eqan? (car '(pizza (tastes good))) 'pizza))
+                      #t)
+  (runit:check-equal? (and (lt-sc:atom? (car '(pizza pizza)))
+                           (lt-sc:eqan? (car '(pizza pizza)) 'pizza))
+                      #t)
+  ; "or" is true if one of its constituents is true. 
+  ; It is false if they are all false.
+  ; "and" is true if all of its constituents are true.
+  ; It is false if one is false.
+  ; "or" is "any", and "and" is "all".
+  ; An argument of "or" may not be considered if one of its preceding args is true. 
+  ; "and" stops if an arg is false.
+  (runit:check-equal? (lt-sc:eqlist? '(strawberry ice cream) 
+                                     '(strawberry ice cream))
+                      #t)
+  (runit:check-equal? (lt-sc:eqlist? '(strawberry ice cream) 
+                                     '(strawberry cream ice))
+                      #f)
+  (runit:check-equal? (lt-sc:eqlist? '(banana ((split)))
+                                     '((banana) (split)))
+                      #f)
+  (runit:check-equal? (lt-sc:eqlist? '(beef ((sausage)) (and (soda)))
+                                     '(beef ((salami)) (and (soda))))
+                      #f)
+  (runit:check-equal? (lt-sc:eqlist? '(beef ((sausage)) (and (soda)))
+                                     '(beef ((sausage)) (and (soda))))
+                      #t)
+  ; eqlist? checks if lists are equal
+  ; trying with their version.
+  (runit:check-equal? (lt-sc:eqlist2? '(strawberry ice cream) 
+                                      '(strawberry ice cream))
+                      #t)
+  (runit:check-equal? (lt-sc:eqlist2? '(strawberry ice cream) 
+                                      '(strawberry cream ice))
+                      #f)
+  (runit:check-equal? (lt-sc:eqlist2? '(banana ((split)))
+                                      '((banana) (split)))
+                      #f)
+  (runit:check-equal? (lt-sc:eqlist2? '(beef ((sausage)) (and (soda)))
+                                      '(beef ((salami)) (and (soda))))
+                      #f)
+  (runit:check-equal? (lt-sc:eqlist2? '(beef ((sausage)) (and (soda)))
+                                      '(beef ((sausage)) (and (soda))))
+                      #t)
+
+  ; an S-expression is an atom 
+  ; or a list, either empty, or containing a list of atoms and/or other lists
+  (lt-sc:display-all "Up to page 92")
+
   (newline)
   (lt-sc:display-all "Done with chapter 05 tests at " (lt-sc:display-date))
 

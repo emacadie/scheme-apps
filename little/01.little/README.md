@@ -52,5 +52,5 @@ Can use rb6: prefix:
 Does not work with rb6 prefix:
 * car
 * cdr
-
+* for-each
 

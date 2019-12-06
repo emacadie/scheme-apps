@@ -11,11 +11,14 @@
          display-all  ; added by me
          display-date ; added by me
          eqan?        ; chapter 04
+         eqlist?      ; chapter 05
+         eqlist2?     ; chapter 05
          firsts       ; chapter 03
          insertL      ; chapter 03
          insertR      ; chapter 03
          insertR*     ; chapter 05
          lat?         ; chapter 02
+         leftmost     ; chapter 05
          member?      ; chapter 02
          member*      ; chapter 05
          multiinsertL ; chapter 03
@@ -56,8 +59,8 @@ chapter 04: 20
 
 ; in preface
 (define (atom? x)
-  (and (not (pair? x))
-       (not (null? x))))
+  (rb6:and (rb6:not (pair? x))
+           (rb6:not (null? x))))
 
 (define (display-all . vs)
   (for-each ris6:display vs)
@@ -237,8 +240,8 @@ chapter 04: 20
 
 ; I assume we were supposed to use the "=" function we made in chapter 04
 (define (eqan? a1 a2)
-  (cond [(and (number? a1) (number? a2) (my-eq a1 a2)) #t]
-        [(and (not (number? a1)) (not (number? a2)) (eq? a1 a2)) #t]
+  (cond [(rb6:and (number? a1) (number? a2) (my-eq a1 a2)) #t]
+        [(rb6:and (not (number? a1)) (not (number? a2)) (eq? a1 a2)) #t]
         [else #f]))
 
 ; count number of times atom a appears in lat
@@ -265,14 +268,14 @@ chapter 04: 20
         ; this is the new part
         [(not (atom? (car l))) (cons (rember* a (car l)) (rember* a (cdr l)))]
         ; this is like multirember, adding check for atom? before equality check
-        [(and (atom? (car l)) (eqan? (car l) a)) (rember* a (cdr l))]
+        [(rb6:and (atom? (car l)) (eqan? (car l) a)) (rember* a (cdr l))]
         ; this is also like multirember
         [else (cons (car l) (rember* a (cdr l)))])) 
 
 (define (insertR* new old lat)
   (cond [(null? lat) '()]
         [(not (atom? (car lat))) (cons (insertR* new old (car lat)) (insertR* new old (cdr lat)))]
-        [(and (atom? (car lat)) (eq? (car lat) old)) 
+        [(rb6:and (atom? (car lat)) (eq? (car lat) old)) 
          (cons old (cons new (insertR* new old (cdr lat))))]
         [else (cons (car lat) (insertR* new old (cdr lat)))]))
 
@@ -280,19 +283,19 @@ chapter 04: 20
 (define (occur* a lat)
   (cond [(null? lat) 0]
         [(not (atom? (car lat))) (my+ (occur* a (car lat)) (occur* a (cdr lat)))]
-        [(and (atom? (car lat)) (eqan? a (car lat))) (add1 (occur* a (cdr lat)))]
+        [(rb6:and (atom? (car lat)) (eqan? a (car lat))) (add1 (occur* a (cdr lat)))]
         [else (occur* a (cdr lat))]))
 ; For these, their "else" is my "not atom?" part.
 (define (subst* new old lat)
   (cond [(null? lat) '()]
         [(not (atom? (car lat))) (cons (subst* new old (car lat)) (subst* new old (cdr lat)))]
-        [(and (atom? (car lat)) (eqan? (car lat) old)) (subst* new old (cons new (cdr lat)))]
+        [(rb6:and (atom? (car lat)) (eqan? (car lat) old)) (subst* new old (cons new (cdr lat)))]
         [else (cons (car lat) (subst* new old (cdr lat)))]))
 
 (define (insertL* new old lat)
   (cond [(null? lat) '()]
         [(not (atom? (car lat))) (cons (insertL* new old (car lat)) (insertR* new old (cdr lat)))]
-        [(and (atom? (car lat)) (eqan? (car lat) old)) 
+        [(rb6:and (atom? (car lat)) (eqan? (car lat) old)) 
          (cons new (cons old (insertL* new old (cdr lat))))]
         [else (cons (car lat) (insertL* new old (cdr lat)))]))
 #|
@@ -301,8 +304,8 @@ Mine:
   (cond [(null? the-list) #f]
         [(not (atom? (car the-list))) (or (member* the-atom (car the-list))
                                           (member* the-atom (cdr the-list)))]
-        [(and (atom? (car the-list)) (eqan? the-atom (car the-list))) #t]
-        ;[(and (atom? (car the-list)) (not (eqan? the-atom (car the-list)))) #f]
+        [(rb6:and (atom? (car the-list)) (eqan? the-atom (car the-list))) #t]
+        ;[(rb6:and (atom? (car the-list)) (not (eqan? the-atom (car the-list)))) #f]
         [else #f]))
 |#
 ; Theirs is better:
@@ -313,6 +316,48 @@ Mine:
         ; I got the else right
         [else (or (member* a (car l)) (member* a (cdr l)))])) 
 
+(define (leftmost l)
+  (cond [(null? l) '()]
+        [(atom? (car l)) (car l)]
+        [else (leftmost (car l))]))
+
+(define (eqlist? l1 l2)
+  (cond [(rb6:and (null? l1) (null? l2)) #t]
+        [(rb6:and (not (atom? (car l1))) 
+                  (not (atom? (car l2)))) 
+           (and (eqlist? (car l1) (car l2))
+                (eqlist? (cdr l1) (cdr l2)))]
+        [(rb6:and (atom? (car l1)) 
+                  (atom? (car l2))
+                  (eqan? (car l1) (car l2))) 
+         (eqlist? (cdr l1) (cdr l2))]
+        ; [(rb6:and (atom? (car l1)) (atom? (car l2)))]
+        [else #f]))
+
+; their version l 346
+(define (eqlist2? l1 l2)
+  (cond [(and (null? l1) (null? l2)) #t]
+        [(and (null? l1) (atom? (car l2))) #f]
+        [(null? l1 ) #f]
+        [(and (atom? (car l1)) (null? l2)) #f]
+        [(and (atom? (car l1)) (atom? (car l2)))
+         (and (eqan? (car l1) (car l2)) (eqlist2? (cdr l1) (cdr l2)))]
+        [(atom? (car l1)) #f]
+        [(null? l2) #f]
+        [(atom? (car l2)) #f]
+        [else (and (eqlist2? (car l1) (car l2))
+                   (eqlist2? (cdr l1) (cdr l2)))])) 
+
+; their second version
+(define (eqlist3? l1 l2)
+  (cond [(and (null? l1) (null? l2)) #t]
+        [(or (null? l1) (null? l2)) #f]
+        [(and (atom? (car l1)) (atom? (car l2)))
+         (and (eqan? (car l1) (car l2))
+              (eqlist3? (cdr l1) (cdr l2)))]
+        [(or (atom? (car l1)) (atom? (car l2))) #f]
+        [else (and (eqlist3? (car l1) (car l2))
+                   (eqlist3? (cdr l1) (cdr l2)))]))
 
 (module+ test
   (require (prefix-in runit: rackunit))
