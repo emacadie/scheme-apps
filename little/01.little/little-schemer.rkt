@@ -10,6 +10,7 @@
          atom?        ; preface
          display-all  ; added by me
          display-date ; added by me
+         edd1         ; chapter 06
          eqan?        ; chapter 04
          eqlist?      ; chapter 05
          eqlist2?     ; chapter 05
@@ -40,6 +41,9 @@
          my-sub1      ; chapter 04
          my-x         ; chapter 04
          no-nums      ; chapter 04
+         numbered?    ; chapter 06
+         numbered2?   ; chapter 06
+         ny+          ; chapter 06
          occur        ; chapter 04
          occur*       ; chapter 05
          one?         ; chapter 04
@@ -48,10 +52,14 @@
          rember       ; chapter 03
          rember*      ; chapter 05
          rempick      ; chapter 04
+         sero?        ; chapter 06
          subst        ; chapter 03
          subst*       ; chapter 05
          subst2       ; chapter 03
          tup+         ; chapter 04
+         value        ; chapter 06
+         value2       ; chapter 06
+         zub1         ; chapter 06
 )
 
 #|
@@ -405,6 +413,100 @@ Mine:
         [(rb6:or (null? l1) (null? l2)) #f]
         [else (and (equal5? (car l1) (car l2))
                    (eqlist5? (cdr l1) (cdr l2)))]))
+
+; chapter 6
+#|
+(define (numbered? x)
+  (display-all "In numbered? with x: " x)
+  (cond [(null? x) #t]
+        [(and (atom? x) (number? x)) #t]
+        [(not (atom? x)) (and (numbered? (car x)) (numbered? (cdr x)))]
+        [(number? (car x)) (numbered? (cdr x))]
+        [(or (eqan? (car x) '+) 
+             (eqan? (car x) '*) 
+             (eqan? (car x) 'raise-power)) (numbered? (cdr x))]
+        [else #f]
+)
+)
+|#
+; theirs
+; I don't think I would have gotten this -
+; I hate car-ring and cdr-ing like this.
+#|
+(define (numbered? aexp) 
+  (cond [(atom? aexp) (number? aexp)]
+        [(eq? (car (cdr aexp)) '+)
+         (and (numbered? (car aexp))
+              (numbered? (car (cdr (cdr aexp)))))]
+        [(eq? (car (cdr aexp)) '*)
+         (and (numbered? (car aexp))
+              (numbered? (car (cdr (cdr aexp)))))]
+        [(eq? (car (cdr aexp)) 'raise-power)
+         (and (numbered? (car aexp))
+              (numbered? (car (cdr (cdr aexp)))))]))
+|#
+; simplified
+(define (numbered? aexp) 
+  (cond [(atom? aexp) (number? aexp)]
+        [else (rb6:and (numbered? (car aexp))
+                       (numbered? (car (cdr (cdr aexp)))))]))
+
+(define (value aexp)
+  (cond [(not (numbered? aexp)) '()]
+        [(atom? aexp) aexp]
+        [(eq? (car (cdr aexp)) '+)
+         (+ (value (car aexp)) (value (car (cdr (cdr aexp)))))]
+        [(eq? (car (cdr aexp)) '*)
+         (* (value (car aexp)) (value (car (cdr (cdr aexp)))))]
+        [(eq? (car (cdr aexp)) 'raise-power)
+         (raise-power (value (car aexp)) (value (car (cdr (cdr aexp)))))]))
+
+; I still want to check if the new lists are proper arithmatic expressions
+; more verbose than I would like, but it works
+(define (numbered2? aexp)
+  (cond [(null? aexp) #t] 
+        [(atom? aexp) (number? aexp)]
+        [(eqan? (car aexp) '+) (numbered2? (cdr aexp))]
+        [(eqan? (car aexp) '*) (numbered2? (cdr aexp))]
+        [(eqan? (car aexp) 'raise-power) (numbered2? (cdr aexp))]
+        [(number? (car aexp)) (numbered2? (cdr aexp))]
+        [(not (lat? aexp)) (rb6:and (numbered2? (car aexp))
+                                    (numbered2? (cdr aexp)))]
+        [else #f]))
+
+(define (1st-sub-exp aexp)
+  (cond [else (car (cdr aexp))]))
+
+(define (2nd-sub-exp aexp)
+  (car (cdr (cdr aexp))))
+
+; verbose, but more meaningful
+(define (operator aexp)
+  (car aexp))
+
+(define (value2 nexp)
+  (cond
+    [(atom? nexp) nexp]
+    [(eq? (operator nexp) '+) (my+ (value2 (1st-sub-exp nexp))
+                                   (value2 (2nd-sub-exp nexp)))]
+    [(eq? (operator nexp) '*) (my-x (value2 (1st-sub-exp nexp))
+                                    (value2 (2nd-sub-exp nexp)))]
+    [else (raise-power (value2 (1st-sub-exp nexp))
+                       (value2 (2nd-sub-exp nexp)))]))
+
+(define (sero? n)
+  (null? n))
+
+(define (edd1 n)
+  (cons '() n))
+
+(define (zub1 n)
+  (cdr n))
+
+(define (ny+ n m)
+  (cond [(sero? m) m]
+        [else (ny+ (edd1 n) (zub1 m))]))
+
 
 (module+ test
   (require (prefix-in runit: rackunit))

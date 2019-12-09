@@ -38,6 +38,11 @@ When building a value with cons, always consider '() for the value of the termin
 
 The Sixth Commandment: Simplify only after the function is correct.   
 
+The Seventh Commandment: Recur on the subparts that are of the same nature:
+- On the sublists of a list.
+- On the subexpressions of an arithmetic expression.   
+
+The Eighth Commandment: Use help functions to abstract from representations.   
 
 
 Can use rb6: prefix:  

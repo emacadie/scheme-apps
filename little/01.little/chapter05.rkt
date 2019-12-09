@@ -207,8 +207,8 @@
   (lt-sc:display-all "The Sixth Commandment is to simplify, but I already simplidied rember")
   (lt-sc:display-all "Their new rember looks like mine, and not more nested cond statements")
 
-
   (newline)
   (lt-sc:display-all "Done with chapter 05 tests at " (lt-sc:display-date))
 
 )
+
