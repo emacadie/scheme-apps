@@ -15,14 +15,18 @@
          eqlist?      ; chapter 05
          eqlist2?     ; chapter 05
          eqlist5?     ; chapter 05
+         eqset?       ; chapter 07
          equal2?      ; chapter 05
          equal5?      ; chapter 05
          firsts       ; chapter 03
          insertL      ; chapter 03
          insertR      ; chapter 03
          insertR*     ; chapter 05
+         intersect    ; chapter 07
+         intersect?   ; chapter 07
          lat?         ; chapter 02
          leftmost     ; chapter 05
+         makeset      ; chapter 07
          member?      ; chapter 02
          member*      ; chapter 05
          multiinsertL ; chapter 03
@@ -53,6 +57,8 @@
          rember*      ; chapter 05
          rempick      ; chapter 04
          sero?        ; chapter 06
+         set?         ; chapter 07
+         subset?      ; chapter 07
          subst        ; chapter 03
          subst*       ; chapter 05
          subst2       ; chapter 03
@@ -93,7 +99,7 @@ chapter 04: 20
 ; Mine is tail-recursive.
 (define (member? the-atom the-list)
   (cond [(null? the-list) #f]
-        [(eq? the-atom (car the-list)) #t]
+        [(equal5? the-atom (car the-list)) #t]
         [else (member? the-atom (cdr the-list))]))
 
 ; Chapter 03
@@ -144,7 +150,7 @@ chapter 04: 20
 
 (define (multirember a lat)
   (cond [(null? lat) (quote ())]
-        [(eq? (car lat) a) (multirember a (cdr lat))]
+        [(equal5? (car lat) a) (multirember a (cdr lat))]
         [else (cons (car lat) (multirember a (cdr lat)))])) 
 
 (define (multiinsertR new old lat)
@@ -388,14 +394,14 @@ Mine:
 
 ; their first version
 (define (equal3? s1 s2)
-  (cond [(and (atom? s1) (atom? s2)) (eqan? s1 s2)]
+  (cond [(rb6:and (atom? s1) (atom? s2)) (eqan? s1 s2)]
         [(atom? s1) #f] ; we know s2 is not an atom if this is true
         [(atom? s2) #f] ; If you get here, you know s1 is NOT an atom
         [else (eqlist? s1 s2)]))
 
 ; their second version
 (define (equal4? s1 s2)
-  (cond [(and (atom? s1) (atom? s2)) (eqan? s1 s2)]
+  (cond [(rb6:and (atom? s1) (atom? s2)) (eqan? s1 s2)]
         [(or (atom? s1) (atom? s2)) #f] 
         [else (eqlist? s1 s2)]))
 ; now rewrite eqlist? using equal2?
@@ -403,16 +409,16 @@ Mine:
 
 ; to do the mutual calls, I need their equal, not mine.
 (define (equal5? a b)
-  (cond [(and (atom? a) (atom? b)) (eqan? a b)]
-        [(or (atom? a) (atom? b)) #f] 
+  (cond [(rb6:and (atom? a) (atom? b)) (eqan? a b)]
+        [(rb6:or (atom? a) (atom? b)) #f] 
         [else (eqlist5? a b)]))
 
 ; no eqlist4?
 (define (eqlist5? l1 l2)
   (cond [(rb6:and (null? l1) (null? l2)) #t]
         [(rb6:or (null? l1) (null? l2)) #f]
-        [else (and (equal5? (car l1) (car l2))
-                   (eqlist5? (cdr l1) (cdr l2)))]))
+        [else (rb6:and (equal5? (car l1) (car l2))
+                       (eqlist5? (cdr l1) (cdr l2)))]))
 
 ; chapter 6
 #|
@@ -506,6 +512,43 @@ Mine:
 (define (ny+ n m)
   (cond [(sero? m) m]
         [else (ny+ (edd1 n) (zub1 m))]))
+
+; chapter 07
+(define (set? lat)
+  (cond [(null? lat) #t]
+        [(member? (car lat) (cdr lat)) #f]
+        [else (set? (cdr lat))]))
+
+(define (makeset lat)
+  (cond [(null? lat) '()]
+        [else (cons (car lat) (makeset (multirember (car lat) (cdr lat))))]))
+
+; checks if each atom in s1 is in s2
+; NOT if all of s1 is in s2 in current order
+(define (subset? s1 s2)
+  (cond [(null? s1) #t]
+        [(member? (car s1) s2) (subset? (cdr s1) s2)]
+        [else #f]))
+; You could change the else to use "and", 
+; with the functions on the second line at the args
+#|
+(define (eqset? s1 s2)
+  (cond [(null? s1) #t]
+        [(rb6:and (not (set? s1)) (not (set? s2))) #f]
+        [(member? (car s1) s2) (eqset? (cdr s1) s2)]
+        [else #f]))
+|#
+; They did subset? twice, checking each against the other
+(define (eqset? s1 s2)
+  (rb6:and (subset? s1 s2)
+           (subset? s2 s1)))
+
+; Mine is shorter, seems to work
+(define (intersect? s1 s2)
+  (cond [(null? s1) #f]
+        [(not (member? (car s1) s2)) (intersect? (cdr s1) s2)]
+        [else #t]))
+
 
 
 (module+ test
