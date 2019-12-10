@@ -72,11 +72,33 @@
   
   ; you make a pair by cons the first onto the cons of the second onto '()
   ; (cons x1 (cons x2 '()))
-  ; "rel" is relation, a list of pairs, or a set
+  ; "rel" is relation, a list of pairs, or a set of pairs
   ; "fun" is function
-  (display-all "page 119")
+  (lt-sc:display-all "page 119")
+  (runit:check-equal? (lt-sc:fun? '((8 3) (4 2) (7 6) (6 2) (3 4))) #t)
+  (runit:check-equal? (lt-sc:fun? '((d 4) (b 0) (b 9) (e 5) (g 4))) #f)
+  ; finite function: A list of pairs in which all the first elements of 
+  ; each pair are unique.
+  (runit:check-equal? (lt-sc:revrel '((8 a) (pumpkin pie) (got sick)))
+                      '((a 8) (pie pumpkin) (sick got)))
+  (runit:check-equal? (lt-sc:seconds '((8 3) (4 8) (7 6) (6 2) (3 4)))
+                      '(3 8 6 2 4))
 
+  ; a full function is one in which the second elements of the pairs form a set
+  ; as well as the first elements of the pairs forming a set (I think)
+  (runit:check-equal? (lt-sc:fullfun? '((8 3) (4 2) (7 6) (6 2) (3 4))) #f)
+  (runit:check-equal? (lt-sc:fullfun? '((8 3) (4 8) (7 6) (6 2) (3 4))) #t)
+  (runit:check-equal? (lt-sc:fullfun? '((grape raisin)
+                                        (plum prune)
+                                        (stewed prune))) 
+                      #f)
+  (runit:check-equal? (lt-sc:fullfun? '((grape raisin)
+                                        (plum prune)
+                                        (stewed grape))) 
+                      #t)
 
+  (runit:check-equal? (lt-sc:one-to-one? '((chocolate chip) (doughy cookie))) 
+                      #t)
 
 
   (newline)

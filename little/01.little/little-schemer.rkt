@@ -21,6 +21,8 @@
          equal5?      ; chapter 05
 
          firsts       ; chapter 03
+         fullfun?     ; chapter 07
+         fun?         ; chapter 07
          insertL      ; chapter 03
          insertR      ; chapter 03
          insertR*     ; chapter 05
@@ -54,11 +56,14 @@
          occur        ; chapter 04
          occur*       ; chapter 05
          one?         ; chapter 04
+         one-to-one?  ; chapter 07
          pick         ; chapter 04
          raise-power  ; chapter 04
          rember       ; chapter 03
          rember*      ; chapter 05
          rempick      ; chapter 04
+         revrel       ; chapter 07
+         seconds      ; chapter 07
          sero?        ; chapter 06
          set?         ; chapter 07
          subset?      ; chapter 07
@@ -606,6 +611,27 @@ Mine:
   (cons s1 (cons s2 '())))
 (define (third x)
   (car (cdr (cdr x))))
+
+(define (fun? x)
+  (set? (firsts x)))
+
+(define (revpair pair)
+  (build (second pair) (first pair)))
+
+(define (revrel x)
+  (cond [(null? x) '()]
+        [else (cons (revpair (car x)) (revrel (cdr x)))]))
+
+(define (seconds l)
+  (cond [(null? l) '()]
+        [else (cons (second (car l)) (seconds (cdr l)))]))
+
+(define (fullfun? fun)
+  (set? (seconds fun))) 
+
+; This does the same thing:
+(define (one-to-one? fun)
+  (fun? (revrel fun))) 
 
 (module+ test
   (require (prefix-in runit: rackunit))
