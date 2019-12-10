@@ -5,7 +5,8 @@
          ; (prefix-in rd:   racket/date)
          (prefix-in srfi-19: srfi/19))
 
-(provide addtup       ; chapter 04
+(provide a-pair?      ; chapter07
+         addtup       ; chapter 04
          all-nums     ; chapter 04
          atom?        ; preface
          display-all  ; added by me
@@ -18,12 +19,14 @@
          eqset?       ; chapter 07
          equal2?      ; chapter 05
          equal5?      ; chapter 05
+
          firsts       ; chapter 03
          insertL      ; chapter 03
          insertR      ; chapter 03
          insertR*     ; chapter 05
          intersect    ; chapter 07
          intersect?   ; chapter 07
+         intersectall ; chapter 07
          lat?         ; chapter 02
          leftmost     ; chapter 05
          makeset      ; chapter 07
@@ -63,6 +66,7 @@
          subst*       ; chapter 05
          subst2       ; chapter 03
          tup+         ; chapter 04
+         union        ; chapter 07
          value        ; chapter 06
          value2       ; chapter 06
          zub1         ; chapter 06
@@ -549,7 +553,59 @@ Mine:
         [(not (member? (car s1) s2)) (intersect? (cdr s1) s2)]
         [else #t]))
 
+(define (intersect s1 s2)
+  (cond [(null? s1) '()]
+        [(member? (car s1) s2) (cons (car s1) (intersect (cdr s1) s2))]
+        [else (intersect (cdr s1) s2)]))
 
+(define (union s1 s2)
+  (cond [(null? s1) s2]
+        [(member? (car s1) s2) (union (cdr s1) s2)]
+        [else (cons (car s1) (union (cdr s1) s2))]))
+
+(define (set-diff set1 set2)
+  (cond [(null? set1) '()]
+        [(member? (car set1) set2) (set-diff (cdr set1) set2)]
+        [else (cons (car set1) (set-diff (cdr set1) set2))]))
+#|
+(define (intersectall lset)
+  (display-all "intersectall with lset: " lset)
+  (cond [(and (not (null? (car lset)))
+              (not (null? (cdr lset)))) 
+         (begin
+           (display-all "(car lset): " (car lset) ", (car (cdr lset)): "
+                        (car (cdr lset)))
+           (cons (intersect (car lset) (car (cdr lset))) (intersectall (cdr lset)))
+)]
+        [else '()]))
+|#
+; I should have seen this.
+(define (intersectall l-set)
+  (cond [(null? (cdr l-set)) (car l-set)]
+        [else (intersect (car l-set) (intersectall (cdr l-set)))])) 
+
+#|
+; mine is shorter, and it works, but I will go with theirs.
+(define (a-pair? l)
+  (cond [(eqan? (length l) 2) #t]
+        [else #f]))
+|#
+
+(define (a-pair? x)
+  (cond [(atom? x) #f]
+        [(null? x) #f]
+        [(null? (cdr x)) #f]
+        [(null? (cdr (cdr x))) #t]
+        [else #f])) 
+
+(define (first x) 
+  (car x))
+(define (second x)
+  (car (cdr x)))
+(define (build s1 s2)
+  (cons s1 (cons s2 '())))
+(define (third x)
+  (car (cdr (cdr x))))
 
 (module+ test
   (require (prefix-in runit: rackunit))

@@ -41,12 +41,41 @@
                                     '(6 chickens with large wings))
                       #t)
   
-    (runit:check-equal? (lt-sc:intersect? '(stewed tomatoes and macaroni)
+  (runit:check-equal? (lt-sc:intersect? '(stewed tomatoes and macaroni)
                                         '(macaroni and cheese))
                       #t)
   (runit:check-equal? (lt-sc:intersect? '(stewed tomatoes und nacaroni)
                                         '(macaroni and cheese))
                       #f)
+
+  (runit:check-equal? (lt-sc:intersect '(stewed tomatoes and macaroni)
+                                       '(macaroni and cheese))
+                      '(and macaroni))
+
+  (runit:check-equal? (lt-sc:union '(stewed tomatoes and macaroni casserole)
+                                   '(macaroni and cheese))
+                      '(stewed tomatoes casserole macaroni and cheese))
+  ; when s1 was null, we returned s2. I feel a commandment coming up.
+  (runit:check-equal? (lt-sc:intersectall '((a b c) (c a d e) (e f g h a b))) 
+                      '(a))
+  (runit:check-equal? (lt-sc:intersectall '((6 pears and)
+                                            (3 peaches and 6 peppers)
+                                            (8 pears and 6 plums)
+                                            (and 6 prunes with some apples)))
+                      '(6 and))
+
+  (lt-sc:display-all "page 117")
+  (runit:check-equal? (lt-sc:a-pair? '(pear pair)) #t)
+  (runit:check-equal? (lt-sc:a-pair? '(3 7)) #t)
+  (runit:check-equal? (lt-sc:a-pair? '((2) (pair))) #t)
+  (runit:check-equal? (lt-sc:a-pair? '(full (house))) #t)
+  
+  ; you make a pair by cons the first onto the cons of the second onto '()
+  ; (cons x1 (cons x2 '()))
+  ; "rel" is relation, a list of pairs, or a set
+  ; "fun" is function
+  (display-all "page 119")
+
 
 
 
