@@ -13,6 +13,8 @@
          display-date ; added by me
          edd1         ; chapter 06
          eqan?        ; chapter 04
+         eq?-c        ; chapter 08
+         eq?-salad    ; chapter 08
          eqlist?      ; chapter 05
          eqlist2?     ; chapter 05
          eqlist5?     ; chapter 05
@@ -24,8 +26,10 @@
          fullfun?     ; chapter 07
          fun?         ; chapter 07
          insertL      ; chapter 03
+         insertL-f    ; chapter 08
          insertR      ; chapter 03
          insertR*     ; chapter 05
+         insertR-f    ; chapter 08
          intersect    ; chapter 07
          intersect?   ; chapter 07
          intersectall ; chapter 07
@@ -60,6 +64,9 @@
          pick         ; chapter 04
          raise-power  ; chapter 04
          rember       ; chapter 03
+         rember-eq?   ; chapter 08
+         rember-f     ; chapter 08
+         rember-f2    ; chapter 08
          rember*      ; chapter 05
          rempick      ; chapter 04
          revrel       ; chapter 07
@@ -122,7 +129,7 @@ chapter 04: 20
   (rember-helper a lat '()))
 
 (define (rember a lat)
-  (cond [(null? lat) (quote ())]
+  (cond [(null? lat) '()]
         ; [(eq? (car lat) a) (cdr lat)]
         [(equal5? (car lat) a) (cdr lat)] ; from chapter 5
         [else (cons (car lat) (rember a (cdr lat)))])) 
@@ -632,6 +639,70 @@ Mine:
 ; This does the same thing:
 (define (one-to-one? fun)
   (fun? (revrel fun))) 
+
+; chapter 08
+(define (rember-f the-func a lat)
+  (cond [(null? lat) '()]
+        ; [(eq? (car lat) a) (cdr lat)]
+        [(the-func (car lat) a) (cdr lat)] ; from chapter 5
+        [else (cons (car lat) (rember-f the-func a (cdr lat)))]))
+; according to book, in Lisp, you would do this for function call:
+; (funcall the-func (car lat) a)
+
+(define eq?-c
+  (lambda (a)
+    (lambda (x)
+      (eq? x a))))
+
+(define eq?-salad (eq?-c 'salad))
+
+(define rember-f2
+  (lambda (test?)
+    (lambda (a lat)
+      (cond [(null? lat) '()]
+            [(test? (car lat) a) (cdr lat)]
+            [else (cons (car lat) ((rember-f2 test?) a (cdr lat)))]))))
+; Honestly, not too clear why you would want a lambda inside a lambda.
+; Maybe after "Simply Scheme" it should be obvious, but I don't get it.  
+; WRT currying: I can see using lambdas in higher-order functions,
+; esp the Big Three. But then just use a straight lambda.
+
+(define rember-eq? (rember-f2 eq?))
+
+(define insertL-f 
+  (lambda (test?)
+    (lambda (new old lat)
+      (cond [(null? lat) '()]
+            [(test? (car lat) old) (cons new lat)]
+            [else (cons (car lat) ((insertL-f test?) new old (cdr lat)))]))))
+
+
+#|
+; This is based on their first version
+(define insertL-f
+  (lambda (test?)
+    (lambda (new old l)
+      (cond [(null? l) (quote ())]
+            [(test? (car l) old) (cons new (cons old (cdr l)))]
+            [else (cons (car l) ((insertL-f test?) new old (cdr l)))]))))
+|#
+
+(define insertR-f 
+  (lambda (test?)
+    (lambda (new old lat)
+      (cond [(null? lat) '()]
+        [(test? (car lat) old) (cons old (cons new (cdr lat)))]
+        [else (cons (car lat) ((insertR-f test?) new old (cdr lat)))]))))
+
+; If we look at their insertL-f, all of it but one line are pretty much the same
+; Will they do it with a cond? Or with another function?
+
+(define (seqL new old l)
+  (cons new (cons old l)))
+
+(define (seqR new old l)
+  (cons old (cons new l)))
+; with functions
 
 (module+ test
   (require (prefix-in runit: rackunit))

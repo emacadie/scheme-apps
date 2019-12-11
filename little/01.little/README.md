@@ -46,6 +46,7 @@ The Eighth Commandment: Use help functions to abstract from representations.
 
 
 Can use rb6: prefix:  
+* =
 * and
 * eq?  
 * equal?  
