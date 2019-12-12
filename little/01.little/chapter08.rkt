@@ -62,7 +62,56 @@
                        'eq? '(equal? eq ? eqan? eqlist? eqpair?))
                       '(equal? eq ? eqan? eqlist? eqpair?))
 
+  (runit:check-equal? (lt-sc:insertL2 'topping 
+                                      'fudge 
+                                      '(ice cream with fudge for dessert))
+                      '(ice cream with topping fudge for dessert))
+  (runit:check-equal? (lt-sc:insertL2 'jalapeno 
+                                      'and
+                                      '(tacos tamales and salsa))
+                      '(tacos tamales jalapeno and salsa))
+  (runit:check-equal? (lt-sc:insertL2 'e 'd '(a b c d f g d h))
+                      '(a b c e d f g d h))
+
+  
+  (runit:check-equal? (lt-sc:subst8 'topping 
+                                   'fudge 
+                                   '(ice cream with fudge for dessert))
+                      '(ice cream with topping for dessert))
+  (runit:check-equal? (lt-sc:subst8 'jalapeno 
+                                   'and
+                                   '(tacos tamales and salsa))
+                      '(tacos tamales jalapeno salsa))
+  (runit:check-equal? (lt-sc:subst8 'e 'd '(a b c d f g d h))
+                      '(a b c e f g d h))
+
+  (runit:check-equal? (lt-sc:rember8 'mint '(lamb chops and mint jelly)) 
+                      '(lamb chops and jelly))
+  (runit:check-equal? (lt-sc:rember8 'mint '(lamb chops and mint flavored mint jelly)) 
+                      '(lamb chops and flavored mint jelly))
+  (runit:check-equal? (lt-sc:rember8 'toast '(bacon lettuce and tomato))
+                      '(bacon lettuce and tomato))
+  (runit:check-equal? (lt-sc:rember8 'cup '(coffee cup tea cup and hick cup))
+                      '(coffee tea cup and hick cup))
+  (runit:check-equal? (lt-sc:rember8 'and '(bacon lettuce and tomato))
+                      '(bacon lettuce tomato))
+  (runit:check-equal? (lt-sc:rember8 'sauce '(soy sauce and tomato sauce))
+                      '(soy and tomato sauce))
+
+  ; they made a function insert-g
+  ; since insertL, insertR and subst from chapter 3 were so similar
+  ; instead of if/cond to select, you just make a function that sends a 
+  ; different function to insert-g
+  (lt-sc:display-all "up to page 133")
+
   (lt-sc:display-all "up to page 131")
+  (lt-sc:display-all "All hail the Ninth Commandment")
+
+  (runit:check-equal? (lt-sc:value8 '13) 13)
+  (runit:check-equal? (lt-sc:value8 '(+ 1 3)) 4)
+  ; (runit:check-equal? (lt-sc:value8 '(1 + (3 raise-power 4))) 82)
+  ; (runit:check-equal? (lt-sc:value8 'cookie) '())
+
 
   (newline)
   (lt-sc:display-all "Done with chapter 08 tests at " (lt-sc:display-date))

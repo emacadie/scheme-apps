@@ -44,6 +44,7 @@ The Seventh Commandment: Recur on the subparts that are of the same nature:
 
 The Eighth Commandment: Use help functions to abstract from representations.   
 
+The Ninth Commandment: Abstract common patterns with a new function.    
 
 Can use rb6: prefix:  
 * =

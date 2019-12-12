@@ -27,6 +27,7 @@
          fun?         ; chapter 07
          insertL      ; chapter 03
          insertL-f    ; chapter 08
+         insertL2     ; chapter 08
          insertR      ; chapter 03
          insertR*     ; chapter 05
          insertR-f    ; chapter 08
@@ -67,6 +68,7 @@
          rember-eq?   ; chapter 08
          rember-f     ; chapter 08
          rember-f2    ; chapter 08
+         rember8      ; chapter 08
          rember*      ; chapter 05
          rempick      ; chapter 04
          revrel       ; chapter 07
@@ -77,10 +79,12 @@
          subst        ; chapter 03
          subst*       ; chapter 05
          subst2       ; chapter 03
+         subst8       ; chapter 08
          tup+         ; chapter 04
          union        ; chapter 07
          value        ; chapter 06
          value2       ; chapter 06
+         value8       ; chapter 08
          zub1         ; chapter 06
 )
 
@@ -354,7 +358,6 @@ Mine:
         [(atom? (car l)) (car l)]
         [else (leftmost (car l))]))
 
-
 (define (eqlist? l1 l2)
   (cond [(rb6:and (null? l1) (null? l2)) #t]
         [(rb6:and (not (atom? (car l1))) 
@@ -507,14 +510,13 @@ Mine:
   (car aexp))
 
 (define (value2 nexp)
-  (cond
-    [(atom? nexp) nexp]
-    [(eq? (operator nexp) '+) (my+ (value2 (1st-sub-exp nexp))
-                                   (value2 (2nd-sub-exp nexp)))]
-    [(eq? (operator nexp) '*) (my-x (value2 (1st-sub-exp nexp))
-                                    (value2 (2nd-sub-exp nexp)))]
-    [else (raise-power (value2 (1st-sub-exp nexp))
-                       (value2 (2nd-sub-exp nexp)))]))
+  (cond [(atom? nexp) nexp]
+        [(eq? (operator nexp) '+) (my+ (value2 (1st-sub-exp nexp))
+                                       (value2 (2nd-sub-exp nexp)))]
+        [(eq? (operator nexp) '*) (my-x (value2 (1st-sub-exp nexp))
+                                        (value2 (2nd-sub-exp nexp)))]
+        [else (raise-power (value2 (1st-sub-exp nexp))
+                           (value2 (2nd-sub-exp nexp)))]))
 
 (define (sero? n)
   (null? n))
@@ -704,6 +706,53 @@ Mine:
   (cons old (cons new l)))
 ; with functions
 
+(define insert-g
+  (lambda (seq)
+    (lambda (new old l)
+      (cond [(null? l) (quote ())]
+            ; calling passed seq function
+            [(eq? (car l) old) (seq new old (cdr l))] 
+            [else (cons (car l) ((insert-g seq) new old (cdr l)))]))))
+
+(define insertL2
+  (insert-g (lambda (new old l)
+              (cons new (cons old l)))))
+; define function in-line
+
+; subst is a lot like insertR and insertL
+; let's make a seq for that
+(define (seqS new old l)
+  (cons new l))
+; we need "old" since we will put this into insert-g for a new subst
+
+(define subst8
+  (insert-g seqS))
+; can I call this with args?
+
+(define seqrem
+  (lambda (new old l)
+    l))
+
+(define (rember8 a l)
+  ((insert-g seqrem) #f a l))
+; #f is a placeholder, I think.
+
+; this returns functions
+(define (atom-to-function x)
+  (cond [(eqan? x '+) my+]
+        [(eqan? x '*) my-x]
+        [else raise-power])) 
+; this expects expressions like '(+ 1 2), not '(1 + 2)
+(define (value8 nexp)
+  (display-all "Calling value8 with " nexp)
+  (cond [(atom? nexp) nexp]
+        [else 
+         ; the double parens were tricky
+         ((atom-to-function (operator nexp)) (value8 (1st-sub-exp nexp))
+                                             (value8 (2nd-sub-exp nexp)))]))
+; I am having some trouble thinking functionally.
+; Perhaps I should watch Eric Normand's podcast more often.
+
 (module+ test
   (require (prefix-in runit: rackunit))
   (runit:check-true #t)
@@ -711,6 +760,13 @@ Mine:
   (display-all "testing " "testing")
   (runit:check-equal? (atom? (quote ())) #f)
   (runit:check-equal? (atom? (rb6:quote ())) #f)
-  (runit:check-equal? (atom? '()) #f))
+  (runit:check-equal? (atom? '()) #f)
+
+  (runit:check-equal? (operator '(+ 5 3))
+                      '+)
+
+)
+
+  
 
 
