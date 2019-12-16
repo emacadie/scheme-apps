@@ -127,14 +127,17 @@
   (runit:check-equal? (lt-sc:multirember&co 'tuna '() lt-sc:a-friend) #t)
   (runit:check-equal? (lt-sc:multirember&co 'tuna '(tuna) lt-sc:a-friend) #f)
   ; this just gives how many in the list are not equal to 'tuna
+  (lt-sc:display-all "01 call to multirember&co --------------------------")
   (runit:check-equal? (lt-sc:multirember&co 'tuna
                                             '(strawberries tuna swordfish)
                                             lt-sc:last-friend)
                       2)
+  (lt-sc:display-all "02 call to multirember&co --------------------------")
   (runit:check-equal? (lt-sc:multirember&co 'tuna
                                             '(strawberries tuna and swordfish)
                                             lt-sc:last-friend)
                       3)
+  (lt-sc:display-all "03 call to multirember&co --------------------------")
   (runit:check-equal? (lt-sc:multirember&co 'tuna
                                             '(strawberries tuna swordfish tuna shark)
                                             lt-sc:last-friend)

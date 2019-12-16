@@ -795,19 +795,59 @@ multiremberT takes a function like eq?-tuna and a lat and then does its work.
 ; instead of pre-defining ahead-of-time?
 
 ; Their function from page 137
-(define multirember&co
+(define multirember&co  
   (lambda (a lat col)
+    (display-all "In multirember&col " a ", " lat ", " col)
     (cond [(null? lat) (col (quote ()) (quote ()))]
           [(eq? (car lat) a)
+           (begin
+             (display-all "In the (eq? (car lat) a section")
            (multirember&co a (cdr lat)
                            (lambda (newlat seen)
+                             (display-all "in lambda for eq with newlat: " 
+                                          newlat ", and seen: " seen)
                              (col newlat
-                                  (cons (car lat) seen))))]
+                                  (cons (car lat) seen)))))]
           [else
+           (begin
+             (display-all "In the else")
            (multirember&co a (cdr lat)
                            (lambda (newlat seen)
+                             (display-all "in lambda for else with newlat: "
+                                          newlat ", and seen: " seen)
                              (col (cons (car lat) newlat)
-                                  seen)))])))
+                                  seen))))])))
+
+#|
+Here is a test in chapter08.rkt:
+  (runit:check-equal? (lt-sc:multirember&co 'tuna
+                                            '(strawberries tuna swordfish tuna shark)
+                                            lt-sc:last-friend)
+                      3)
+
+Here is the printout from chapter 08:
+03 call to multirember&co --------------------------
+In multirember&col tuna, (strawberries tuna swordfish tuna shark), #<procedure:last-friend>
+In the else
+In multirember&col tuna, (tuna swordfish tuna shark), #<procedure:...ttle-schemer.rkt:815:27>
+In the (eq? (car lat) a section
+In multirember&col tuna, (swordfish tuna shark), #<procedure:...ttle-schemer.rkt:806:27>
+In the else
+In multirember&col tuna, (tuna shark), #<procedure:...ttle-schemer.rkt:815:27>
+In the (eq? (car lat) a section
+In multirember&col tuna, (shark), #<procedure:...ttle-schemer.rkt:806:27>
+In the else
+In multirember&col tuna, (), #<procedure:...ttle-schemer.rkt:815:27>
+in lambda for else with newlat: (), and seen: ()
+in lambda for eq with newlat: (shark), and seen: ()
+in lambda for else with newlat: (shark), and seen: (tuna)
+in lambda for eq with newlat: (swordfish shark), and seen: (tuna)
+in lambda for else with newlat: (swordfish shark), and seen: (tuna tuna)
+
+Why do we never see "strawberry" in the "in lambda" statements?
+Interesting that we get the "in lambda" statements at the end.
+We can see the lists building up.
+|#
 
 ; It is a function that takes two arguments 
 ; and asks whether the second one is the empty list. 

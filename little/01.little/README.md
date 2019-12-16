@@ -48,6 +48,8 @@ The Ninth Commandment: Abstract common patterns with a new function.
 
 The Tenth Commandment: Build functions to collect more than one value at a time.   
 Discussion of chapter 08 and Tenth Commandment: https://gist.github.com/jcoglan/cc12bd0f0c077c487c04    
+Also: http://debasishg.blogspot.com/2007/08/collector-idiom-in-scheme-is-this.html (with a reply by co-author MF)    
+
 
    
 Can use rb6: prefix:  
