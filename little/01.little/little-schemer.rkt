@@ -5,7 +5,8 @@
          ; (prefix-in rd:   racket/date)
          (prefix-in srfi-19: srfi/19))
 
-(provide a-pair?      ; chapter07
+(provide a-friend     ; chapter 08
+         a-pair?      ; chapter07
          addtup       ; chapter 04
          all-nums     ; chapter 04
          atom?        ; preface
@@ -15,6 +16,7 @@
          eqan?        ; chapter 04
          eq?-c        ; chapter 08
          eq?-salad    ; chapter 08
+         eq?-tuna     ; chapter 08
          eqlist?      ; chapter 05
          eqlist2?     ; chapter 05
          eqlist5?     ; chapter 05
@@ -22,70 +24,75 @@
          equal2?      ; chapter 05
          equal5?      ; chapter 05
 
-         firsts       ; chapter 03
-         fullfun?     ; chapter 07
-         fun?         ; chapter 07
-         insertL      ; chapter 03
-         insertL-f    ; chapter 08
-         insertL2     ; chapter 08
-         insertR      ; chapter 03
-         insertR*     ; chapter 05
-         insertR-f    ; chapter 08
-         intersect    ; chapter 07
-         intersect?   ; chapter 07
-         intersectall ; chapter 07
-         lat?         ; chapter 02
-         leftmost     ; chapter 05
-         makeset      ; chapter 07
-         member?      ; chapter 02
-         member*      ; chapter 05
-         multiinsertL ; chapter 03
-         multiinsertR ; chapter 03
-         multirember  ; chapter 03
-         multisubst   ; chapter 03
-         my+          ; chapter 04
-         my-          ; chapter 04
-         my-add1      ; chapter 04
-         my-div       ; chatper 04
-         my-eq        ; chapter 04
-         my-gt        ; chapter 04
-         my-length    ; chapter 04
-         my-lt        ; chapter 04
-         my-rember    ; I may get rid of this
-         my-sub1      ; chapter 04
-         my-x         ; chapter 04
-         no-nums      ; chapter 04
-         numbered?    ; chapter 06
-         numbered2?   ; chapter 06
-         ny+          ; chapter 06
-         occur        ; chapter 04
-         occur*       ; chapter 05
-         one?         ; chapter 04
-         one-to-one?  ; chapter 07
-         pick         ; chapter 04
-         raise-power  ; chapter 04
-         rember       ; chapter 03
-         rember-eq?   ; chapter 08
-         rember-f     ; chapter 08
-         rember-f2    ; chapter 08
-         rember8      ; chapter 08
-         rember*      ; chapter 05
-         rempick      ; chapter 04
-         revrel       ; chapter 07
-         seconds      ; chapter 07
-         sero?        ; chapter 06
-         set?         ; chapter 07
-         subset?      ; chapter 07
-         subst        ; chapter 03
-         subst*       ; chapter 05
-         subst2       ; chapter 03
-         subst8       ; chapter 08
-         tup+         ; chapter 04
-         union        ; chapter 07
-         value        ; chapter 06
-         value2       ; chapter 06
-         value8       ; chapter 08
-         zub1         ; chapter 06
+         firsts        ; chapter 03
+         fullfun?      ; chapter 07
+         fun?          ; chapter 07
+         insertL       ; chapter 03
+         insertL-f     ; chapter 08
+         insertL2      ; chapter 08
+         insertR       ; chapter 03
+         insertR*      ; chapter 05
+         insertR-f     ; chapter 08
+         intersect     ; chapter 07
+         intersect?    ; chapter 07
+         intersectall  ; chapter 07
+         last-friend   ; chapter 08
+         lat?          ; chapter 02
+         leftmost      ; chapter 05
+         makeset       ; chapter 07
+         member?       ; chapter 02
+         member*       ; chapter 05
+         multiinsertL  ; chapter 03
+         multiinsertR  ; chapter 03
+         multirember   ; chapter 03
+         multirember&co ; chapter 08
+         multirember-eq? ; chapter 08
+         multirember-f ; chapter 08
+         multiremberT  ; chapter 08
+         multisubst    ; chapter 03
+         my+           ; chapter 04
+         my-           ; chapter 04
+         my-add1       ; chapter 04
+         my-div        ; chatper 04
+         my-eq         ; chapter 04
+         my-gt         ; chapter 04
+         my-length     ; chapter 04
+         my-lt         ; chapter 04
+         my-rember     ; I may get rid of this
+         my-sub1       ; chapter 04
+         my-x          ; chapter 04
+         no-nums       ; chapter 04
+         numbered?     ; chapter 06
+         numbered2?    ; chapter 06
+         ny+           ; chapter 06
+         occur         ; chapter 04
+         occur*        ; chapter 05
+         one?          ; chapter 04
+         one-to-one?   ; chapter 07
+         pick          ; chapter 04
+         raise-power   ; chapter 04
+         rember        ; chapter 03
+         rember-eq?    ; chapter 08
+         rember-f      ; chapter 08
+         rember-f2     ; chapter 08
+         rember8       ; chapter 08
+         rember*       ; chapter 05
+         rempick       ; chapter 04
+         revrel        ; chapter 07
+         seconds       ; chapter 07
+         sero?         ; chapter 06
+         set?          ; chapter 07
+         subset?       ; chapter 07
+         subst         ; chapter 03
+         subst*        ; chapter 05
+         subst2        ; chapter 03
+         subst8        ; chapter 08
+         tup+          ; chapter 04
+         union         ; chapter 07
+         value         ; chapter 06
+         value2        ; chapter 06
+         value8        ; chapter 08
+         zub1          ; chapter 06
 )
 
 #|
@@ -752,6 +759,75 @@ Mine:
                                              (value8 (2nd-sub-exp nexp)))]))
 ; I am having some trouble thinking functionally.
 ; Perhaps I should watch Eric Normand's podcast more often.
+
+(define (multirember-f test)
+  (lambda (a lat) 
+  (cond [(null? lat) (quote ())]
+        [(test (car lat) a) ((multirember-f test) a (cdr lat))]
+        [else (cons (car lat) ((multirember-f test) a (cdr lat)))])))
+
+#|
+(define multirember-f
+  (lambda (test ?)
+    (lambda (a lat)
+      (cond ((null? lat) (quote ()))
+            ((test? a (car lat)) ((multirember-f test?) a (cdr lat)))
+            (else (cons (car lat) ((multirember-f test?) a (cdr lat))))))))
+|#
+
+; define Define multirember-eq ? using multirember-f
+; I forgot: No need to specify "a" and "lat"
+(define (multirember-eq? test)
+    ((multirember-f eq?)))
+
+(define eq?-tuna (eq?-c 'tuna))
+
+#|
+Perhaps we should now write multiremberT which is similar to multirember-f
+Instead of taking testP and returning a function, 
+multiremberT takes a function like eq?-tuna and a lat and then does its work.
+|#
+(define (multiremberT the-func lat)
+  (cond [(null? lat) '()]
+        [(the-func (car lat)) (multiremberT the-func (cdr lat))]
+        [else (cons (car lat) (multiremberT the-func (cdr lat)))]))
+; Let me guess: Will we use "lambda" in an invocation of multiremberT
+; instead of pre-defining ahead-of-time?
+
+; Their function from page 137
+(define multirember&co
+  (lambda (a lat col)
+    (cond [(null? lat) (col (quote ()) (quote ()))]
+          [(eq? (car lat) a)
+           (multirember&co a (cdr lat)
+                           (lambda (newlat seen)
+                             (col newlat
+                                  (cons (car lat) seen))))]
+          [else
+           (multirember&co a (cdr lat)
+                           (lambda (newlat seen)
+                             (col (cons (car lat) newlat)
+                                  seen)))])))
+
+; It is a function that takes two arguments 
+; and asks whether the second one is the empty list. 
+; It ignores its first argnment.
+(define a-friend
+  (lambda (x y)
+    (null? y)))
+
+; multirember&co is not really removing, it is returning #t or #f
+; at least with "a-friend"
+; "col" stands for "collector", which is also a continuation.
+
+; from the text, page 140, about what (multirember&co a lat f) does:
+; It looks at every atom of the lat to see whether it is eq? to a. 
+; Those atoms that are not are collected in one list ls1 
+; the others for which the answer is true are collected in a second list ls2 . 
+; Finally, it determines the value of (f ls1 ls2 ) .
+
+(define (last-friend x y)
+  (length x))
 
 (module+ test
   (require (prefix-in runit: rackunit))

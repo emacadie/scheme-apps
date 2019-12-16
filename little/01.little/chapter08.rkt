@@ -111,7 +111,35 @@
   (runit:check-equal? (lt-sc:value8 '(+ 1 3)) 4)
   ; (runit:check-equal? (lt-sc:value8 '(1 + (3 raise-power 4))) 82)
   ; (runit:check-equal? (lt-sc:value8 'cookie) '())
-
+  (runit:check-equal? ((lt-sc:multirember-f eq?) 
+                       'tuna
+                       '(shrimp salad tuna salad and tuna))
+                      '(shrimp salad salad and))
+  (runit:check-equal? (lt-sc:multiremberT lt-sc:eq?-tuna 
+                                          '(shrimp salad tuna salad and tuna))
+                      '(shrimp salad salad and))
+  ; page 138
+  ; "a-friend" checks if the second arg is an empty list
+  (runit:check-equal? (lt-sc:multirember&co 'tuna
+                                            '(strawberries tuna and swordfish)
+                                            lt-sc:a-friend)
+                      #f)
+  (runit:check-equal? (lt-sc:multirember&co 'tuna '() lt-sc:a-friend) #t)
+  (runit:check-equal? (lt-sc:multirember&co 'tuna '(tuna) lt-sc:a-friend) #f)
+  ; this just gives how many in the list are not equal to 'tuna
+  (runit:check-equal? (lt-sc:multirember&co 'tuna
+                                            '(strawberries tuna swordfish)
+                                            lt-sc:last-friend)
+                      2)
+  (runit:check-equal? (lt-sc:multirember&co 'tuna
+                                            '(strawberries tuna and swordfish)
+                                            lt-sc:last-friend)
+                      3)
+  (runit:check-equal? (lt-sc:multirember&co 'tuna
+                                            '(strawberries tuna swordfish tuna shark)
+                                            lt-sc:last-friend)
+                      3)
+  (lt-sc:display-all "Now we get the Tenth Commandment")
 
   (newline)
   (lt-sc:display-all "Done with chapter 08 tests at " (lt-sc:display-date))

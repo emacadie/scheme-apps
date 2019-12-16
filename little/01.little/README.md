@@ -46,11 +46,16 @@ The Eighth Commandment: Use help functions to abstract from representations.
 
 The Ninth Commandment: Abstract common patterns with a new function.    
 
+The Tenth Commandment: Build functions to collect more than one value at a time.   
+Discussion of chapter 08 and Tenth Commandment: https://gist.github.com/jcoglan/cc12bd0f0c077c487c04    
+
+   
 Can use rb6: prefix:  
 * =
 * and
 * eq?  
 * equal?  
+* length
 * list?  
 * number?
 * null?  
