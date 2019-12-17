@@ -843,6 +843,7 @@ in lambda for eq with newlat: (shark), and seen: ()
 in lambda for else with newlat: (shark), and seen: (tuna)
 in lambda for eq with newlat: (swordfish shark), and seen: (tuna)
 in lambda for else with newlat: (swordfish shark), and seen: (tuna tuna)
+in last-friend with x: (strawberries swordfish shark), and unused y: (tuna tuna)
 
 Why do we never see "strawberry" in the "in lambda" statements?
 Interesting that we get the "in lambda" statements at the end.
@@ -852,9 +853,9 @@ We can see the lists building up.
 ; It is a function that takes two arguments 
 ; and asks whether the second one is the empty list. 
 ; It ignores its first argnment.
-(define a-friend
-  (lambda (x y)
-    (null? y)))
+(define (a-friend x y)
+  (display-all "in a-friend with unused x: " x ", and y: " y)
+  (null? y))
 
 ; multirember&co is not really removing, it is returning #t or #f
 ; at least with "a-friend"
@@ -867,6 +868,7 @@ We can see the lists building up.
 ; Finally, it determines the value of (f ls1 ls2 ) .
 
 (define (last-friend x y)
+  (display-all "in last-friend with x: " x ", and unused y: " y)
   (length x))
 
 (module+ test
