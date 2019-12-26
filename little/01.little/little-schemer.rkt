@@ -797,7 +797,7 @@ multiremberT takes a function like eq?-tuna and a lat and then does its work.
 ; Their function from page 137
 (define multirember&co  
   (lambda (a lat col)
-    (display-all "In multirember&col " a ", " lat ", " col)
+    (display-all "In multirember&co " a ", " lat ", " col)
     (cond [(null? lat) (col (quote ()) (quote ()))]
           [(eq? (car lat) a)
            (begin
@@ -827,17 +827,17 @@ Here is a test in chapter08.rkt:
 
 Here is the printout from chapter 08:
 03 call to multirember&co --------------------------
-In multirember&col tuna, (strawberries tuna swordfish tuna shark), #<procedure:last-friend>
+In multirember&co tuna, (strawberries tuna swordfish tuna shark), #<procedure:last-friend>
 In the else
-In multirember&col tuna, (tuna swordfish tuna shark), #<procedure:...ttle-schemer.rkt:815:27>
+In multirember&co tuna, (tuna swordfish tuna shark), #<procedure:...ttle-schemer.rkt:815:27>
 In the (eq? (car lat) a section
-In multirember&col tuna, (swordfish tuna shark), #<procedure:...ttle-schemer.rkt:806:27>
+In multirember&co tuna, (swordfish tuna shark), #<procedure:...ttle-schemer.rkt:806:27>
 In the else
-In multirember&col tuna, (tuna shark), #<procedure:...ttle-schemer.rkt:815:27>
+In multirember&co tuna, (tuna shark), #<procedure:...ttle-schemer.rkt:815:27>
 In the (eq? (car lat) a section
-In multirember&col tuna, (shark), #<procedure:...ttle-schemer.rkt:806:27>
+In multirember&co tuna, (shark), #<procedure:...ttle-schemer.rkt:806:27>
 In the else
-In multirember&col tuna, (), #<procedure:...ttle-schemer.rkt:815:27>
+In multirember&co tuna, (), #<procedure:...ttle-schemer.rkt:815:27>
 in lambda for else with newlat: (), and seen: ()
 in lambda for eq with newlat: (shark), and seen: ()
 in lambda for else with newlat: (shark), and seen: (tuna)
@@ -871,6 +871,70 @@ We can see the lists building up.
   (display-all "in last-friend with x: " x ", and unused y: " y)
   (length x))
 
+; I get the concept of collectors, I think.
+; But I am not clear how the lists are transmitted/passed
+; I know last-friend returns a number, but why doesn't it return a number
+; all the other times we see "col" in multirember&co?
+
+; I guess we only call "col" once, and the other times it builds up the args.
+; it's not like it has args the first time.
+; Now that I write that, I feel kind of dumb.
+
+; The thing is: I think I get it, but I am not sure I could do it if asked to.
+; I am not having that "a-ha!" moment.
+; As one of the pages I link to put it, this seems like a convoluted way
+; to implement reduce/keep, or is it filter?.
+; Then again, maybe this is how Scheme does it.
+
+#|
+; this is like the lambda in multirember&co for the eq
+; their definition in book, page 139
+; won't work because "col", "newlat" and "lat" are undefined
+ 
+(define new-friend
+  (lambda (newlat seen)
+    (col newlat
+         (cons (car lat) seen))))
+|#
+
+(define multirember&co2  
+  (lambda (a lat col)
+    (display-all "In multirember&co2 " a ", " lat ", " col)
+    (cond [(null? lat) (col (quote ()) (quote ()))]
+          [(eq? (car lat) a)
+           (begin
+             (display-all "In the (eq? (car lat) a section")
+             (display-all "Here is result of eq lambda: "
+                                                     (lambda (newlat seen)
+                             (display-all "in lambda for eq2 with newlat: " 
+                                          newlat ", and seen: " seen)
+                             (col newlat
+                                  (cons (car lat) seen)))
+                          )
+           (multirember&co2 a (cdr lat)
+                           (lambda (newlat seen)
+                             (display-all "in lambda for eq with newlat: " 
+                                          newlat ", and seen: " seen)
+                             (col newlat
+                                  (cons (car lat) seen)))
+))]
+          [else
+           (begin
+             (display-all "In the else")
+             (display-all "Here is the result of else lambda: "
+                                                     (lambda (newlat seen)
+                             (display-all "in lambda for else2 with newlat: "
+                                          newlat ", and seen: " seen)
+                             (col (cons (car lat) newlat)
+                                  seen))
+                          )
+           (multirember&co2 a (cdr lat) (lambda (newlat seen)
+                             (display-all "in lambda for else with newlat: "
+                                          newlat ", and seen: " seen)
+                             (col (cons (car lat) newlat)
+                                  seen)))
+)])))
+
 (module+ test
   (require (prefix-in runit: rackunit))
   (runit:check-true #t)
@@ -882,8 +946,13 @@ We can see the lists building up.
 
   (runit:check-equal? (operator '(+ 5 3))
                       '+)
+  (display-all "------------ trying multirember&co2")
+  (runit:check-equal? (multirember&co2 'tuna
+                                       '(strawberries tuna swordfish tuna shark)
+                                       last-friend)
+                      3)
 
-)
+) ; end module+ test
 
   
 
