@@ -5,25 +5,25 @@
          ; (prefix-in rd:   racket/date)
          (prefix-in srfi-19: srfi/19))
 
-(provide a-friend     ; chapter 08
-         a-pair?      ; chapter07
-         addtup       ; chapter 04
-         all-nums     ; chapter 04
-         atom?        ; preface
-         display-all  ; added by me
-         display-date ; added by me
-         edd1         ; chapter 06
-         eqan?        ; chapter 04
-         eq?-c        ; chapter 08
-         eq?-salad    ; chapter 08
-         eq?-tuna     ; chapter 08
-         eqlist?      ; chapter 05
-         eqlist2?     ; chapter 05
-         eqlist5?     ; chapter 05
-         eqset?       ; chapter 07
-         equal2?      ; chapter 05
-         equal5?      ; chapter 05
-
+(provide a-friend      ; chapter 08
+         a-pair?       ; chapter07
+         addtup        ; chapter 04
+         all-nums      ; chapter 04
+         atom?         ; preface
+         display-all   ; added by me
+         display-date  ; added by me
+         edd1          ; chapter 06
+         eqan?         ; chapter 04
+         eq?-c         ; chapter 08
+         eq?-salad     ; chapter 08
+         eq?-tuna      ; chapter 08
+         eqlist?       ; chapter 05
+         eqlist2?      ; chapter 05
+         eqlist5?      ; chapter 05
+         eqset?        ; chapter 07
+         equal2?       ; chapter 05
+         equal5?       ; chapter 05
+         evens-only*   ; chapter 08
          firsts        ; chapter 03
          fullfun?      ; chapter 07
          fun?          ; chapter 07
@@ -42,11 +42,13 @@
          makeset       ; chapter 07
          member?       ; chapter 02
          member*       ; chapter 05
-         multiinsertL  ; chapter 03
-         multiinsertR  ; chapter 03
-         multirember   ; chapter 03
-         multirember&co ; chapter 08
-         multirember-eq? ; chapter 08
+         multiinsertL     ; chapter 03
+         multiinsertLR    ; chapter 08
+         multiinsertLR&co ; chapter 08
+         multiinsertR     ; chapter 03
+         multirember      ; chapter 03
+         multirember&co   ; chapter 08
+         multirember-eq?  ; chapter 08
          multirember-f ; chapter 08
          multiremberT  ; chapter 08
          multisubst    ; chapter 03
@@ -69,6 +71,7 @@
          occur*        ; chapter 05
          one?          ; chapter 04
          one-to-one?   ; chapter 07
+         page144-func  ; chapter 08
          pick          ; chapter 04
          raise-power   ; chapter 04
          rember        ; chapter 03
@@ -78,6 +81,7 @@
          rember8       ; chapter 08
          rember*       ; chapter 05
          rempick       ; chapter 04
+         return-newlat ; chapter 08
          revrel        ; chapter 07
          seconds       ; chapter 07
          sero?         ; chapter 06
@@ -885,7 +889,7 @@ We can see the lists building up.
 ; As one of the pages I link to put it, this seems like a convoluted way
 ; to implement reduce/keep, or is it filter?.
 ; Then again, maybe this is how Scheme does it.
-
+; And when is "col" called?
 #|
 ; this is like the lambda in multirember&co for the eq
 ; their definition in book, page 139
@@ -905,35 +909,161 @@ We can see the lists building up.
            (begin
              (display-all "In the (eq? (car lat) a section")
              (display-all "Here is result of eq lambda: "
-                                                     (lambda (newlat seen)
+                          (lambda (newlat seen)
                              (display-all "in lambda for eq2 with newlat: " 
                                           newlat ", and seen: " seen)
-                             (col newlat
-                                  (cons (car lat) seen)))
-                          )
+                             (col newlat (cons (car lat) seen))))
            (multirember&co2 a (cdr lat)
                            (lambda (newlat seen)
-                             (display-all "in lambda for eq with newlat: " 
-                                          newlat ", and seen: " seen)
-                             (col newlat
-                                  (cons (car lat) seen)))
-))]
+                             (col newlat (cons (car lat) seen)))))]
           [else
            (begin
              (display-all "In the else")
              (display-all "Here is the result of else lambda: "
-                                                     (lambda (newlat seen)
+                          (lambda (newlat seen)
                              (display-all "in lambda for else2 with newlat: "
                                           newlat ", and seen: " seen)
-                             (col (cons (car lat) newlat)
-                                  seen))
-                          )
-           (multirember&co2 a (cdr lat) (lambda (newlat seen)
-                             (display-all "in lambda for else with newlat: "
-                                          newlat ", and seen: " seen)
-                             (col (cons (car lat) newlat)
-                                  seen)))
-)])))
+                             (col (cons (car lat) newlat) seen)))
+           (multirember&co2 a (cdr lat) 
+                            (lambda (newlat seen)
+                              (col (cons (car lat) newlat) seen))))])))
+
+
+(define (multiinsertLR new old-l old-r lat)
+  (cond [(null? lat) '()]
+        [(eq? (car lat) old-l) (cons new (cons old-l (multiinsertLR new old-l old-r (cdr lat))))]
+        [(eq? (car lat) old-r) (cons old-r (cons new (multiinsertLR new old-l old-r (cdr lat)))) ]
+        [else (cons (car lat) (multiinsertLR new old-l old-r (cdr lat)))]))
+
+(define (multiinsertLR&co new oldL oldR lat col)
+  (cond [(null? lat) (col '() 0 0)]
+        [(eq? (car lat) oldL) 
+         (multiinsertLR&co new oldL oldR (cdr lat) 
+                           (lambda (newlat L R)
+                             (col (cons new (cons oldL newlat)) (my-add1 L) R)))]
+        [(eq? (car lat) oldR) 
+         (multiinsertLR&co new oldL oldR (cdr lat)
+                           (lambda (newlat L R)
+                             (col (cons oldR (cons new newlat)) L (my-add1 R))))]
+        [else 
+               (multiinsertLR&co new oldL oldR (cdr lat)
+                                 (lambda (newlat L R)
+                                   (col (cons (car lat) newlat) L R)))]))
+(define (page144-func newlat n1 n2)
+  (display-all "calling page144-func with: " newlat ", " n1 ", " n2)
+  (+ (my-length newlat) n1 n2))
+
+(define (return-newlat newlat n1 n2)
+  newlat)
+
+; from the text, page 142:
+; When multiinsertLR&co is done, it will use col on the new lat, on the number of left
+; insertions, and the number of right insertions. 
+; use "(col '() 0 0) on (null? lat) because that matches the types:
+; a list, and two numbers
+
+#|
+(define (multirember a lat)
+  (cond [(null? lat) (quote ())]
+        [(equal5? (car lat) a) (multirember a (cdr lat))]
+        [else (cons (car lat) (multirember a (cdr lat)))])) 
+(define multirember&co  
+  (lambda (a lat col)
+    (cond [(null? lat) (col (quote ()) (quote ()))]
+          [(eq? (car lat) a) 
+           (multirember&co a (cdr lat)
+                           (lambda (newlat seen) 
+                             (col newlat (cons (car lat) seen))))]
+          [else
+           (multirember&co a (cdr lat)
+                           (lambda (newlat seen)
+                             (col (cons (car lat) newlat) seen)))])))
+|#
+; my version
+(define (evens-only* l)
+  (cond [(null? l) '()]
+        [(not (atom? (car l))) (cons (evens-only* (car l)) (evens-only* (cdr l)))]
+        [(rb6:and (atom? (car l)) (even? (car l)))
+         (cons (car l) (evens-only* (cdr l)))]
+        [else (evens-only* (cdr l))]))
+; theirs
+#|
+(define (evens-only* l)
+  (cond [(null? l) (quote ())]
+        [(atom? (car l)) (cond [(even? (car l)) (cons (car l) (evens-only* (cdr l)))]
+                               [else (evens-only* (cdr l))])]
+        [else (cons (evens-only* (car l)) (evens-only* (cdr l)))]))
+|#
+; theirs without nested cond; I think it is the same as mine
+; but in a different order
+#|
+(define (evens-only* l)
+  (cond [(null? l) (quote ())]
+        [(rb6:and (atom? (car l)) (even? (car l))) (cons (car l) (evens-only* (cdr l)))]
+        [(atom? (car l)) (evens-only* (cdr l))]
+        [else (cons (evens-only* (car l)) (evens-only* (cdr l)))]))
+|#
+
+(define (my-evens-only*&co l col)
+  (display-all "my-evens-only*&co with " l ", " col)
+  (cond [(null? l) (col '() '() '())]
+        [(not (atom? (car l))) #| (cons (my-evens-only*&co (car l)
+                                                     (lambda (newl evs odds)
+                                                       (col newl evs odds))) 
+                                     (my-evens-only*&co (cdr l) 
+                                                     (lambda (newl evs odds)
+                                                       (col newl evs odds)))
+                                     |#
+         (my-evens-only*&co (car l) (lambda (al ap as)
+                                   (my-evens-only*&co (cdr l)
+                                                   (lambda (dl dp ds)
+                                                     (col (cons al dl)
+                                                          (cons ap dp)
+                                                          (cons as ds))))))
+]
+        [(rb6:and (atom? (car l)) (even? (car l)))
+         (my-evens-only*&co (cdr l) 
+                         (lambda (newl evs odds)
+                           (col (cons (car l) newl) (cons (car l) evs) odds)))]
+        [else (my-evens-only*&co (cdr l) 
+                              (lambda (newl evs odds)
+                                (col newl evs (cons (car l) odds))))]))
+
+(define evens-only*&co
+  (lambda (l col)
+    (cond
+      [(null? l) (col '() 1 0)]
+      [(atom? (car l))
+       (cond
+         [(even? (car l))
+          (evens-only*&co (cdr l)
+                      (lambda (newl p s)
+                        (col (cons (car l) newl)
+                             (* (car l) p) s)))]
+         [else (evens-only*&co (cdr l)
+                           (lambda (newl p s)
+                             (col newl
+                                  p (+ (car l) s))))])]
+      [else  (evens-only*&co (car l) (lambda (al ap as)
+                                   (evens-only*&co (cdr l)
+                                                   (lambda (dl dp ds)
+                                                     (col (cons al dl)
+                                                          (* ap dp)
+                                                          (+ as ds))))))])))
+
+(define (first-evens-func outp evs odds)
+  (display-all "first-evens-func, outp: " outp ", evs: " evs ", odds: " odds))
+
+(define (the-last-friend newl product sum)
+  (display-all "here in the-last-friend, with newl: " newl ", product: "
+               product ", sum: " sum)
+  (cons sum 
+        (cons product 
+              newl)))
+
+ ; if the car the list is not an atom, recur on both car and cdr of list
+  ; if the car is an atom and is what we want, cons something to the recur on cdr
+  ; else, cons something else to recur on cdr
 
 (module+ test
   (require (prefix-in runit: rackunit))
@@ -946,12 +1076,23 @@ We can see the lists building up.
 
   (runit:check-equal? (operator '(+ 5 3))
                       '+)
+  #|
   (display-all "------------ trying multirember&co2")
   (runit:check-equal? (multirember&co2 'tuna
                                        '(strawberries tuna swordfish tuna shark)
                                        last-friend)
                       3)
+  |#
 
+  (evens-only*&co '((9 1 2 8) 3 10 ((9 9) 7 6) 2) the-last-friend)
+  (my-evens-only*&co '((9 1 2 8) 3 10 ((9 9) 7 6) 2) first-evens-func)
+#|
+  (runit:check-equal? (lt-sc:evens-only* '(1 2 3 4 5 6 7 8 9))
+                      '(2 4 6 8))
+
+  (runit:check-equal? (lt-sc:evens-only* 
+                      '((2 8) 10 (() 6) 2))
+|#
 ) ; end module+ test
 
   

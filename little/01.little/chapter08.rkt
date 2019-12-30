@@ -144,6 +144,22 @@
                       3)
   (lt-sc:display-all "Now we get the Tenth Commandment")
 
+  (runit:check-equal? (lt-sc:multiinsertLR&co 'salty 'fish 'chips
+                                              '(chips and fish or fish and chips)
+                                              lt-sc:page144-func)
+                      15)
+    (runit:check-equal? (lt-sc:multiinsertLR&co 'salty 'fish 'chips
+                                              '(chips and fish or fish and chips)
+                                              lt-sc:return-newlat)
+                      '(chips salty and salty fish or salty fish and chips salty))
+  (lt-sc:display-all "up to page 144")
+
+  (runit:check-equal? (lt-sc:evens-only* '(1 2 3 4 5 6 7 8 9))
+                      '(2 4 6 8))
+
+  (runit:check-equal? (lt-sc:evens-only* '((9 1 2 8) 3 10 ((9 9) 7 6) 2))
+                      '((2 8) 10 (() 6) 2))
+
   (newline)
   (lt-sc:display-all "Done with chapter 08 tests at " (lt-sc:display-date))
 )

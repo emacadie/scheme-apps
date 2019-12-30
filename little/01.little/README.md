@@ -57,6 +57,7 @@ Can use rb6: prefix:
 * and
 * eq?  
 * equal?  
+* even?
 * length
 * list?  
 * number?

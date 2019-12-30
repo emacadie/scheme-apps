@@ -206,7 +206,17 @@
 
   (lt-sc:display-all "The Sixth Commandment is to simplify, but I already simplidied rember")
   (lt-sc:display-all "Their new rember looks like mine, and not more nested cond statements")
+#|
+From the text:
+All *-functions work on lists that are
+either
+- empty,
+- an atom consed onto a list , or
+- a list consed onto a list .
+Comment: Isn't that all lists?
+These are meant for lists with multiple levels.
 
+|#
   (newline)
   (lt-sc:display-all "Done with chapter 05 tests at " (lt-sc:display-date))
 
