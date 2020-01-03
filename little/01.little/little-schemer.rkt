@@ -901,8 +901,7 @@ We can see the lists building up.
          (cons (car lat) seen))))
 |#
 
-(define multirember&co2  
-  (lambda (a lat col)
+(define (multirember&co2 a lat col)
     (display-all "In multirember&co2 " a ", " lat ", " col)
     (cond [(null? lat) (col (quote ()) (quote ()))]
           [(eq? (car lat) a)
@@ -926,7 +925,7 @@ We can see the lists building up.
                              (col (cons (car lat) newlat) seen)))
            (multirember&co2 a (cdr lat) 
                             (lambda (newlat seen)
-                              (col (cons (car lat) newlat) seen))))])))
+                              (col (cons (car lat) newlat) seen))))]))
 
 
 (define (multiinsertLR new old-l old-r lat)
