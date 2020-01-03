@@ -799,8 +799,7 @@ multiremberT takes a function like eq?-tuna and a lat and then does its work.
 ; instead of pre-defining ahead-of-time?
 
 ; Their function from page 137
-(define multirember&co  
-  (lambda (a lat col)
+(define (multirember&co a lat col)
     (display-all "In multirember&co " a ", " lat ", " col)
     (cond [(null? lat) (col (quote ()) (quote ()))]
           [(eq? (car lat) a)
@@ -820,7 +819,7 @@ multiremberT takes a function like eq?-tuna and a lat and then does its work.
                              (display-all "in lambda for else with newlat: "
                                           newlat ", and seen: " seen)
                              (col (cons (car lat) newlat)
-                                  seen))))])))
+                                  seen))))]))
 
 #|
 Here is a test in chapter08.rkt:
