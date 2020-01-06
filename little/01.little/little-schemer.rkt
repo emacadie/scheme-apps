@@ -10,6 +10,7 @@
          addtup        ; chapter 04
          all-nums      ; chapter 04
          atom?         ; preface
+         build         ; chapter 07
          display-all   ; added by me
          display-date  ; added by me
          edd1          ; chapter 06
@@ -24,6 +25,7 @@
          equal2?       ; chapter 05
          equal5?       ; chapter 05
          evens-only*   ; chapter 08
+         first         ; chapter 07
          firsts        ; chapter 03
          fullfun?      ; chapter 07
          fun?          ; chapter 07
@@ -36,9 +38,12 @@
          intersect     ; chapter 07
          intersect?    ; chapter 07
          intersectall  ; chapter 07
+         keep-looking  ; chapter09
          last-friend   ; chapter 08
          lat?          ; chapter 02
          leftmost      ; chapter 05
+         length*       ; chapter 09
+         looking       ; chapter 09
          makeset       ; chapter 07
          member?       ; chapter 02
          member*       ; chapter 05
@@ -83,9 +88,11 @@
          rempick       ; chapter 04
          return-newlat ; chapter 08
          revrel        ; chapter 07
+         second        ; chapter 07
          seconds       ; chapter 07
          sero?         ; chapter 06
          set?          ; chapter 07
+         shift         ; chapter 09
          subset?       ; chapter 07
          subst         ; chapter 03
          subst*        ; chapter 05
@@ -269,6 +276,7 @@ chapter 04: 20
   (cond [(null? lat) 0]
         [else (add1 (my-length (cdr lat)))]))
 
+; return element n (1-based) from lat
 (define (pick n lat)
 (cond [(null? lat) '()]
       [(eq? n 1) (car lat)]
@@ -627,8 +635,11 @@ Mine:
   (car x))
 (define (second x)
   (car (cdr x)))
+
+; used in chapter 09
 (define (build s1 s2)
   (cons s1 (cons s2 '())))
+
 (define (third x)
   (car (cdr (cdr x))))
 
@@ -1059,9 +1070,39 @@ We can see the lists building up.
         (cons product 
               newl)))
 
+ ; for multi-level lists:
  ; if the car the list is not an atom, recur on both car and cdr of list
-  ; if the car is an atom and is what we want, cons something to the recur on cdr
-  ; else, cons something else to recur on cdr
+ ; if the car is an atom and is what we want, cons something to the recur on cdr
+ ; else, cons something else to recur on cdr
+
+; chapter 09
+(define (looking a lat)
+  (keep-looking a (pick 1 lat) lat))
+; second arg to keep-looking is the first number of lat
+; what if it is not a number? not my problem
+
+(define (keep-looking a sorn lat)
+  ; (display-all "keep-looking " a " " sorn " " lat)
+  (cond [(number? sorn) (keep-looking a (pick sorn lat) lat)]
+        [else (eq? sorn a)]))
+
+(define (shift p)
+  (build (first (first p))
+         (build (second (first p))
+                (second p))))
+; like keep-looking, this could go on forever
+; Second "cond" call violates 7th Commandment
+; You should always recur on something smaller
+(define (align pora)
+  (cond [(atom? pora) pora]
+        [(a-pair? (first pora)) (align (shift pora))]
+        [else (build (first pora) (align (second pora)))])) 
+
+; count the atoms in align's args
+(define (length* pora)
+  (cond [(atom?  pora) 1]
+        [else (+ (length* (first pora))
+                 (length* (second pora)))]))
 
 (module+ test
   (require (prefix-in runit: rackunit))

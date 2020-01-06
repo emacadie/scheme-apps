@@ -99,7 +99,7 @@
 
   (runit:check-equal? (lt-sc:one-to-one? '((chocolate chip) (doughy cookie))) 
                       #t)
-
+  (runit:check-equal? (lt-sc:build 'a 'b) '(a b))
 
   (newline)
   (lt-sc:display-all "Done with chapter 07 tests at " (lt-sc:display-date))

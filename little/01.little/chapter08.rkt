@@ -72,7 +72,6 @@
                       '(tacos tamales jalapeno and salsa))
   (runit:check-equal? (lt-sc:insertL2 'e 'd '(a b c d f g d h))
                       '(a b c e d f g d h))
-
   
   (runit:check-equal? (lt-sc:subst8 'topping 
                                    'fudge 
@@ -148,7 +147,7 @@
                                               '(chips and fish or fish and chips)
                                               lt-sc:page144-func)
                       15)
-    (runit:check-equal? (lt-sc:multiinsertLR&co 'salty 'fish 'chips
+  (runit:check-equal? (lt-sc:multiinsertLR&co 'salty 'fish 'chips
                                               '(chips and fish or fish and chips)
                                               lt-sc:return-newlat)
                       '(chips salty and salty fish or salty fish and chips salty))
