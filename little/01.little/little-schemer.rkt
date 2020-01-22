@@ -93,6 +93,7 @@
          sero?         ; chapter 06
          set?          ; chapter 07
          shift         ; chapter 09
+         shuffle       ; chapter 09
          subset?       ; chapter 07
          subst         ; chapter 03
          subst*        ; chapter 05
@@ -103,6 +104,7 @@
          value         ; chapter 06
          value2        ; chapter 06
          value8        ; chapter 08
+         weight*       ; chapter 09
          zub1          ; chapter 06
 )
 
@@ -1103,6 +1105,16 @@ We can see the lists building up.
   (cond [(atom?  pora) 1]
         [else (+ (length* (first pora))
                  (length* (second pora)))]))
+
+(define (weight* pora)
+    (cond [(atom? pora) 1]
+          [else (+ (* (weight* (first pora)) 2)
+                   (weight* (second pora)))]))
+
+(define (shuffle pora)
+  (cond [(atom? pora) pora]
+        [(a-pair? (first pora)) (shuffle (revpair pora))]
+        [else (build (first pora) (shuffle (second pora)))]))
 
 (module+ test
   (require (prefix-in runit: rackunit))

@@ -21,6 +21,17 @@
   ; Is a partial function a function that could never return? 
   ; or never return for some arguments?
   ; page 153
+  (runit:check-equal? (lt-sc:weight* '((a b) c)) 7)
+  (runit:check-equal? (lt-sc:weight* '(a (b c))) 5)
+
+  ; page 154: Partial function does not return a value for all arguments
+  ; Isn't that a sign of a badly designed or implemented function?
+  ; total function: returns a value for any/all arguments
+  ; Is that the point of this chapter? Try to always return a value?
+  (runit:check-equal? (lt-sc:shuffle '(a (b c))) '(a (b c)))
+  (runit:check-equal? (lt-sc:shuffle '(a b)) '(a b))
+  ; starting page 155
+
 
 
   (newline)
