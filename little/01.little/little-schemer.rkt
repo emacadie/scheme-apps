@@ -7,6 +7,7 @@
 
 (provide a-friend      ; chapter 08
          a-pair?       ; chapter07
+         ackermann     ; chapter 09
          addtup        ; chapter 04
          all-nums      ; chapter 04
          atom?         ; preface
@@ -1111,10 +1112,26 @@ We can see the lists building up.
           [else (+ (* (weight* (first pora)) 2)
                    (weight* (second pora)))]))
 
+; not total: may just infinitely swap
 (define (shuffle pora)
   (cond [(atom? pora) pora]
         [(a-pair? (first pora)) (shuffle (revpair pora))]
         [else (build (first pora) (shuffle (second pora)))]))
+
+; defined as "A" in the text
+(define (ackermann n m)
+  (cond [(zero? n) (add1 m)]
+        [(zero? m) (ackermann (sub1 n) 1)]
+        [else (ackermann (sub1 n) (ackermann n (sub1 m)))]))
+
+#|
+(define (will-stop? f)
+  (cond [(not (null? (f '()))) #t]
+        [else #f]
+)
+)
+|#
+; nevermind: will-stop? will not always return a value
 
 (module+ test
   (require (prefix-in runit: rackunit))

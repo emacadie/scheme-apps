@@ -31,9 +31,30 @@
   (runit:check-equal? (lt-sc:shuffle '(a (b c))) '(a (b c)))
   (runit:check-equal? (lt-sc:shuffle '(a b)) '(a b))
   ; starting page 155
+  (runit:check-equal? (lt-sc:ackermann 1 0) 2)
+  (runit:check-equal? (lt-sc:ackermann 1 1) 3)
+  (runit:check-equal? (lt-sc:ackermann 2 2) 7)
+  ; the following does not give an answer
+  ; (runit:check-equal? (lt-sc:ackermann 4 3) 7)
+  ; starting page 170
+  (lt-sc:display-all "done with chapter 9")
 
+  ; from https://mvanier.livejournal.com/2700.html
+  (define Yx
+    (lambda (f)
+      ((lambda (x)
+         (f (lambda (y) ((x x) y))))
+       (lambda (x)
+         (f (lambda (y) ((x x) y)))))))
 
-
+  (define factorialx
+     (Yx (lambda (func)
+           (lambda (num)
+              (if (= num 0)
+                  1
+                  (* num (func (- num 1))))))))
+  ; Not sure I see the point of the Y-Combinator.
+  ; Maybe I will just be grateful that Scheme can do recursion.
   (newline)
   (lt-sc:display-all "Done with chapter 09 tests at " (lt-sc:display-date))
 )
