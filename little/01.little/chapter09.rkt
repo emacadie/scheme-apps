@@ -4,6 +4,68 @@
          (prefix-in ris6: rnrs/io/simple-6)
          (prefix-in lt-sc: "little-schemer.rkt"))
 
+; Into the Y-Combinator rabbit-hole starting on page 160
+; Try to define length without "define" function.
+; How could we make "length" recursive?
+(define (eternity x)
+  (eternity x))
+
+; gets length of empty list
+(define length-0 ; just go with this for now
+  (lambda (l)
+    (cond [(null? l) 0]
+          [else (eternity (cdr l))]))
+)
+
+
+
+; function to determine length of list w/1 or fewer items
+(define length-1-or-less
+(lambda (l)
+  (cond [(null? l) 0]
+        [else (add1 (length-0 (cdr l)))]))
+)
+; now, replace length-0 with its definition in length-1-or-less
+(lambda (l)
+  (cond [(null? l) 0]
+        [else (add1 ((lambda (l)
+                       (cond [(null? l) 0]
+                             [else (eternity (cdr l))])) (cdr l)))]))
+
+; Now, a function to get the length of a list w/2 or fewer items
+
+(define length-2-or-less
+  (lambda (l)
+    (cond [(null? l) 0]
+          [else (add1 (length-1-or-less (cdr l)))])
+))
+
+; for some reason, theirs do not work in racket
+; which might make this harder to follow
+(lambda (l)
+  (cond [(null? 0)]
+        [else (add1 
+               (lambda (l)
+                 (cond [(null? l) 0]
+                       [else (add1 ((lambda (l)
+                                      (cond [(null? l) 0]
+                                            [else (eternity (cdr l))])) (cdr l)))]))
+               (cdr l))]))
+
+; a function that looks like length, again
+((lambda (length)
+   (lambda (l)
+     (cond [(null? l) 0]
+           ; aren't they just calling "length" here? 
+           ; doesn't that defeat the purpose?
+           [else (add1 (length (cdr l)))]))) 
+ eternity)
+
+; now length-1-or-less
+
+
+
+
 (module+ test
   (require (prefix-in runit: rackunit))
   (runit:check-true #t)
@@ -36,6 +98,12 @@
   (runit:check-equal? (lt-sc:ackermann 2 2) 7)
   ; the following does not give an answer
   ; (runit:check-equal? (lt-sc:ackermann 4 3) 7)
+
+  ; The crazy begins here
+  (runit:check-equal? (length-2-or-less '(a b)) 2)
+  (runit:check-equal? (length-2-or-less '(a)) 1)
+  (runit:check-equal? (length-2-or-less '()) 0)
+
   ; starting page 170
   (lt-sc:display-all "done with chapter 9")
 
