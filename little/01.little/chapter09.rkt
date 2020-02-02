@@ -150,7 +150,7 @@
 )
 ; this is very inefficient
 
-; mk-length-0 without a call to eternity
+; mk-length-0 without a call to eternity - page 165
 (define mk-length-0-02
 ((lambda (mk-length)
    (mk-length mk-length))
@@ -217,18 +217,53 @@ in lambda of new-mk-length w/ l: ()
     (mk-length mk-length))))
 ; For me, this never stops
 |#
+; (mk-length-p171-01 '(a b c d e))
 (define mk-length-p171-01
-((lambda (mk-length)
-   (mk-length mk-length))
- (lambda (mk-length)
-   (lambda (l)
-     (lt-sc:display-all "In mk-length-p171-01 w/l: " l)
-     (cond [(null? l) 0]
-           [else (add1
-                  ((lambda(x)
-                     ((mk-length mk-length) x))
-                   (cdr l)))]))))
+  ((lambda (mk-length)
+     (mk-length mk-length))
+   (lambda (mk-length)
+     (lambda (l)
+       (lt-sc:display-all "In mk-length-p171-01 w/l: " l)
+       (cond [(null? l) 0]
+             [else (add1 ((lambda(x)
+                            ((mk-length mk-length) x))
+                          (cdr l)))]))))
 )
+; (mk-length-p171-02 '(a b c d e))
+(define mk-length-p171-02
+  ((lambda (mk-length)
+     (mk-length mk-length))
+   (lambda (mk-length)
+     ((lambda (length)
+        (lambda (l)
+          (cond [(null? l) 0]
+                [else (add1 (length (cdr l)))])))
+      (lambda (x)
+        ((mk-length mk-length) x)))))
+)
+
+; extract the function in the box that looks like length and give it a name
+; (p172-01 '(a b c d e))
+(define p172-01
+((lambda (le) ; this part makes length
+   ((lambda (mk-length)
+      (mk-length mk-length))
+    (lambda (mk-length)
+      (le (lambda (x)
+            ((mk-length mk-length) x))))))
+ (lambda (lengthx) ; this part looks like length
+   (lambda (l)
+     (cond [(null? l) 0]
+           [else (add1 (lengthx (cdr l)))]))))
+)
+
+; that top part is the applicative-order Y combinator
+(define Y
+  (lambda (le)
+    ((lambda (f) (f f))
+     (lambda (f)
+       (le (lambda (x) ((f f) x)))))))
+; I'm still not sure I get it
 
 (module+ test
   (require (prefix-in runit: rackunit))
