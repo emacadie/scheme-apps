@@ -11,6 +11,7 @@
          addtup        ; chapter 04
          all-nums      ; chapter 04
          atom?         ; preface
+         atom-to-action ; chapter 10
          build         ; chapter 07
          display-all   ; added by me
          display-date  ; added by me
@@ -26,6 +27,8 @@
          equal2?       ; chapter 05
          equal5?       ; chapter 05
          evens-only*   ; chapter 08
+         extend-table  ; chapter 10
+         expression-to-action ; chapter 10
          first         ; chapter 07
          firsts        ; chapter 03
          fullfun?      ; chapter 07
@@ -40,14 +43,16 @@
          intersect?    ; chapter 07
          intersectall  ; chapter 07
          keep-looking  ; chapter09
-         last-friend   ; chapter 08
-         lat?          ; chapter 02
-         leftmost      ; chapter 05
-         length*       ; chapter 09
-         looking       ; chapter 09
-         makeset       ; chapter 07
-         member?       ; chapter 02
-         member*       ; chapter 05
+         last-friend      ; chapter 08
+         lat?             ; chapter 02
+         leftmost         ; chapter 05
+         length*          ; chapter 09
+         looking          ; chapter 09
+         lookup-in-entry  ; chapter 10
+         lookup-in-table  ; chapter 10
+         makeset          ; chapter 07
+         member?          ; chapter 02
+         member*          ; chapter 05
          multiinsertL     ; chapter 03
          multiinsertLR    ; chapter 08
          multiinsertLR&co ; chapter 08
@@ -55,9 +60,9 @@
          multirember      ; chapter 03
          multirember&co   ; chapter 08
          multirember-eq?  ; chapter 08
-         multirember-f ; chapter 08
-         multiremberT  ; chapter 08
-         multisubst    ; chapter 03
+         multirember-f    ; chapter 08
+         multiremberT     ; chapter 08
+         multisubst       ; chapter 03
          my+           ; chapter 04
          my-           ; chapter 04
          my-add1       ; chapter 04
@@ -69,6 +74,7 @@
          my-rember     ; I may get rid of this
          my-sub1       ; chapter 04
          my-x          ; chapter 04
+         new-entry     ; chapter 10
          no-nums       ; chapter 04
          numbered?     ; chapter 06
          numbered2?    ; chapter 06
@@ -1132,6 +1138,53 @@ We can see the lists building up.
 )
 |#
 ; nevermind: will-stop? will not always return a value
+
+; Chapter 10
+(define new-entry build)
+
+(define (lookup-in-entry-help name names values entry-f)
+  (cond [(null? names) (entry-f name)]
+        [(eq? (car names) name) (car values)]
+        [else (lookup-in-entry-help name (cdr names) (cdr values) entry-f)]))
+
+(define (lookup-in-entry name entry entry-f)
+  (lookup-in-entry-help name
+                        (first entry)
+                        (second entry)
+                        entry-f))
+
+(define extend-table cons)
+
+(define (lookup-in-table name table table-f)
+  (cond [(null? table) (table-f name)]
+        [else (lookup-in-entry name 
+                               (car table) 
+                               (lambda (name)
+                                 (lookup-in-table name 
+                                                  (cdr table) 
+                                                  table-f)))]))
+
+(define (expression-to-action e)
+  (cond [(atom? e) (atom-to-action e)]
+        [else (list-to-action e)]))
+
+(define (atom-to-action e)
+  (cond [(number? e) *const]
+        [(eq? e #t)  *const]
+        [(eq? e #f)  *const]
+        [(eq? e (quote cons))    *const]
+        [(eq? e (quote car))     *const]
+        [(eq? e (quote cdr))     *const]
+        [(eq? e (quote null?))   *const]
+        [(eq? e (quote eq?))     *const]
+        [(eq? e (quote atom?))   *const]
+        [(eq? e (quote zero?))   *const]
+        [(eq? e (quote add1))    *const]
+        [(eq? e (quote sub1))    *const]
+        [(eq? e (quote number?)) *const]
+        [else *identifier]
+)
+)
 
 (module+ test
   (require (prefix-in runit: rackunit))
