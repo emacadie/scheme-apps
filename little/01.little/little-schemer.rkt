@@ -51,6 +51,7 @@
          lookup-in-entry  ; chapter 10
          lookup-in-table  ; chapter 10
          makeset          ; chapter 07
+         meaning          ; chapter 10
          member?          ; chapter 02
          member*          ; chapter 05
          multiinsertL     ; chapter 03
@@ -111,6 +112,7 @@
          value         ; chapter 06
          value2        ; chapter 06
          value8        ; chapter 08
+         value-10      ; chapter 10
          weight*       ; chapter 09
          zub1          ; chapter 06
 )
@@ -1182,9 +1184,84 @@ We can see the lists building up.
         [(eq? e (quote add1))    *const]
         [(eq? e (quote sub1))    *const]
         [(eq? e (quote number?)) *const]
-        [else *identifier]
-)
-)
+        [else *identifier]))
+
+(define (list-to-action e)
+  (cond [(atom? (car e))
+         (cond [(eq? (car e) (quote quote)) *quote]
+               [(eq? (car e) (quote lambda)) *lambda]
+               [(eq? (car e) (quote cond)) *cond]
+               [else *application])]
+        [else *application]))
+
+(define (meaning e table)
+  ((expression-to-action e) e table))
+
+(define (value-10 e)
+  (meaning e '()))
+
+(define (*const e table)
+  (cond [(number? e) e]
+        [(eq? e #t) #t]
+        [(eq? e #f) #f]
+        [else (build (quote primitive) e)]))
+
+(define (*quote  e table)
+  (text-of e))
+
+(define text-of second)
+
+(define (*identifier e table)
+  (lookup-in-table e table initial-table))
+
+(define (initial-table name)
+  (car (quote ())))
+
+(define (*lambda e table)
+  (build (quote non-primitive) (cons table (cdr e)))) 
+
+(define table-of first) 
+
+(define formals-of second)
+
+(define body-of third )
+
+(define (evcon lines table )
+  (cond [(else? (question-of (car lines)))
+         (meaning (answer-of (car lines)) table)]
+        [(meaning (question-of (car lines)) table)
+         (meaning (answer-of (car lines)) table)]
+        [else (evcon (cdr lines) table)])) 
+
+(define (else? x)
+  (cond [(atom? x) (eq? x (quote else))]
+        [else #f])) 
+
+(define question-of first)
+
+(define answer-of second)
+
+(define (*cond e table)
+  (evcon (cond-lines-of e) table)) 
+
+(define cond-lines-of cdr)
+
+; EValuate LISt, not "elvis"
+(define (evlis args table)
+  (cond [(null? args) (quote ())]
+        [else (cons (meaning (car args) table)
+                    (evlis (cdr args) table))]))
+
+(define (*application e table)
+  (apply
+   (meaning (function-of e) table)
+   (evlis (arguments-of e) table)))
+
+(define function-of car)
+
+(define arguments-of cdr)
+
+; up to page 187
 
 (module+ test
   (require (prefix-in runit: rackunit))
