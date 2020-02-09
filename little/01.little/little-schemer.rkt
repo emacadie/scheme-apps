@@ -5,12 +5,13 @@
          ; (prefix-in rd:   racket/date)
          (prefix-in srfi-19: srfi/19))
 
-(provide a-friend      ; chapter 08
-         a-pair?       ; chapter07
-         ackermann     ; chapter 09
-         addtup        ; chapter 04
-         all-nums      ; chapter 04
-         atom?         ; preface
+(provide a-friend       ; chapter 08
+         a-pair?        ; chapter07
+         ackermann      ; chapter 09
+         addtup         ; chapter 04
+         all-nums       ; chapter 04
+         apply-closure  ; chapter 10
+         atom?          ; preface
          atom-to-action ; chapter 10
          build         ; chapter 07
          display-all   ; added by me
@@ -1253,7 +1254,7 @@ We can see the lists building up.
                     (evlis (cdr args) table))]))
 
 (define (*application e table)
-  (apply
+  (apply-ls
    (meaning (function-of e) table)
    (evlis (arguments-of e) table)))
 
@@ -1262,6 +1263,37 @@ We can see the lists building up.
 (define arguments-of cdr)
 
 ; up to page 187
+(define primitive?
+  (lambda (l)
+    (eq? (first l) (quote primitive))))
+
+(define non-primitive?
+  (lambda (l)
+    (eq? (first l) (quote non-primitive))))
+
+; ls for little schemer
+(define (apply-ls fun vals)
+  (cond [(primitive? fun) (apply-primitive (second fun) vals)]
+        [(non-primitive? fun) (apply-closure (second fun) vals)]))
+
+(define (apply-primitive name vals)
+  (cond [(eq? name 'cons) (cons (first vals) (second vals))]
+        [(eq? name 'car)  (car (first vals))]
+        [(eq? name 'cdr) (cdr (first vals))]
+        [(eq? name 'null?) (null? (first vals))]
+        [(eq? name 'eq?) (eq? (first vals) (second vals))]
+        [(eq? name 'atom?) (atom? (first vals))]
+        [(eq? name 'zero?) (zero? (first vals))]
+        [(eq? name 'add1) (add1 (first vals))]
+        [(eq? name 'sub1) (sub1 (first vals))]
+        [(eq? name 'number?) (number? (first vals))]))
+
+(define (apply-closure closure vals)
+  (meaning (body-of closure)
+           (extend-table (new-entry (formals-of closure)
+                                    vals)
+                         (table-of closure)))) 
+
 
 (module+ test
   (require (prefix-in runit: rackunit))
