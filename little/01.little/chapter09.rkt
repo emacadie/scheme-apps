@@ -23,12 +23,12 @@
 (define length-1-or-less
 (lambda (l)
   (cond [(null? l) 0]
-        [else (add1 (length-0 (cdr l)))]))
+        [else (lt-sc:my-add1 (length-0 (cdr l)))]))
 )
 ; now, replace length-0 with its definition in length-1-or-less
 (lambda (l)
   (cond [(null? l) 0]
-        [else (add1 ((lambda (l)
+        [else (lt-sc:my-add1 ((lambda (l)
                        (cond [(null? l) 0]
                              [else (eternity (cdr l))])) (cdr l)))]))
 
@@ -37,17 +37,17 @@
 (define length-2-or-less
   (lambda (l)
     (cond [(null? l) 0]
-          [else (add1 (length-1-or-less (cdr l)))])
+          [else (lt-sc:my-add1 (length-1-or-less (cdr l)))])
 ))
 
 ; for some reason, theirs do not work in racket
 ; which might make this harder to follow
 (lambda (l)
   (cond [(null? 0)]
-        [else (add1 
+        [else (lt-sc:my-add1 
                (lambda (l)
                  (cond [(null? l) 0]
-                       [else (add1 ((lambda (l)
+                       [else (lt-sc:my-add1 ((lambda (l)
                                       (cond [(null? l) 0]
                                             [else (eternity (cdr l))])) (cdr l)))]))
                (cdr l))]))
@@ -56,7 +56,7 @@
 ((lambda (lengthx)
    (lambda (l)
      (cond [(null? l) 0]
-           [else (add1 (lengthx (cdr l)))]))) 
+           [else (lt-sc:my-add1 (lengthx (cdr l)))]))) 
  eternity)
 
 ; now define length-1-or-less
@@ -65,12 +65,12 @@
    (lambda (l)
      (lt-sc:display-all "length-1-or-less-02 with f")
      (cond [(null? l) 0]
-           [else (add1 (f (cdr l)))])))
+           [else (lt-sc:my-add1 (f (cdr l)))])))
  ((lambda (g)
     (lambda (l)
       (lt-sc:display-all "length-1-or-less-02 with g")
       (cond [(null? l) 0]
-            [else (add1 (g (cdr l)))])))
+            [else (lt-sc:my-add1 (g (cdr l)))])))
   eternity))
 )
 
@@ -82,17 +82,17 @@
      (lambda (l)
        (lt-sc:display-all "In lambda 01 for length-2-or-less-02 w/ l: " l)
        (cond ((null? l) 0)
-             (else (add1 (lengthx (cdr l)))))))
+             (else (lt-sc:my-add1 (lengthx (cdr l)))))))
    ((lambda (lengthx)
       (lambda (l)
         (lt-sc:display-all "In lambda 02 for length-2-or-less-02 w/ l: " l)
         (cond ((null? l) 0)
-              (else (add1 (lengthx (cdr l)))))))
+              (else (lt-sc:my-add1 (lengthx (cdr l)))))))
     ((lambda (lengthx)
        (lambda (l)
          (lt-sc:display-all "In lambda 03 for length-2-or-less-02 w/ l: " l)
          (cond ((null? l) 0)
-               (else (add1 (lengthx (cdr l)))))))
+               (else (lt-sc:my-add1 (lengthx (cdr l)))))))
      eternity)))
 )
 ; I guess Racket starts at the first lambda
@@ -112,7 +112,7 @@
    (lambda (l)
      (lt-sc:display-all "in mk-length-0 lengthx lambda") ; prints
      (cond [(null? l) 0]
-           [else (add1 (lengthx (cdr l)))]))))
+           [else (lt-sc:my-add1 (lengthx (cdr l)))]))))
 )
 ; you can call this on an empty list
 
@@ -123,7 +123,7 @@
  (lambda (length)
    (lambda (l)
      (cond [(null? l) 0]
-           [else (add1 (length (cdr l)))])))) 
+           [else (lt-sc:my-add1 (length (cdr l)))])))) 
 
 ; mk-length for a list <= 2 items
 ((lambda (mk-length)
@@ -133,7 +133,7 @@
  (lambda (length)
    (lambda (l)
      (cond [(null? l) 0]
-           [else (add1 (length (cdr l)))]))))
+           [else (lt-sc:my-add1 (length (cdr l)))]))))
 
 ; mk-length for a list <= 3 items
 (define mk-length-3-or-less
@@ -146,7 +146,7 @@
      (lambda (l)
        (lt-sc:display-all "in mk-length-3-or-less lengthx lambda with l " l) ; prints
        (cond [(null? l) 0]
-             [else (add1 (lengthx (cdr l)))]))))
+             [else (lt-sc:my-add1 (lengthx (cdr l)))]))))
 )
 ; this is very inefficient
 
@@ -157,7 +157,7 @@
  (lambda (mk-length)
    (lambda (l)
      (cond [(null? l) 0]
-           [else (add1 (mk-length (cdr l)))]))))
+           [else (lt-sc:my-add1 (mk-length (cdr l)))]))))
 )
 ; Page 166: the first argument to mk-length is mk-length
 
@@ -168,7 +168,7 @@
    (lambda (mk-length)
      (lambda (l)
        (cond [(null? l) 0]
-             [else (add1 ((mk-length eternity)
+             [else (lt-sc:my-add1 ((mk-length eternity)
                           (cdr l)))]))))
 )
 ; note for page 166: (mk-length-1-02 '(apples)) result: 1
@@ -182,7 +182,7 @@
  (lambda (mk-length)
    (lambda (l)
      (cond [(null? l) 0]
-           [else (add1 ((mk-length mk-length) (cdr l)))]))))
+           [else (lt-sc:my-add1 ((mk-length mk-length) (cdr l)))]))))
 )
 #|
 (new-mk-length '(a b c d e))
@@ -204,7 +204,7 @@ in lambda of new-mk-length w/ l: ()
  (lambda (mk-length)
    (lambda (l)
      (cond [(null? l) 0]
-           [else (add1 ((mk-length mk-length) (cdr l)))]))))
+           [else (lt-sc:my-add1 ((mk-length mk-length) (cdr l)))]))))
 ; to this:
 #|
 ((lambda (mk-length)
@@ -213,7 +213,7 @@ in lambda of new-mk-length w/ l: ()
    ((lambda (lengthx)
       (lambda (l)
         (cond [(null? l) 0]
-              [else (add1 (lengthx (cdr l)))])))
+              [else (lt-sc:my-add1 (lengthx (cdr l)))])))
     (mk-length mk-length))))
 ; For me, this never stops
 |#
@@ -225,7 +225,7 @@ in lambda of new-mk-length w/ l: ()
      (lambda (l)
        (lt-sc:display-all "In mk-length-p171-01 w/l: " l)
        (cond [(null? l) 0]
-             [else (add1 ((lambda(x)
+             [else (lt-sc:my-add1 ((lambda(x)
                             ((mk-length mk-length) x))
                           (cdr l)))]))))
 )
@@ -237,7 +237,7 @@ in lambda of new-mk-length w/ l: ()
      ((lambda (length)
         (lambda (l)
           (cond [(null? l) 0]
-                [else (add1 (length (cdr l)))])))
+                [else (lt-sc:my-add1 (length (cdr l)))])))
       (lambda (x)
         ((mk-length mk-length) x)))))
 )
@@ -254,7 +254,7 @@ in lambda of new-mk-length w/ l: ()
  (lambda (lengthx) ; this part looks like length
    (lambda (l)
      (cond [(null? l) 0]
-           [else (add1 (lengthx (cdr l)))]))))
+           [else (lt-sc:my-add1 (lengthx (cdr l)))]))))
 )
 
 ; that top part is the applicative-order Y combinator
