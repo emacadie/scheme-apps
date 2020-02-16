@@ -109,10 +109,13 @@
                   (two-in-a-row-b? (car lat) (cdr lat)))]))
 
 (define (two-in-a-row-page7 lat)
-  (cond [(null? lat) #f]
-        [else (two-in-a-row-b? (car lat) (cdr lat))]
-)
-)
+  (display-all "calling two-in-a-row-page-7 with lat: " lat)
+  (cond [(begin 
+           (display-all "lat is null")
+           (null? lat) #f)]
+        [else (begin
+                (display-all "lat is not null, calling two-in-a-row-b?")
+                (two-in-a-row-b? (car lat) (cdr lat)))]))
 
 (module+ test
   (require (prefix-in runit: rackunit))

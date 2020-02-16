@@ -16,7 +16,7 @@
   (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff jeff monroe)) 
                       #t)
   ;; first it's "jeff" (2 f's) then "jefff" (3 f's)
-  (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff jeff monroe)) 
+  (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff jefff monroe)) 
                       #f)
 
   ;; left off page 7
