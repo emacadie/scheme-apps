@@ -11,15 +11,18 @@
   (ss-sc:display-all "testing chapter 11 of 'The Seasoned Schemer'")
 
   ; We will only be dealing with positive integers in this chapter.
-  (runit:check-equal? (ss-sc:member? 'sardines '(Italian sardines spaghetti parslet)) #t)
-  (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff monroe)) #f)
+  (runit:check-equal? (ss-sc:member? 'sardines '(Italian sardines spaghetti parslet)) 
+                      #t)
+  (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff monroe)) 
+                      #f)
   (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff jeff monroe)) 
                       #t)
   ;; first it's "jeff" (2 f's) then "jefff" (3 f's)
   (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff jefff monroe)) 
                       #f)
-
   ;; left off page 7
+  ;; their example to walk throught: 
+  ;; (ss-sc:two-in-a-row-page7 '(b d e i i a g))
   
 
    (newline)

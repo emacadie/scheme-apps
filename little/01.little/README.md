@@ -64,6 +64,7 @@ Can use rb6: prefix:
 * null?  
 * or
 * quote  
+* reverse 
 * zero?
 
 Does not work with rb6 prefix:

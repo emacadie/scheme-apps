@@ -56,7 +56,6 @@
         [else (rb6:and (equal5? (car l1) (car l2))
                        (eqlist5? (cdr l1) (cdr l2)))]))
 
-
 ; I assume we were supposed to use the "=" function we made in chapter 04
 (define (eqan? a1 a2)
   (cond [(rb6:and (number? a1) (number? a2) (my-eq a1 a2)) #t]
@@ -104,18 +103,62 @@
                   (two-in-a-row2? lat))]))
 
 (define (two-in-a-row-b? preceding lat)
-  (cond [(null? lat) #f]
-        [else (or (equal5? (car lat) preceding)
-                  (two-in-a-row-b? (car lat) (cdr lat)))]))
+  (display-all "calling two-in-a-row-b? with preceding " 
+               preceding ", and lat: " lat)
+  (cond [(null? lat) (begin
+                       (display-all "lat is null")
+                       #f)]
+        [else (begin
+                (display-all "lat is not null, is (car lat) equal to preceding: "
+                             (equal5? (car lat) preceding))
+                (or (equal5? (car lat) preceding)
+                    (two-in-a-row-b? (car lat) (cdr lat))))]))
 
 (define (two-in-a-row-page7 lat)
   (display-all "calling two-in-a-row-page-7 with lat: " lat)
-  (cond [(begin 
-           (display-all "lat is null")
-           (null? lat) #f)]
+  (cond [(null? lat) (begin 
+                       (display-all "lat is null")
+                       #f)]
         [else (begin
                 (display-all "lat is not null, calling two-in-a-row-b?")
                 (two-in-a-row-b? (car lat) (cdr lat)))]))
+
+(define (my-sum-of-prefixes tup)
+  (my-sum-of-prefixes-hlpr (cdr tup) (car tup) (list (car tup))))
+
+(define (my-sum-of-prefixes-hlpr in-tup ttl out-tup)
+  (display-all "my-sum-of-prefixes-hlpr with: in-tup: " 
+               in-tup ", ttl: " ttl ", out-tup: " out-tup)
+  (cond [(null? in-tup) (reverse out-tup)]
+        [else (my-sum-of-prefixes-hlpr (cdr in-tup) 
+                                       (+ (car in-tup) ttl)
+                                       (cons (+ (car in-tup) ttl) 
+                                             out-tup))]))
+; now theirs
+; sonssf: sum of numbers seen so far
+(define (sum-of-prefixes-b sonssf tup)
+  (display-all "sum-of-prefixes-b with sonssf: " sonssf ", and tup: " tup)
+  (cond [(null? tup) '()]
+        [else (cons (+ sonssf (car tup))
+                    (sum-of-prefixes-b (+ sonssf (car tup)) 
+                                       (cdr tup)))]))
+
+(define (sum-of-prefixes tup)
+  (sum-of-prefixes-b 0 tup))
+
+#|
+Page 10: The "trick": two-in-a-row-b? receives 2 args,
+and one tells us something about the other.
+The first (preceding) always occurs just before the second arg (lat) 
+in the original list.
+sum-of-prefixes-b: receives "tup" and the sum of all numbers that preceded
+current "tup" that original function received.
+Maybe I'm dense, but: Isn't that principle true of all recursive functions?
+So far it looks like this chapter is just review
+I prefer tail-recursion, so I don't know if I will be able
+to predict their answers.
+But they are using helper functions.
+|#
 
 (module+ test
   (require (prefix-in runit: rackunit))
@@ -125,8 +168,12 @@
   (runit:check-equal? (atom? (quote ())) #f)
   (runit:check-equal? (atom? (rb6:quote ())) #f)
   (runit:check-equal? (atom? '()) #f)
+  (runit:check-equal? (my-sum-of-prefixes '(2 1 9 17 0))
+                      '(2 3 12 29 29))
+  (runit:check-equal? (my-sum-of-prefixes '(1 1 1 1 1))
+                      '(1 2 3 4 5))
   (newline)
-  (display-all "Done with preface tests at " (display-date))
+  (display-all "Done with Seasoned tests at " (display-date))
 ) ; end module+ test
 
   

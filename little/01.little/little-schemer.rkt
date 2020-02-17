@@ -174,7 +174,7 @@ chapter 04: 20
 
 (define (insertR new old lat)
   (cond [(null? lat) '()]
-        [(eq? (car lat) old) (cons old (cons new  (cdr lat)))]
+        [(eq? (car lat) old) (cons old (cons new (cdr lat)))]
         [else (cons (car lat) (insertR new old (cdr lat)))]))
 ; Yo dawg, I heard you like cons-ing lists, so I put a cons in your cons
 ; so you can add a list to your list.
