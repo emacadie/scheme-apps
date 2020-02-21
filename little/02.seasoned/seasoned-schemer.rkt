@@ -11,6 +11,9 @@
          member?       ; chapter 11
          my-add1       ; chapter 04
          my-sub1       ; chapter 04
+         my-sum-of-prefixes ; chapter 11
+         scramble           ; chapter 11
+         sum-of-prefixes    ; chapter 11
          two-in-a-row-page7 ; chapter 11
 )
 
@@ -160,6 +163,41 @@ to predict their answers.
 But they are using helper functions.
 |#
 
+; a "tup" is a list of numbers
+; scramble: The function scramble takes a non-empty list of numbers 
+; in which no number is greater than its own index, 
+; and returns a list of numbers of the same length. 
+; Each number in the argument is treated as a backward index 
+; from its own position to a point earlier in the list. 
+; The result at each position is found by counting backward 
+; from the current position according to this index
+
+; for scrample, we need "pick" from chapter 4 again
+(define (pick n lat)
+  ; (display-all "- pick with n: " n ", and lat: " lat)
+  (cond [(null? lat) '()]
+        [(eq? n 1) (car lat)]
+        [else (pick (sub1 n) (cdr lat))]))
+
+; "rev-pre" is reversed prefix
+(define (scramble-b tup rev-pre)
+  (display-all "scramble-b with tup: " tup ", and rev-pre: " rev-pre)
+  (cond [(null? tup) '()]
+        [else 
+         (begin
+           (display-all "in else, about to call pick with " (car tup) ", and: "
+                        (cons (car tup) rev-pre) ", resulting in: "
+                        (pick (car tup) (cons (car tup) rev-pre)))
+           (cons (pick (car tup) 
+                          (cons (car tup) rev-pre))
+                    (scramble-b (cdr tup) 
+                               (cons (car tup) 
+                                     rev-pre))))]))
+
+(define (scramble tup)
+  (scramble-b tup '()))
+
+
 (module+ test
   (require (prefix-in runit: rackunit))
   (runit:check-true #t)
@@ -168,10 +206,7 @@ But they are using helper functions.
   (runit:check-equal? (atom? (quote ())) #f)
   (runit:check-equal? (atom? (rb6:quote ())) #f)
   (runit:check-equal? (atom? '()) #f)
-  (runit:check-equal? (my-sum-of-prefixes '(2 1 9 17 0))
-                      '(2 3 12 29 29))
-  (runit:check-equal? (my-sum-of-prefixes '(1 1 1 1 1))
-                      '(1 2 3 4 5))
+  
   (newline)
   (display-all "Done with Seasoned tests at " (display-date))
 ) ; end module+ test

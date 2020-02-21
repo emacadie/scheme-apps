@@ -20,12 +20,28 @@
   ;; first it's "jeff" (2 f's) then "jefff" (3 f's)
   (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff jefff monroe)) 
                       #f)
-  ;; left off page 7
-  ;; their example to walk throught: 
-  ;; (ss-sc:two-in-a-row-page7 '(b d e i i a g))
   
+  ;; their example to walk through:
+  (runit:check-equal? (ss-sc:two-in-a-row-page7 '(b d e i i a g))
+                      #t)
 
-   (newline)
-   (ss-sc:display-all "Done with chapter 04 tests at " (ss-sc:display-date))
+  (runit:check-equal? (ss-sc:my-sum-of-prefixes '(2 1 9 17 0))
+                      '(2 3 12 29 29))
+  (runit:check-equal? (ss-sc:my-sum-of-prefixes '(1 1 1 1 1))
+                      '(1 2 3 4 5))
+  (runit:check-equal? (ss-sc:sum-of-prefixes '(2 1 9 17 0))
+                      '(2 3 12 29 29))
+  (runit:check-equal? (ss-sc:sum-of-prefixes '(1 1 1 1 1))
+                      '(1 2 3 4 5))
+
+  (runit:check-equal? (ss-sc:scramble '(1 1 1 3 4 2 1 1 9 2))
+                      '(1 1 1 1 1 4 1 1 1 9))
+  (runit:check-equal? (ss-sc:scramble '(1 2 3 4 5 6 7 8 9))
+                      '(1 1 1 1 1 1 1 1 1))
+  (runit:check-equal? (ss-sc:scramble '(1 2 3 1 2 3 4 1 8 2 10))
+                      '(1 1 1 1 1 1 1 1 1 2 8 2))
+    
+  (newline)
+  (ss-sc:display-all "Done with chapter 11 tests at " (ss-sc:display-date))
 )
 
