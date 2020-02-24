@@ -9,6 +9,7 @@
          display-date
          display-all
          member?       ; chapter 11
+         multirember   ; chapter 12
          my-add1       ; chapter 04
          my-sub1       ; chapter 04
          my-sum-of-prefixes ; chapter 11
@@ -197,6 +198,21 @@ But they are using helper functions.
 (define (scramble tup)
   (scramble-b tup '()))
 
+;; chapter 12
+; the Y-combinator
+(define Y
+  (lambda (le)
+    ((lambda (f) (f f))
+     (lambda (f)
+       (le (lambda (x) ((f f) x)))))))
+
+(define (multirember a lat)
+  ((Y (lambda (mr)
+        (lambda (lat)
+          (cond [(null? lat) '()]
+                [(eq? a (car lat)) (mr (cdr lat))]
+                [else (cons (car lat) (mr (cdr lat)))]))))
+   lat))
 
 (module+ test
   (require (prefix-in runit: rackunit))
