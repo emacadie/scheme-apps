@@ -79,7 +79,7 @@ Not tail-recursive.
   (cond [(empty? sent) start]
         [else (my-reduce func
                          (func start (car sent))
-                         (cdr sent) )]))
+                         (cdr sent))]))
 
 
 ;; 19.2  Write keep. Don't forget that keep has to return a sentence if 
