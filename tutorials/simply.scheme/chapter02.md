@@ -134,7 +134,7 @@ Again, I think the answer is: +, *, and, max, min
 
 from https://html.com/tables/
 
-```html
+
 <table>
  <caption>A complex table</caption>
  <thead>
@@ -193,5 +193,5 @@ from https://html.com/tables/
   </tr>
  </tfoot>
 </table>
-```
+
 
