@@ -56,9 +56,7 @@ Functions in this chapter:
 |sqrt        |number     |          |          |number     |
 |vowel?      |*anything* |          |          |boolean    |
 |word        |*word or integer*|*word or integer*||word   |
-|extra cell|2|3|4|
-This is the fifth cell.<br />
-This is the end|
+
 
 
 For "and", "not" and "or", I have to enter the booleans as "#t" or "#f". That did not occur to me right away. Usually you get the values for the arguments from a function, or multiple functions. I guess this "functions" program does things differently.    
@@ -133,4 +131,67 @@ butfirst, butlast, count, even?, first, last, odd, vowel?
 2.9: An operator f is associative if f(f(a,b),c)=f(a,f(f(b,c)) for all possible arguments A, B, and C. For example, * is associative, but not /. Which of the operators from Exercise 2.7 are associative?    
 Again, I think the answer is: +, *, and, max, min   
 
+
+from https://html.com/tables/
+
+```html
+<table>
+ <caption>A complex table</caption>
+ <thead>
+  <tr>
+   <th colspan="3">Invoice #123456789</th>
+   <th>14 January 2025
+  </tr>
+  <tr>
+   <td colspan="2">
+    <strong>Pay to:</strong><br>
+    Acme Billing Co.<br>
+    123 Main St.<br>
+    Cityville, NA 12345
+   </td>
+   <td colspan="2">
+    <strong>Customer:</strong><br>
+    John Smith<br>
+    321 Willow Way<br>
+    Southeast Northwestershire, MA 54321
+   </td>
+  </tr>
+ </thead>
+ <tbody>
+  <tr>
+   <th>Name / Description</th>
+   <th>Qty.</th>
+   <th>@</th>
+   <th>Cost</th>
+  </tr>
+  <tr>
+   <td>Paperclips</td>
+   <td>1000</td>
+   <td>0.01</td>
+   <td>10.00</td>
+  </tr>
+  <tr>
+   <td>Staples (box)</td>
+   <td>100</td>
+   <td>1.00</td>
+   <td>100.00</td>
+  </tr>
+ </tbody>
+ <tfoot>
+  <tr>
+   <th colspan="3">Subtotal</th>
+   <td> 110.00</td>
+  </tr>
+  <tr>
+   <th colspan="2">Tax</th>
+   <td> 8% </td>
+   <td>8.80</td>
+  </tr>
+  <tr>
+   <th colspan="3">Grand Total</th>
+   <td>$ 118.80</td>
+  </tr>
+ </tfoot>
+</table>
+```
 
