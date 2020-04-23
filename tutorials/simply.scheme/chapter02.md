@@ -56,7 +56,8 @@ Functions in this chapter:
 |sqrt        |number     |          |          |number     |
 |vowel?      |*anything* |          |          |boolean    |
 |word        |*word or integer*|*word or integer*||word   |
-|extra cell|2|3|4|This is the fifth cell.<br />
+|extra cell|2|3|4|
+This is the fifth cell.<br />
 This is the end|
 
 
