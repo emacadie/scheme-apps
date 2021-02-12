@@ -137,7 +137,8 @@ In any case, map is a genuine Scheme primitive, so it's the official grownup way
               (list? listB))
          (my-append (list listA) listB)]
         [(not-list-or-pair listB) (reverse (cons listB (reverse listA)))]
-        [else (my-append (reverse (cons (car listB) (reverse listA))) (cdr listB))])) ; line 129
+        [else (my-append (reverse (cons (car listB) (reverse listA))) 
+                         (cdr listB))])) ; line 129
 
 ;; again, not perfect, does not handle pairs too well, but I think I will take it
 ;; Isn't a pair just a list anyway?
@@ -146,7 +147,7 @@ In any case, map is a genuine Scheme primitive, so it's the official grownup way
 ;; But the book said they are pretty much the same
 (define (append-multi-lists listA . listB)
   (cond [(null-or-empty? listB) listA]
-        [(null-or-empty? listA) listB (apply append-multi-lists listB)] ;; could this be done with car and cdr?      
+        ; [(null-or-empty? listA) listB (apply append-multi-lists listB)] ;; could this be done with car and cdr?      
         [(and (= (count listB) 1 ) (list? (car listB)) (empty? (car listB))) listA]
         [else  (apply append-multi-lists (my-append listA (car listB)) (cdr listB))]))
 
@@ -392,17 +393,52 @@ In any case, map is a genuine Scheme primitive, so it's the official grownup way
   (check-equal? (mystery '(1 2 3 4)) '(4 3 2 1) "Error for (mystery '(1 2 3 4))")
 
   ;; 17.06
-  (check-three-things-equal? '(get back the word)      (append '(get back) '(the word))      (my-append '(get back) '(the word)))
-  (check-three-things-equal? '(i am the walrus)        (append '(i am) '(the walrus))        (my-append '(i am) '(the walrus)))
-  (check-three-things-equal? '(Rod Argent Chris White) (append '(Rod Argent) '(Chris White)) (my-append '(Rod Argent) '(Chris White)))
+  (check-equal? '(get back the word)      (append '(get back) '(the word)) )
+  (check-equal? '(get back the word)      (my-append '(get back) '(the word)) )
+  (check-equal? '(i am the walrus)        (append '(i am) '(the walrus)) )
+  (check-equal? '(i am the walrus)        (my-append '(i am) '(the walrus)) )
+  (check-equal? '(Rod Argent Chris White) (append '(Rod Argent) '(Chris White)) )
+  (check-equal? '(Rod Argent Chris White) (my-append '(Rod Argent) '(Chris White)) )
   ;; from Husk R7RS docs
-  (check-three-things-equal? '(x y)                    (append '(x) '(y))                    (my-append '(x) '(y)) )
-  (check-three-things-equal? '(a b c d)                (append '(a) '(b c d))                (my-append '(a) '(b c d))  )
-  (check-three-things-equal? '(a (b) (c))              (append '(a (b)) '((c)))              (my-append '(a (b)) '((c))) )
+  (check-equal? '(x y)                    (append '(x) '(y)) )
+  (check-equal? '(x y)                    (my-append '(x) '(y)) )
+  (check-equal? '(a b c d)                (append '(a) '(b c d))  )
+  (check-equal? '(a b c d)                (my-append '(a) '(b c d))  )
+  (check-equal? '(a (b) (c))              (append '(a (b)) '((c))) )
+  (check-equal? '(a (b) (c))              (my-append '(a (b)) '((c))) )
   ;; orig from Husk R7RS: (append '(a b) '(c . d)) ==> (a b c . d)
-  (check-three-things-equal? '(a b c d)                (append '(a b) '(c d))                (my-append '(a b) '(c d)) )
-  (check-three-things-equal? 'a                        (append '() 'a)                       (my-append '() 'a) )
-  (check-three-things-equal? '(1 2 3 4 5 '(10 11 12))  (append '(1 2 3) '(4 5 '(10 11 12)))  (my-append '(1 2 3) '(4 5 '(10 11 12))) )
+  (check-equal? '(a b c d)                (append '(a b) '(c d)) )
+  (check-equal? '(a b c d)                (my-append '(a b) '(c d)) )
+  (check-equal? 'a                        (append '() 'a) )  
+  (check-equal? 'a                        (my-append '() 'a) )
+  (check-equal? '(1 2 3 4 5 '(10 11 12))  (append '(1 2 3) '(4 5 '(10 11 12)))  )
+  (check-equal? (my-append '(1 2 3) '(4 5 '(10 11 12)))  '(1 2 3 4 5 '(10 11 12)) ) 
+
+  ; (buntine-append a b)
+  (check-equal? (append '(get back) '(the word))         '(get back the word) )
+  ; (check-equal? (buntine-append '(get back) '(the word)) '(get back the word) ) 
+  (check-equal? (append '(i am) '(the walrus)) '(i am the walrus) )        
+  ; (check-equal? (buntine-append '(i am) '(the walrus))  '(i am the walrus) )  
+  (check-equal? (append '(Rod Argent) '(Chris White)) '(Rod Argent Chris White) ) 
+  ; (check-equal? (buntine-append '(Rod Argent) '(Chris White)) '(Rod Argent Chris White) )
+  ;; from Husk R7RS docs
+  (check-equal? '(x y)                    (append '(x) '(y)) )
+  ; (check-equal? (buntine-append '(x) '(y))  '(x y) )                    
+  (check-equal? '(a b c d)                (append '(a) '(b c d)) )
+  ; (printf "result: ~a \n" (buntine-append '(a) '(b c d))  )
+  ; (check-equal? (buntine-append '(a) '(b c d))   '(a b c d) )                
+  (check-equal? '(a (b) (c))              (append '(a (b)) '((c)))  )
+  ; (check-equal? '(a (b) (c))              (buntine-append '(a (b)) '((c))) )
+  ;; orig from Husk R7RS: (append '(a b) '(c . d)) ==> (a b c . d)
+  (check-equal? '(a b c d)                (append '(a b) '(c d))  )
+  ; (check-equal? '(a b c d)                (buntine-append '(a b) '(c d)) )
+  (check-equal? 'a                        (append '() 'a)  )
+  ; (check-equal? 'a                        (buntine-append '() 'a) )
+  (check-equal? '(1 2 3 4 5 '(10 11 12))  (append '(1 2 3) '(4 5 '(10 11 12))) )
+  ; (check-equal? '(1 2 3 4 5 '(10 11 12))  (buntine-append '(1 2 3) '(4 5 '(10 11 12))) )
+
+
+
 
   (check-three-things-equal? '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) (append-multi-lists '(1 2 3) '(4 5 6) '(7 8 9) ))
   (check-equal?              '(1 2 3 4 5 6 7 8 9) (their-multi-append '(1 2 3) '(4 5 6) '(7 8 9) ) )
