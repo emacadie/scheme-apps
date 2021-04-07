@@ -13,6 +13,8 @@
   ; We will only be dealing with positive integers in this chapter.
   (runit:check-equal? (ss-sc:member? 'sardines '(Italian sardines spaghetti parslet)) 
                       #t)
+  (runit:check-equal? (ss-sc:member? 'sardines '(Italian sardine spaghetti parslet)) 
+                      #f)
   (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff monroe)) 
                       #f)
   (runit:check-equal? (ss-sc:two-in-a-row-page7 '(wash adams jeff jeff monroe)) 
@@ -39,7 +41,7 @@
   (runit:check-equal? (ss-sc:scramble '(1 2 3 4 5 6 7 8 9))
                       '(1 1 1 1 1 1 1 1 1))
   (runit:check-equal? (ss-sc:scramble '(1 2 3 1 2 3 4 1 8 2 10))
-                      '(1 1 1 1 1 1 1 1 1 2 8 2))
+                      '(1 1 1 1 1 1 1 1 2 8 2))
     
   (newline)
   (ss-sc:display-all "Done with chapter 11 tests at " (ss-sc:display-date))

@@ -1,0 +1,7 @@
+Preface: Goal of book is to get people to think recursively. 
+I suppose I got that from "Simply Scheme" (but this book does not presume SS as a prerequisite).
+"The Little Schemer and The Seasoned Schemer will not introduce you to the practical world of programming, but a mastery of the concepts in these books provides a start toward understanding the nature of computation."
+
+Chapter 1:
+
+

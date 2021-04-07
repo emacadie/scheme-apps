@@ -12,8 +12,10 @@
 
   ; sets
   (runit:check-equal? (lt-sc:set? '(apple peaches apple plum)) #f)
+  (runit:check-equal? (lt-sc:set? '(apple peaches plum)) #t)
   (runit:check-equal? (lt-sc:set? '()) #t)
   (runit:check-equal? (lt-sc:set? '(apple 3 pear 4 9  apple 3 4)) #f)
+  (runit:check-equal? (lt-sc:set? '(apple 3 pear 9  4)) #t)
   ; I changed member? to use equal5?
 
   (runit:check-equal? (lt-sc:makeset '(apple peach pear peach plum apple lemon peach))

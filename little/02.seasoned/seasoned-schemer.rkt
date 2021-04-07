@@ -173,7 +173,7 @@ But they are using helper functions.
 ; The result at each position is found by counting backward 
 ; from the current position according to this index
 
-; for scrample, we need "pick" from chapter 4 again
+; for scramble, we need "pick" from chapter 4 again
 (define (pick n lat)
   ; (display-all "- pick with n: " n ", and lat: " lat)
   (cond [(null? lat) '()]
@@ -190,7 +190,7 @@ But they are using helper functions.
                         (cons (car tup) rev-pre) ", resulting in: "
                         (pick (car tup) (cons (car tup) rev-pre)))
            (cons (pick (car tup) 
-                          (cons (car tup) rev-pre))
+                       (cons (car tup) rev-pre))
                     (scramble-b (cdr tup) 
                                (cons (car tup) 
                                      rev-pre))))]))

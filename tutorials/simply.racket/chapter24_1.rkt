@@ -1,4 +1,4 @@
-
+#lang simply-scheme
 
 #|
 24.1  Set up a spreadsheet to keep track of the grades in a course. 
@@ -44,4 +44,11 @@ You can make predictions about your grades on future assignments and see what ov
 (put 55 d5)
 (put 55 e5)
 (put (+ (cell b) (cell c) (cell d) (cell e)) f5)
+
+;; (module+ test
+;;   (require rackunit)
+;;   (check-true #t)
+;;    (printf "(sphere-volume 10):  ~a \n" (sphere-volume 10)) 
+;; )
+(module test racket/base)
 
