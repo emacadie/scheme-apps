@@ -8,6 +8,7 @@
 (provide atom?          ; preface
          display-date
          display-all
+         equal5?
          member?       ; chapter 11
          multirember   ; chapter 12
          my-add1       ; chapter 04

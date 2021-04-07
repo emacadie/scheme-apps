@@ -6,3 +6,7 @@ The Eleventh Commandment: Use additional arguments when a function needs to know
 
 The Twelfth Commandment: Use (letrec ...) to remove arguments that do not change for recursive applications.
 
+The Thirteenth Commandment: Use (letrec ...) to hide and protect functions
+
+
+
