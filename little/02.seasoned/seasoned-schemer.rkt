@@ -14,6 +14,7 @@
          my-add1       ; chapter 04
          my-sub1       ; chapter 04
          my-sum-of-prefixes ; chapter 11
+         pick               ; chapter 04/12
          scramble           ; chapter 11
          sum-of-prefixes    ; chapter 11
          two-in-a-row-page7 ; chapter 11

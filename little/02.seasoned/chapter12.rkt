@@ -184,25 +184,55 @@
                                        (cdr tup)))]))
 
 (define (sum-of-prefixes-34 tup)
-  (letrec ([SOP (lambda (sonssf tup-1)
-                  (cond [(null? tup-1) '()]
-                      [else (cons (+ sonssf (car tup-1))
-                                  (SOP (+ sonssf (car tup-1)) 
-                                       (cdr tup-1)))]))])
+  (letrec 
+      ([SOP (lambda (sonssf tup-1)
+              (cond [(null? tup-1) '()]
+                    [else (cons (+ sonssf (car tup-1))
+                                (SOP (+ sonssf (car tup-1)) 
+                                     (cdr tup-1)))]))])
     (SOP 0 tup))) ;; this goes right inside end of letrec
 
 
 ; So I guess letrec can be useful if you want to make a function tail-recursive
 ; and don't want to make a helper
-;; recursive
+
+;; tail-recursive version
 (define (my-sum-of-prefixes tup)
-  (letrec ([SOP2 (lambda (in-tup ttl out-tup)
-                   (cond [(null? in-tup) (reverse out-tup)]
-                         [else (SOP2 (cdr in-tup) 
-                                     (+ (car in-tup) ttl)
-                                     (cons (+ (car in-tup) ttl) 
-                                           out-tup))]))])
+  (letrec 
+      ([SOP2 (lambda (in-tup ttl out-tup)
+               (cond [(null? in-tup) (reverse out-tup)]
+                     [else (SOP2 (cdr in-tup) 
+                                 (+ (car in-tup) ttl)
+                                 (cons (+ (car in-tup) ttl) 
+                                       out-tup))]))])
     (SOP2 (cdr tup) (car tup) (list (car tup)))))
+
+;; (define (scramble-b tup rev-pre)
+;;   (display-all "scramble-b with tup: " tup ", and rev-pre: " rev-pre)
+;;   (cond [(null? tup) '()]
+;;         [else 
+;;          (begin
+;;            (display-all "in else, about to call pick with " (car tup) ", and: "
+;;                         (cons (car tup) rev-pre) ", resulting in: "
+;;                         (pick (car tup) (cons (car tup) rev-pre)))
+;;            (cons (pick (car tup) 
+;;                        (cons (car tup) rev-pre))
+;;                     (scramble-b (cdr tup) 
+;;                                (cons (car tup) 
+;;                                      rev-pre))))]))
+
+(define (scramble tup)
+  (letrec 
+      ([scramble-b 
+        (lambda (tup rev-pre)
+          (cond [(null? tup) '()]
+                [else
+                 (cons (ss-sc:pick (car tup) 
+                                   (cons (car tup) rev-pre))
+                       (scramble-b (cdr tup) 
+                                   (cons (car tup) 
+                                         rev-pre)))]))])
+    (scramble-b tup '())))
 
 (module+ test
   (require (prefix-in runit: rackunit))
@@ -255,6 +285,12 @@
   (runit:check-equal? (my-sum-of-prefixes '(1 1 1 1 1))
                       '(1 2 3 4 5))
     
+  (runit:check-equal? (scramble '(1 1 1 3 4 2 1 1 9 2))
+                      '(1 1 1 1 1 4 1 1 1 9))
+  (runit:check-equal? (scramble '(1 2 3 4 5 6 7 8 9))
+                      '(1 1 1 1 1 1 1 1 1))
+  (runit:check-equal? (scramble '(1 2 3 1 2 3 4 1 8 2 10))
+                      '(1 1 1 1 1 1 1 1 2 8 2))
   (newline)
   (ss-sc:display-all "Done with chapter 12 tests at " (ss-sc:display-date))
 )
