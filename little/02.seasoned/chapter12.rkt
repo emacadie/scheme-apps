@@ -207,20 +207,6 @@
                                        out-tup))]))])
     (SOP2 (cdr tup) (car tup) (list (car tup)))))
 
-;; (define (scramble-b tup rev-pre)
-;;   (display-all "scramble-b with tup: " tup ", and rev-pre: " rev-pre)
-;;   (cond [(null? tup) '()]
-;;         [else 
-;;          (begin
-;;            (display-all "in else, about to call pick with " (car tup) ", and: "
-;;                         (cons (car tup) rev-pre) ", resulting in: "
-;;                         (pick (car tup) (cons (car tup) rev-pre)))
-;;            (cons (pick (car tup) 
-;;                        (cons (car tup) rev-pre))
-;;                     (scramble-b (cdr tup) 
-;;                                (cons (car tup) 
-;;                                      rev-pre))))]))
-
 (define (scramble tup)
   (letrec 
       ([scramble-b 
