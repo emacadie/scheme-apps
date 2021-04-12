@@ -29,10 +29,10 @@
   (lambda (a lat)
     (ss-sc:display-all "In multirember-letrec")
     ((letrec 
-         ((mr (lambda (lat)
+         ([mr (lambda (lat)
                 (cond [(null? lat) '()]
                       [(eq? a (car lat)) (mr (cdr lat))]
-                      [else (cons (car lat) (mr (cdr lat)))]))))
+                      [else (cons (car lat) (mr (cdr lat)))]))])
        mr)
      lat)))
 
@@ -44,10 +44,10 @@
   (lambda (a lat)
     (ss-sc:display-all "In multirember-letrec-22")
     (letrec 
-         ((mr (lambda (lat)
+        ([mr (lambda (lat)
                 (cond [(null? lat) '()]
                       [(eq? a (car lat)) (mr (cdr lat))]
-                      [else (cons (car lat) (mr (cdr lat)))]))))
+                      [else (cons (car lat) (mr (cdr lat)))]))])
       (mr lat))))
 
 ; The Twelfth Commandment: Use (letrec ...) to remove arguments that do not change for recursive applications.
@@ -165,10 +165,10 @@
 
 (define two-in-a-row-page34
   (letrec
-      ((W (lambda (a lat)
+      ([W (lambda (a lat)
             (cond [(null? lat) #f]
                   [else (or (ss-sc:equal5? (car lat) a) 
-                            (W (car lat) (cdr lat)))]))))
+                            (W (car lat) (cdr lat)))]))])
     (lambda (lat)
       (cond [(null? lat) #f]
             [else (W (car lat) (cdr lat))]))))
@@ -219,6 +219,17 @@
                                    (cons (car tup) 
                                          rev-pre)))]))])
     (scramble-b tup '())))
+
+(define (member-letrec the-word the-sent)
+  (letrec ([M (lambda (the-w the-s outp)
+                (ss-sc:display-all "w is: " the-w ", s is: " the-s ", outp is: " outp)  
+                (cond [(null? the-s)
+                       (begin
+                         (ss-sc:display-all "the-s is empty, outp is: " outp)
+                         outp)]  
+                      [(equal? the-w (car the-s)) (M the-w '() #t)]    
+                      [(M the-w (cdr the-s) #f)]))])                   
+    (M the-word the-sent #f)))          
 
 (module+ test
   (require (prefix-in runit: rackunit))
@@ -277,6 +288,15 @@
                       '(1 1 1 1 1 1 1 1 1))
   (runit:check-equal? (scramble '(1 2 3 1 2 3 4 1 8 2 10))
                       '(1 1 1 1 1 1 1 1 2 8 2))
+
+ ; (printf "(member-letrec 'what '(ask not what your country can do for you)): ~a \n" (member-letrec 'what '(ask not what your country can do for you)))
+  (runit:check-equal? (member-letrec 'what '(ask not what your country can do for you)) #t  "Error for: (member-letrec 'what '(ask not what your country can do for you))")
+  ; (printf "(member-letrec 'when '(ask not what your country can do for you)): ~a \n" (member-letrec 'when '(ask not what your country can do for you)))
+  (runit:check-equal? (member-letrec 'how '(ask not what your country can do for you)) #f "Error for: (member-letrec 'when '(ask not what your country can do for you))")
+  (runit:check-equal? (member-letrec 4 '(1 2 3 4)) #t)
+  (runit:check-equal? (member-letrec 5 '(1 2 3 4)) #f)
+
+
   (newline)
   (ss-sc:display-all "Done with chapter 12 tests at " (ss-sc:display-date))
 )

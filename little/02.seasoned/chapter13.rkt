@@ -103,14 +103,15 @@
                 (letrec
                     ([J (lambda (s1)
                           (cond [(null? s1) '()]
-                                [(ss-sc:member? (car s1) s2) (J (cdr s1))]
-                                [else (cons (car s1) (J (cdr s1)))]))])
+                                [(ss-sc:member? (car s1) s2) 
+                                 (cons (car s1) (J (cdr s1)))]
+                                [else (J (cdr s1))]))])
                   (cond [(null? s2) '()]
                         [else (J s1)])))])
         (cond [(null? lset) '()]
               [else (A lset)])))))
 
-;; from https://github.com/pkrumins/the-seasoned-schemer/blob/master/13-hop-skip-and-jump.ss
+;; from https://github.com/pkrumins/the-seasoned-schemer/blob/master/13-hop-skip-and-jump.ss - has conditions of J reversed and it works
 (define intersectall-ap
   (lambda (lset)
     (call-with-current-continuation
@@ -169,10 +170,80 @@
       (letrec
           ([R (lambda (lat)
                 (cond [(null? lat) '()]
-                      [(ss-sc:equal5? (car lat) a) (skip (R (cdr lat)))]
+                      [(ss-sc:equal5? (car lat) a) 
+                       (skip (R (cdr lat)))
+                       ; (R (cdr lat))
+                       ]
                       [else (cons (car lat) (R (cdr lat)))]))])
           (R lat))))
 
+; in tail-recursive version, 
+; (skip (R (cdr lat))) can be replaced with (R (cdr lat))
+; and it still works
+; in non-tail-recursive, it breaks
+; recursive, and prints
+(define (rember-upto-last-r a lat)
+  (ss-sc:display-all "----- in rember-upto-last-r with a: " a)
+  (let/cc skip
+    (ss-sc:display-all "at skip point")
+      (letrec
+          ([R (lambda (lat outp)
+                (ss-sc:display-all "Calling R w/lat: " lat 
+                                   " and outp: " outp)
+                (cond [(null? lat) 
+                       (begin
+                         (ss-sc:display-all "lat is null, returning " 
+                                            (reverse outp))
+                         (reverse outp))]
+                      [(ss-sc:equal5? (car lat) a) 
+                       (begin
+                         (ss-sc:display-all "car lat is a, calling skip")
+                         (skip (R (cdr lat) '()))
+                         ;(R (cdr lat) '())
+)
+                       ]
+                      [else (begin
+                              (ss-sc:display-all "In else, calling R w/ "
+                                                 (cdr lat) " and consing "
+                                                 (car lat) " onto " outp
+                                                 )
+                              (R (cdr lat) (cons (car lat) outp)))]))])
+        (R lat '()))))
+
+; prints
+(define (rember-upto-last-p a lat)
+  (ss-sc:display-all "---------------- Calling rember-upto-last-p w/a: " a)
+  (let/cc skip
+      (letrec
+          ([R (lambda (lat)
+                (ss-sc:display-all "* In (R " lat ")")
+                (cond [(null? lat) 
+                       (begin
+                         (ss-sc:display-all "lat is null")
+                         '())]
+                      [(ss-sc:equal5? (car lat) a) 
+                       (begin
+                         (ss-sc:display-all "car lat is a: " a
+                                            " calling skip (R ("
+                                            (cdr lat) "))"
+                                            )
+                         (skip (R (cdr lat)))
+                         ; (R (cdr lat))
+                         )]
+                      [else 
+                       (begin
+                         (ss-sc:display-all "In the else, "
+                                                 "calling (cons "
+                                                 (car lat) " (R "
+                                                 (cdr lat) "))"
+                                                 )
+                         (cons (car lat) (R (cdr lat))))]))])
+          (R lat))))
+; going to the skip seems to reset it and start over with whatever values
+; are "current" at that time
+; from book: we eliminate all the pending "cons" calls when we skip
+; maybe that's why we could alter the "skip" in the tail-recursive versions
+; there were no "cons" calls waiting for data to return
 
 
 (module+ test
@@ -220,17 +291,17 @@
   ;;                                        (3 diet hamburgers))) 
   ;;                     '())
 
-  (runit:check-equal? (intersectall-41 '((3 steaks and) 
-                                         (no food and) 
-                                         (three baked potatoes)
-                                         (3 diet hamburgers))) 
-                      '())
-
-  ;; (runit:check-equal? (intersectall-49 '((3 steaks and) 
+  ;; (runit:check-equal? (intersectall-41 '((3 steaks and) 
   ;;                                        (no food and) 
   ;;                                        (three baked potatoes)
   ;;                                        (3 diet hamburgers))) 
   ;;                     '())
+
+  (runit:check-equal? (intersectall-49 '((3 steaks and) 
+                                         (no food and) 
+                                         (three baked potatoes)
+                                         (3 diet hamburgers))) 
+                      '())
 
   (runit:check-equal? (intersectall-ap '((3 steaks and) 
                                          (no food and) 
@@ -320,7 +391,7 @@
                         chocolate mints
                         caramel delight ginger snaps))
 
-  (runit:check-equal? (rember-upto-last 'roots
+  (runit:check-equal? (rember-upto-last-p 'roots
                                         '(noodles 
                                           spaghetti 
                                           spatzle
@@ -364,11 +435,23 @@
                                           vanilla ice cream
                                           German chocolate cake
                                           more cookies
-                                          gingerbread man)
-)
-                      '(gingerbread man)
+                                          gingerbread man))
+                      '(gingerbread man))
 
-)
+    (runit:check-equal? (rember-upto-last-p 'cookies
+                                            '(cookies
+                                              chocolate mints
+                                              caramel delight ginger snaps
+                                              desserts
+                                              cookies
+                                              chocolate moose
+                                              vanilla ice cream
+                                              German chocolate cake
+                                              more cookies
+                                              gingerbread man))
+                      '(gingerbread man))
+
+
 
   (newline)
   (ss-sc:display-all "Done with chapter 13 tests at " (ss-sc:display-date))

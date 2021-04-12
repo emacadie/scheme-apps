@@ -204,7 +204,7 @@
                                       '(beef ((sausage)) (and (soda))))
                       #t)
 
-  (lt-sc:display-all "The Sixth Commandment is to simplify, but I already simplidied rember")
+  (lt-sc:display-all "The Sixth Commandment is to simplify, but I already simplified rember")
   (lt-sc:display-all "Their new rember looks like mine, and not more nested cond statements")
 #|
 From the text:

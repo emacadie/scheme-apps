@@ -72,6 +72,18 @@
         [(equal? the-word (first the-sent)) (member-r-helper the-word '() #t)]
         [else (member-r-helper the-word (butfirst the-sent) #f)]))
 
+(define (member-letrec the-word the-sent)
+  (letrec ([M (lambda (the-w the-s outp)
+                (more:display-all "w is: " the-w ", s is: " the-s ", outp is: " outp)
+                (cond [(empty? the-s) 
+                       (begin
+                         (more:display-all "the-s is empty, outp is: " outp)
+                         outp
+)]
+                      [(equal? the-w (first the-s)) (M the-w '() #t)]
+                      [(M the-w (butfirst the-s) #f)]))])
+    (M the-word the-sent #f)))
+
 ;; 14.7  Write differences, which takes a sentence of numbers as its argument 
 ;; and returns a sentence containing the differences between adjacent elements. 
 ;; (The length of the returned sentence is one less than that of the argument.)
@@ -356,6 +368,12 @@
   (check-equal? (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '()) 
                 '(3 4 6 7 9 12 18 24 36 40 50 99) 
                 "Error for: (merge-r '(4 7 18 40 99) '(3 6 9 12 24 36 50) '())")
+;; member-letrec down at the bottom
+  (printf "(member-letrec 'what '(ask not what your country can do for you)): ~a \n" (member-letrec 'what '(ask not what your country can do for you)))
+  (check-equal? (member-letrec 'what '(ask not what your country can do for you)) #t  "Error for: (member-letrec 'what '(ask not what your country can do for you))")
+  (printf "(member-letrec 'when '(ask not what your country can do for you)): ~a \n" (member-letrec 'when '(ask not what your country can do for you)))
+  (check-equal? (member-letrec 'when '(ask not what your country can do for you)) #f "Error for: (member-letrec 'when '(ask not what your country can do for you))")
+
 ) ;; end module+ test 
 
 
