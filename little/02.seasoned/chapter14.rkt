@@ -100,7 +100,6 @@
 
 ; Fifteenth Commandment (preliminary version)
 ; Use (let ...) to name values of repeated expressions
-; up to page 69
 
 (define (depth l)
   (cond [(null? l) 1]
@@ -184,7 +183,45 @@
                        (P (cdr tup) conscartup)))]))])
     (P tup '())))
 
-; up to page 76
+; redefing leftmost w/let-cc
+(define (leftmost-78 l)
+  (let/cc skip (lm l skip)))
+
+(define (lm l out)
+  (cond [(null? l) '()]
+        [(ss-sc:atom? (car l)) (out (car l))] ; is this where the skip happens?
+        [else (let () ; could also use begin
+                (lm (car l) out)
+                (lm (cdr l) out))]))
+
+(define (leftmost-letrec l)
+  (letrec ([lm (lambda (l out)
+                 (cond [(null? l) '()]
+                       [(ss-sc:atom? (car l)) (out (car l))] 
+                       [else (let () ; could also use begin
+                               (lm (car l) out)
+                               (lm (cdr l) out))]))])
+    (let/cc skip (lm l skip))))
+
+(define (leftmost-letcc l)
+  ; "out" above never really changes, it is always "skip"
+  ; and then we can remove it from definition of lm by putting letrec in let/cc
+  ; since we already have "skip"
+  (let/cc skip 
+    (letrec ([lm (lambda (l)
+                 (cond [(null? l) '()]
+                       [(ss-sc:atom? (car l)) (skip (car l))] 
+                       [else (let () ; could also use begin
+                               (lm (car l))
+                               (lm (cdr l)))]))])
+      (lm l))))
+
+;; Their explanation (roughly)
+;; Sets up a North Pole w/skip
+;; calls lm
+;; lm looks at each atom in list l from left to right
+;; when it finds an atom if uses skip to return it "abruptly and promptly"
+; up to page 83
 
 (module+ test
   (require (prefix-in runit: rackunit))
@@ -278,6 +315,26 @@
   (runit:check-equal? (scramble-let '(1 2 3 1 2 3 4 1 8 2 10))
                       '(1 1 1 1 1 1 1 1 2 8 2))
 
+  (runit:check-equal? (leftmost-78 '(((a) b) (c d)))
+                      'a)
+  (runit:check-equal? (leftmost-78 '(((a) ()) () (e)))
+                      'a)
+  (runit:check-equal? (leftmost-78 '(((() a) ())))
+                      'a)
+
+  (runit:check-equal? (leftmost-letrec '(((a) b) (c d)))
+                      'a)
+  (runit:check-equal? (leftmost-letrec '(((a) ()) () (e)))
+                      'a)
+  (runit:check-equal? (leftmost-letrec '(((() a) ())))
+                      'a)
+
+  (runit:check-equal? (leftmost-letcc '(((a) b) (c d)))
+                      'a)
+  (runit:check-equal? (leftmost-letcc '(((a) ()) () (e)))
+                      'a)
+  (runit:check-equal? (leftmost-letcc '(((() a) ())))
+                      'a)
 
   (newline)
   (ss-sc:display-all "Done with chapter 14 tests at " (ss-sc:display-date)
