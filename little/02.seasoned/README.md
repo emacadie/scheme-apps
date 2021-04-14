@@ -12,4 +12,7 @@ The Thirteenth Commandment: Use (letrec ...) to hide and protect functions
 
 The Fourteenth Commandment: Use (letcc ... ) to return values abruptly and promptly
 
+The Fifteenth Commandment: Use (let ...) to name the values of repeated
+expressions in a function definition if they may be evaluated twice
+for one and the same use of the function
 
