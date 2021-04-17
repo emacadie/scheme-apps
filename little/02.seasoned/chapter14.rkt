@@ -223,6 +223,86 @@
 ;; when it finds an atom if uses skip to return it "abruptly and promptly"
 ; up to page 83
 
+(define (rm a l oh)
+  (cond [(null? l) (oh 'no)]
+        [(ss-sc:atom? (car l))
+         (if (ss-sc:equal5? (car l) a)
+             (cdr l)
+             (cons (car l) (rm a (cdr l) oh)))]
+        [else
+         (if (ss-sc:atom? (let/cc oh 
+                            (rm a (car l) oh)))
+             (cons (car l) (rm a (cdr l) oh))
+             (cons (rm a (car l) 0) (cdr l)))]))
+
+
+
+(define (rember1-88 a l)
+  (let ([new-l (let/cc oh (rm-88 a l oh))])
+    (if (ss-sc:atom? new-l)
+        l
+        new-l)))
+
+(define (rm-88 a l oh)
+  (cond [(null? l) (oh 'no)]
+        [(ss-sc:atom? (car l))
+         (if (ss-sc:equal5? (car l) a)
+             (cdr l)
+             (cons (car l) (rm-88 a (cdr l) oh)))]
+        [else
+         (let ([new-car (let/cc oh
+                          (rm-88 a (car l) oh))])
+           (if (ss-sc:atom? new-car)
+             (cons (car l) (rm-88 a (cdr l) oh))
+             (cons new-car (cdr l))))]))
+
+; All the stupid jokes about food are getting tiresome
+
+;; from https://stackoverflow.com/questions/60301595/scheme-the-seasoned-schemer-question-about-the-syntax-of-the-definition-of-t
+;; https://stackoverflow.com/questions/11788525/is-there-any-function-like-try-in-racket
+;; (define-syntax try 
+;;   (syntax-rules () 
+;;     ((try var a b ...) 
+;;      (let/cc success 
+;;        (let/cc var (success a)) b ...))))
+
+; is that hygienic? I have no idea
+; can't get more unique than UUIDs
+(define-syntax try 
+  (syntax-rules () 
+    ((try var 962c2a14-1d86-47a1-92bf c7e91eb3911c ...) 
+     (let/cc success 
+       (let/cc var (success 962c2a14-1d86-47a1-92bf)) c7e91eb3911c  ...))))
+
+; https://beautifulracket.com/explainer/hygiene.html
+; This can get pretty complicated
+; In the book definition for "try", it says that 
+; "the name 'success' must not occur in alhpa or beta"
+; and they used Greek letters
+; MAYBE ALL-CAPS WOULD BE ENOUGH
+; what do the periods mean?
+; If I understand https://docs.racket-lang.org/guide/pattern-macros.html#%28part._define-syntax-rule%29
+; The macros are expanded hygienically by default
+; I don't want to get hung up on this now
+
+(define (rember1-try a l)
+  (try oh (rm a l oh) l))
+
+(define (rember1-try-89 a l)
+  (try oh (rm-89 a l oh) l))
+
+(define (rm-89 a l oh)
+  (cond [(null? l) (oh 'no)]
+        [(ss-sc:atom? (car l))
+         (if (ss-sc:equal5? (car l) a)
+             (cdr l)
+             (cons (car l) (rm-89 a (cdr l) oh)))]
+        [else
+         (try oh2
+              (cons (rm-89 a (car l) oh2) (cdr l))
+              (cons (car l) (rm-89 a (cdr l) oh)))]))
+
+
 (module+ test
   (require (prefix-in runit: rackunit))
   (runit:check-true #t)
@@ -335,6 +415,49 @@
                       'a)
   (runit:check-equal? (leftmost-letcc '(((() a) ())))
                       'a)
+
+  (runit:check-equal? (rember1-88 'salad
+                                  '((Swedish rye) 
+                                    (French (mustard salad turkey)) salad))
+                      '((Swedish rye) (French (mustard turkey)) salad))
+
+  (runit:check-equal? (rember1-88 'meat
+                                  '((pasta meat) 
+                                    pasta (noodles meat sauce) meat tomatoes))
+                      '((pasta) pasta (noodles meat sauce) meat tomatoes))
+  
+  (runit:check-equal? (rember1-88 'a '((foo bar) baz))
+                      '((foo bar) baz))
+
+
+  (runit:check-equal? (rember1-try 'salad
+                                  '((Swedish rye) 
+                                    (French (mustard salad turkey)) salad))
+                      '((Swedish rye) (French (mustard turkey)) salad))
+
+  (runit:check-equal? (rember1-try 'meat
+                                  '((pasta meat) 
+                                    pasta (noodles meat sauce) meat tomatoes))
+                      '((pasta) pasta (noodles meat sauce) meat tomatoes))
+  
+  (runit:check-equal? (rember1-try 'a '((foo bar) baz))
+                      '((foo bar) baz))
+
+  (runit:check-equal? (rember1-try-89 'salad
+                                      '((Swedish rye) 
+                                        (French (mustard salad turkey)) salad))
+                      '((Swedish rye) (French (mustard turkey)) salad))
+
+  (runit:check-equal? (rember1-try-89 'meat
+                                      '((pasta meat) 
+                                        pasta 
+                                        (noodles meat sauce) meat tomatoes))
+                      '((pasta) pasta (noodles meat sauce) meat tomatoes))
+  
+  (runit:check-equal? (rember1-try-89 'a '((foo bar) baz))
+                      '((foo bar) baz))
+
+  
 
   (newline)
   (ss-sc:display-all "Done with chapter 14 tests at " (ss-sc:display-date)
