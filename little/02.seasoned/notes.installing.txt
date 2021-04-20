@@ -1,0 +1,42 @@
+ericm@latitude:~/github/scheme-apps$ raco pkg install uuid
+Resolving "uuid" via https://download.racket-lang.org/releases/6.9/catalog/
+Resolving "uuid" via https://pkgs.racket-lang.org
+Downloading repository https://github.com/LiberalArtist/uuid.git#before-racket-v7.6
+raco setup: version: 6.9
+raco setup: platform: x86_64-linux [3m]
+raco setup: installation name: 6.9
+raco setup: variants: 3m
+raco setup: main collects: /usr/local/share/racket/collects
+raco setup: collects paths: 
+raco setup:   /home/ericm/.racket/6.9/collects
+raco setup:   /usr/local/share/racket/collects
+raco setup: main pkgs: /usr/local/share/racket/pkgs
+raco setup: pkgs paths: 
+raco setup:   /usr/local/share/racket/pkgs
+raco setup:   /home/ericm/.racket/6.9/pkgs
+raco setup: links files: 
+raco setup:   /usr/local/share/racket/links.rktd
+raco setup:   /home/ericm/.racket/6.9/links.rktd
+raco setup: main docs: /usr/local/share/racket/doc
+raco setup: --- updating info-domain tables ---
+raco setup: updating: /home/ericm/.racket/6.9/share/info-cache.rktd
+raco setup: --- pre-installing collections ---
+raco setup: --- installing foreign libraries ---
+raco setup: --- installing shared files ---
+raco setup: --- compiling collections ---
+raco setup: --- parallel build using 4 jobs ---
+raco setup: 3 making: <pkgs>/uuid
+raco setup: 3 making: <pkgs>/uuid/scribblings
+raco setup: --- creating launchers ---
+raco setup: --- installing man pages ---
+raco setup: --- building documentation ---
+raco setup: 0 running: <pkgs>/uuid/scribblings/uuid.scrbl
+raco setup: 3 rendering: <pkgs>/racket-index/scribblings/main/user/local-redirect.scrbl
+raco setup: 2 rendering: <pkgs>/racket-index/scribblings/main/user/release.scrbl
+raco setup: 1 rendering: <pkgs>/racket-index/scribblings/main/user/search.scrbl
+raco setup: 0 rendering: <pkgs>/racket-index/scribblings/main/user/start.scrbl
+raco setup: 3 rendering: <pkgs>/uuid/scribblings/uuid.scrbl
+raco setup: --- installing collections ---
+raco setup: --- post-installing collections ---
+
+

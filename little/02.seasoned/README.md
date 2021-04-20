@@ -22,3 +22,17 @@ The Fifteenth Commandment: Use (let ...) to name the values of repeated
 expressions in a function definition if they may be evaluated twice
 for one and the same use of the function
 
+The Sixteeth Commandment: Use (set! ... ) only with names defined in (let ... ) blocks
+
+The Seventeenth Commandment: Use (set! x ...) for (let ((x ...)) ... )
+only if there is at least one (lambda ... ) between it and the "let"
+
+(Note: this does not apply if you are defining functions with the name and args in a separate parens)
+
+The Eighteenth Commandment: Use (set! x ...) only when the value that x
+refers to is no longer needed.
+
+The Nineteenth Commandment: Use (set! ... ) to remember valuable things
+between two distinct uses of a function
+
+

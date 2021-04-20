@@ -2,7 +2,8 @@
 
 (require (prefix-in rb6:  rnrs/base-6)
          (prefix-in ris6: rnrs/io/simple-6)
-         (prefix-in ss-sc: "seasoned-schemer.rkt"))
+         (prefix-in ss-sc: "seasoned-schemer.rkt")
+         (prefix-in uuid: uuid))
 
 ;; page 56
 (define (leftmost l)
@@ -280,10 +281,11 @@
 ; "the name 'success' must not occur in alhpa or beta"
 ; and they used Greek letters
 ; MAYBE ALL-CAPS WOULD BE ENOUGH
-; what do the periods mean?
+; what do the periods mean? I think it stands for "whatever comes after this"
 ; If I understand https://docs.racket-lang.org/guide/pattern-macros.html#%28part._define-syntax-rule%29
-; The macros are expanded hygienically by default
+; then the macros are expanded hygienically by default
 ; I don't want to get hung up on this now
+; https://www2.cs.sfu.ca/CourseCentral/383/tjd/racket_macros.html
 
 (define (rember1-try a l)
   (try oh (rm a l oh) l))
@@ -460,6 +462,7 @@
   
 
   (newline)
+  (ss-sc:display-all "Here is a UUID w/gensym: " (gensym (uuid:uuid-string)))
   (ss-sc:display-all "Done with chapter 14 tests at " (ss-sc:display-date)
                      "\n---------------------------------------------------")
 )
