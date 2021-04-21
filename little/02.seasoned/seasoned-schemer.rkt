@@ -90,6 +90,7 @@
 
 ;; end functions for member?
 
+
 ;; chapter 11
 (define (is-first? a lat)
   (cond [(null? lat) #f]

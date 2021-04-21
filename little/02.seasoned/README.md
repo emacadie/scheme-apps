@@ -24,10 +24,15 @@ for one and the same use of the function
 
 The Sixteeth Commandment: Use (set! ... ) only with names defined in (let ... ) blocks
 
-The Seventeenth Commandment: Use (set! x ...) for (let ((x ...)) ... )
+The Seventeenth Commandment (first version): Use (set! x ...) for (let ((x ...)) ... )
 only if there is at least one (lambda ... ) between it and the "let"
 
 (Note: this does not apply if you are defining functions with the name and args in a separate parens)
+
+The Seventeenth Commandment (final version): 
+Use (set! x ...) for (let ((x ...)) ... )
+only if there is at least one (lambda ... ) between it and the "let"
+or if the new value for x is a function that refers to x
 
 The Eighteenth Commandment: Use (set! x ...) only when the value that x
 refers to is no longer needed.

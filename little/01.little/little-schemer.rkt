@@ -286,7 +286,7 @@ chapter 04: 20
 
 (define (my-length lat)
   (cond [(null? lat) 0]
-        [else (add1 (my-length (cdr lat)))]))
+        [else (my-add1 (my-length (cdr lat)))]))
 
 ; return element n (1-based) from lat
 (define (pick n lat)
@@ -895,7 +895,7 @@ We can see the lists building up.
 
 (define (last-friend x y)
   (display-all "in last-friend with x: " x ", and unused y: " y)
-  (length x))
+  (my-length x))
 
 ; I get the concept of collectors, I think.
 ; But I am not clear how the lists are transmitted/passed
