@@ -4,6 +4,10 @@ https://github.com/pkrumins/the-seasoned-schemer
 
 https://github.com/viswanathgs/The-Seasoned-Schemer
 
+Interestingly, these two have to redefine atom? for each chapter. I wonder what implementation of Scheme they used.   
+
+https://github.com/pkrumins/the-little-prover
+
 http://community.schemewiki.org/?little-schemer
 
 http://community.schemewiki.org/?seasoned-schemer
