@@ -44,4 +44,9 @@ refers to is no longer needed.
 The Nineteenth Commandment: Use (set! ... ) to remember valuable things
 between two distinct uses of a function
 
+The Twentieth Commandment: When thinking about a value created w/ (letcc ...),
+write down the function that is equivalent but does not forget.
+Then, when you use it, remember to forget.
+
+
 
