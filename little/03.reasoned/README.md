@@ -23,15 +23,18 @@ https://github.com/takikawa/minikanren/
 Says to use 
 https://github.com/calvis/cKanren   
 https://pkgs.racket-lang.org/package/cKanren
+Look at stuff in https://github.com/calvis/cKanren/blob/master/cKanren/miniKanren.rkt
+
 
 Local notes for minikanren:
-file:///home/ericm/.racket/6.9/pkgs/minikanren/minikanren/doc/minikanren/index.html
-Local notes for cKanren:
-None
+file:///home/ericm/.racket/6.9/pkgs/minikanren/minikanren/doc/minikanren/index.html  
+Local notes for cKanren:  
+None  
 
 Preface: Starting with two constants: #s and #u  (like #t and #f)   
 Three operators: an equal sign w/three lines, fresh (like lambda) and cond^e (like cond)  
 "A relation, a function that returns a goal as its value, ends its name with a superscript 'o'"  
+cKanren seems to use succeed and fail in for #s and #u
 
 
 
