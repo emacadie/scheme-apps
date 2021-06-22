@@ -22,9 +22,12 @@ https://www.monolune.com/using-racket-for-the-reasoned-schemer/
 https://github.com/takikawa/minikanren/  
 Says to use 
 https://github.com/calvis/cKanren   
-https://pkgs.racket-lang.org/package/cKanren
+https://pkgs.racket-lang.org/package/cKanren    
 Look at stuff in https://github.com/calvis/cKanren/blob/master/cKanren/miniKanren.rkt
 
+
+Canonical Racket repo (not in Racket packages):   
+https://github.com/miniKanren/Racket-miniKanren    
 
 Local notes for minikanren:
 file:///home/ericm/.racket/6.9/pkgs/minikanren/minikanren/doc/minikanren/index.html  
@@ -37,6 +40,7 @@ Three operators: an equal sign w/three lines, fresh (like lambda) and cond^e (li
 cKanren seems to use succeed and fail in for #s and #u
 
 
-
+The Law of Fresh: If x is fresh, then (≡ v x) succeeds and associates x with v   
+The Law of ≡: (≡ v w) is the same as (≡ w v)   
 
 

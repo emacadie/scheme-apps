@@ -79,5 +79,38 @@ raco setup: --- installing collections ---
 raco setup: --- post-installing collections ---
 ericm@latitude:~$ 
 
+ericm@latitude:~/github$ raco pkg install --type github miniKanren/Racket-miniKanren
+Querying Git references for Racket-miniKanren at git://github.com/miniKanren/Racket-miniKanren
+Downloading repository git://github.com/miniKanren/Racket-miniKanren
+raco setup: version: 6.9
+raco setup: platform: x86_64-linux [3m]
+raco setup: installation name: 6.9
+raco setup: variants: 3m
+raco setup: main collects: /usr/local/share/racket/collects
+raco setup: collects paths: 
+raco setup:   /home/ericm/.racket/6.9/collects
+raco setup:   /usr/local/share/racket/collects
+raco setup: main pkgs: /usr/local/share/racket/pkgs
+raco setup: pkgs paths: 
+raco setup:   /usr/local/share/racket/pkgs
+raco setup:   /home/ericm/.racket/6.9/pkgs
+raco setup: links files: 
+raco setup:   /usr/local/share/racket/links.rktd
+raco setup:   /home/ericm/.racket/6.9/links.rktd
+raco setup: main docs: /usr/local/share/racket/doc
+raco setup: --- updating info-domain tables ---
+raco setup: --- pre-installing collections ---
+raco setup: --- installing foreign libraries ---
+raco setup: --- installing shared files ---
+raco setup: --- compiling collections ---
+raco setup: --- parallel build using 4 jobs ---
+raco setup: 3 making: <pkgs>/Racket-miniKanren
+raco setup: 3 making: <pkgs>/Racket-miniKanren/miniKanren
+raco setup: --- creating launchers ---
+raco setup: --- installing man pages ---
+raco setup: --- building documentation ---
+raco setup: --- installing collections ---
+raco setup: --- post-installing collections ---
+ericm@latitude:~/github$ 
 
 
